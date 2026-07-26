@@ -128,13 +128,17 @@ Tier 4 com os itens A-D do escopo concluídos, com evidência real (ver
 - **SLOs como código** (ADR 0015): três SLOs com recording rules
   multi-janela e alertas de burn-rate no Prometheus.
 
-Não entregue neste tier, por restrição de tempo e memória da máquina
-compartilhada com outro laboratório (`edge-lab`), rodando em paralelo:
-SBOM/scan/assinatura de imagem, teste de carga dedicado ao tier 4 e
-runbook de backup/recuperação distribuída. EKS, MSK, RDS/Aurora e
-ElastiCache continuam fora de escopo local (LocalStack community não os
-implementa; ver `docs/limitacoes-simulacao-local.md`). Mapa completo do
-que falta: `docs/benchmarks/tier-4-what-breaks-next.md`.
+Numa segunda passada, antes do tier 5, os três itens que tinham ficado de
+fora por restrição de memória compartilhada com o `edge-lab` foram
+fechados com evidência real: **SBOM/scan/assinatura de imagem** (ADR 0016,
+`docs/benchmarks/supply-chain/`), **teste de carga dedicado** (steady
+state + spike 3x, 0% de erro, p95 de 7,33ms,
+`docs/benchmarks/tier-4-load/`) e **runbook de backup/recuperação
+distribuída** (`docs/runbooks/backup-e-recuperacao-distribuida.md`, RPO
+real de 39s medido). EKS, MSK, RDS/Aurora e ElastiCache continuam fora de
+escopo local (LocalStack community não os implementa; ver
+`docs/limitacoes-simulacao-local.md`). Mapa completo do que ainda falta:
+`docs/benchmarks/tier-4-what-breaks-next.md`.
 
-O próximo gate é fechar os itens que sobraram do tier 4 (carga, supply
-chain, backup) antes de considerar o tier 5 (células e multi-região).
+O tier 5 (células, fencing e multi-região) está em andamento — ver seção
+abaixo.

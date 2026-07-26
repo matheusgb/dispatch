@@ -70,16 +70,33 @@ partir do Kubernetes 1.33; o `kind` deste laboratório roda 1.31
 de 0 a 3 réplicas por lag real do consumer group, ver ADR 0014), mas o
 combo não é o que a documentação oficial do KEDA testa.
 
-### Itens do tier 4 não executados por restrição de tempo e memória local
+### Itens do tier 4 fechados numa segunda passada (antes do tier 5)
 
-A máquina deste laboratório roda em paralelo com outro laboratório
-(`edge-lab`), compartilhando CPU e memória. Nesta passada do tier 4, os
-seguintes itens do escopo (marcados como "se sobrar fôlego" no roadmap
-interno) não foram executados, e nenhum número relacionado a eles deve
-ser lido como medido: SBOM/scan/assinatura de imagem (`syft`, `grype`,
-`cosign`), teste de carga dedicado ao tier 4 (steady state + spike 3x +
-soak reduzido) e o runbook de backup/recuperação distribuída. Ver
-`docs/benchmarks/tier-4-what-breaks-next.md` para o detalhamento.
+Uma primeira passada do tier 4 não executou três itens por restrição de
+tempo e memória compartilhada com o `edge-lab`. Antes de iniciar o tier 5,
+o `edge-lab` foi parado (containers Docker, não o código) para liberar
+memória, e os três itens foram fechados com evidência real:
+
+- **SBOM/scan/assinatura de imagem**: `syft` (SBOM SPDX), `grype` (scan de
+  vulnerabilidades, nenhuma encontrada nesta execução) e `cosign` (chave
+  local, não keyless) contra as 5 imagens do `docker compose`. Ver ADR
+  0016 e `docs/benchmarks/supply-chain/`.
+- **Teste de carga dedicado**: `k6` com steady state (10 VUs) e spike de
+  3x (30 VUs) contra o `delivery-api` real, 0% de erro em ~144 mil
+  requisições, p95 de 7,33ms. Ver `docs/benchmarks/tier-4-load/README.md`.
+- **Runbook de backup/recuperação distribuída**: `pg_dump`/`pg_restore`
+  reais, comparação do gap de dados contra o high-watermark do Kafka, e
+  RPO medido (39s nesta execução, refletindo o intervalo real entre
+  backup e "crash" simulado, não um número teórico). Ver
+  `docs/runbooks/backup-e-recuperacao-distribuida.md`.
+
+O soak reduzido (contínuo por várias horas) continua não executado nesta
+passada — decisão de escopo, não esquecimento: o tempo desta sessão foi
+priorizado para o tier 5 (TLA+, fencing, células, simulador), que o
+usuário pediu explicitamente para não pular. Ver
+`docs/benchmarks/tier-4-what-breaks-next.md` para o registro histórico
+completo (mantido como estava, com uma nota de que os três itens acima
+deixaram de ser pendência).
 
 ## Tier 5: células e multi-região
 

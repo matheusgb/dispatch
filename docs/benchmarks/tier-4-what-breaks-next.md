@@ -41,19 +41,16 @@
    aqui deveria ser validado contra uma versão suportada antes de
    qualquer alegação além do que este tier mediu.
 
-6. **Nenhum teste de carga dedicado ao tier 4.** O roadmap pede steady
-   state + spike 3x + soak (reduzido a 15-20min localmente). Não
-   executado nesta passada por restrição de tempo/memória: os
-   experimentos de chaos e a validação de Helm/KEDA já saturaram a
-   máquina compartilhada com outro laboratório (`edge-lab`) rodando em
-   paralelo. Fica como primeira tarefa de uma eventual continuação deste
-   tier.
+6. ~~Nenhum teste de carga dedicado ao tier 4.~~ **Fechado numa segunda
+   passada, antes do tier 5**: `k6` com steady state (10 VUs) e spike de
+   3x (30 VUs), 0% de erro em ~144 mil requisições, p95 de 7,33ms. Ver
+   `docs/benchmarks/tier-4-load/README.md`. O soak completo (várias horas)
+   continua não executado, por escolha de prioridade em favor do tier 5.
 
-7. **SBOM, scan e assinatura de imagem não executados.** Mesma restrição
-   do item 6. `syft`, `grype` e `cosign` não foram instalados nem
-   rodados; nenhuma imagem deste repositório tem SBOM anexado ou
-   assinatura de proveniência. Item E do escopo do tier, marcado como
-   "se sobrar fôlego" — não sobrou nesta passada.
+7. ~~SBOM, scan e assinatura de imagem não executados.~~ **Fechado numa
+   segunda passada**: `syft`, `grype` e `cosign` (chave local) rodados
+   contra as 5 imagens do `docker compose`. Ver ADR 0016 e
+   `docs/benchmarks/supply-chain/`.
 
 8. **Alertmanager não implantado.** As regras de alerta de burn-rate
    (ADR 0015) são avaliadas pelo Prometheus e aparecem em
@@ -61,11 +58,15 @@
    PagerDuty, e-mail) existe neste laboratório. Um alerta "disparando" só
    é visível consultando o Prometheus diretamente.
 
-9. **Backup e recuperação distribuída não exercitados neste tier.** O
-   roadmap pede um runbook coordenando ponto de restauração do banco,
-   offsets do Kafka, replay e reconciliação final. Não coberto nesta
-   passada; entra como candidato de prioridade alta na continuação,
-   junto com o teste de carga (item 6).
+9. ~~Backup e recuperação distribuída não exercitados neste tier.~~
+   **Fechado numa segunda passada**: `pg_dump`/`pg_restore` reais, gap
+   medido contra o high-watermark do Kafka, RPO real de 39s nesta
+   execução. Achado novo, não esperado: sob a carga combinada desta
+   sessão, o relay do outbox manteve 96-99% dos eventos pendentes o tempo
+   todo, publicando em lotes muito mais lentos que o ciclo de ~1s
+   esperado — candidato a investigação de causa raiz (contenção de CPU do
+   laboratório vs. gargalo real do relay). Ver
+   `docs/runbooks/backup-e-recuperacao-distribuida.md`.
 
 Nenhum destes itens bloqueia a tag `tier-4.0.0`: os itens A-D do escopo
 do tier (Terraform contra LocalStack, Helm, KEDA, chaos reduzido, SLOs
