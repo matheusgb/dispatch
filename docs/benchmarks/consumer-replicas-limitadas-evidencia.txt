@@ -1,0 +1,11 @@
+GROUP        dispatch-worker
+COORDINATOR  0
+STATE        Stable
+BALANCER     range
+MEMBERS      5
+TOTAL-LAG    0
+
+TOPIC                     PARTITION  CURRENT-OFFSET  LOG-START-OFFSET  LOG-END-OFFSET  LAG   MEMBER-ID                                                                                                             CLIENT-ID                                                                        HOST
+dispatch.delivery-events  0          56              0                 56              0     dispatch-worker@dispatch-worker-56b54fb47-5978p (github.com/segmentio/kafka-go)-308e61c4-c2b4-4058-80aa-69740cdb37a3  dispatch-worker@dispatch-worker-56b54fb47-5978p (github.com/segmentio/kafka-go)  172.22.0.1
+dispatch.delivery-events  1          61              0                 61              0     dispatch-worker@dispatch-worker-56b54fb47-7ssfn (github.com/segmentio/kafka-go)-8c4f7bcf-d57d-413f-a2fe-f947121b6c70  dispatch-worker@dispatch-worker-56b54fb47-7ssfn (github.com/segmentio/kafka-go)  172.22.0.1
+dispatch.delivery-events  2          48              0                 48              0     dispatch-worker@dispatch-worker-56b54fb47-wr9gp (github.com/segmentio/kafka-go)-80ad6883-a0cc-432a-b403-eb7eb8d42cc5  dispatch-worker@dispatch-worker-56b54fb47-wr9gp (github.com/segmentio/kafka-go)  172.22.0.1

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-worker
+  namespace: dispatch
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-worker
+  template:
+    metadata:
+      labels:
+        app: notification-worker
+    spec:
+      serviceAccountName: dispatch-workload
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: notification-worker
+          image: dispatch-notification-worker:kind
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: dispatch-config
+          env:
+            - name: HTTP_ADDR
+              value: ":8080"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 1
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-worker
+  namespace: dispatch
+spec:
+  selector:
+    app: notification-worker
+  ports:
+    - port: 80
+      targetPort: http
+      name: http

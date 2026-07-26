@@ -5,3 +5,15 @@ scrape_configs:
   - job_name: delivery-api
     static_configs:
       - targets: ["delivery-api:8080"]
+  - job_name: dispatch-worker
+    static_configs:
+      - targets: ["dispatch-worker:8080"]
+  - job_name: tracking-ingest
+    static_configs:
+      - targets: ["tracking-ingest:8080"]
+  - job_name: tracking-projector
+    static_configs:
+      - targets: ["tracking-projector:8080"]
+  - job_name: notification-worker
+    static_configs:
+      - targets: ["notification-worker:8080"]

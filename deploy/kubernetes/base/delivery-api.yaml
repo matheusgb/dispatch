@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-api
+  namespace: dispatch
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: delivery-api
+  template:
+    metadata:
+      labels:
+        app: delivery-api
+    spec:
+      serviceAccountName: dispatch-workload
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: delivery-api
+      containers:
+        - name: delivery-api
+          image: dispatch-delivery-api:kind
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: dispatch-config
+            - secretRef:
+                name: dispatch-secrets
+          env:
+            - name: HTTP_ADDR
+              value: ":8080"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 1
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: delivery-api
+  namespace: dispatch
+spec:
+  selector:
+    app: delivery-api
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: delivery-api
+  namespace: dispatch
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: delivery-api
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: delivery-api
+  namespace: dispatch
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: delivery-api
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracking-projector
+  namespace: dispatch
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tracking-projector
+  template:
+    metadata:
+      labels:
+        app: tracking-projector
+    spec:
+      serviceAccountName: dispatch-workload
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: tracking-projector
+          image: dispatch-tracking-projector:kind
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: dispatch-config
+            - secretRef:
+                name: dispatch-secrets
+          env:
+            - name: HTTP_ADDR
+              value: ":8080"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 1
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracking-projector
+  namespace: dispatch
+spec:
+  selector:
+    app: tracking-projector
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tracking-projector
+  namespace: dispatch
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tracking-projector

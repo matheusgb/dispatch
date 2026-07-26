@@ -1,0 +1,165 @@
+{
+  "seed": 9999,
+  "orders": 15,
+  "couriers": 6,
+  "completed": 14,
+  "declined": 1,
+  "expired": 0,
+  "errors": 0,
+  "duplicates_checked": 3,
+  "duplicates_ok": 3,
+  "total_assign_retries": 0,
+  "positions_sent": 42,
+  "positions_current": 42,
+  "duration_ns": 84701296181,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "9e9c1854-0423-4522-a95a-4554e7be48e9",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 8654944416
+    },
+    {
+      "index": 1,
+      "delivery_id": "aaf51e34-bf99-4684-ac55-633603f39804",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 9654480784
+    },
+    {
+      "index": 2,
+      "delivery_id": "c6094a12-b20e-41d1-9166-abd121dd0f61",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 7454401104
+    },
+    {
+      "index": 3,
+      "delivery_id": "f21613e8-6792-4ab6-8d10-fb8659e885ae",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18110521706
+    },
+    {
+      "index": 4,
+      "delivery_id": "a871f867-8d27-470f-93e8-2e107488b38b",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 14703726330
+    },
+    {
+      "index": 5,
+      "delivery_id": "7ea8239c-a8d9-4599-97b4-48f21b2d6561",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 17924003459
+    },
+    {
+      "index": 6,
+      "delivery_id": "4945f8a6-a104-4915-91ad-61cfcecc9c4a",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 20317078114
+    },
+    {
+      "index": 7,
+      "delivery_id": "d549b16a-be8b-4431-98f2-5db011978b8f",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 19113622292
+    },
+    {
+      "index": 8,
+      "delivery_id": "cdd766d5-ca5d-4160-80a7-ceb2e3cebfb8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18104159447
+    },
+    {
+      "index": 9,
+      "delivery_id": "c6521e24-4158-4819-a030-c6573c25c3d0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 20113156010
+    },
+    {
+      "index": 10,
+      "delivery_id": "95eaefa5-325a-42c2-985a-025c2bf5b47d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 20111747417
+    },
+    {
+      "index": 11,
+      "delivery_id": "c9e2a3d9-d947-4d9d-8f25-da461bb17f2b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 20113712538
+    },
+    {
+      "index": 12,
+      "delivery_id": "70b8af84-d92d-4891-a172-45a697a87eab",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18908745144
+    },
+    {
+      "index": 13,
+      "delivery_id": "9ea0b8a5-a030-46e6-b5f3-0de7e54c1aa2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18912653235
+    },
+    {
+      "index": 14,
+      "delivery_id": "1d058d58-c8f2-478b-9f40-a44724abce05",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18904791997
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatch-worker
+  namespace: dispatch
+spec:
+  # Réplicas úteis de um consumer group são limitadas pelo número de
+  # partições do tópico: dispatch.delivery-events tem 3 partições, então a
+  # 4ª réplica além dessas 3 fica ociosa (ver docs/adr/0010, testado em
+  # docs/benchmarks/tier-3-baseline.md).
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dispatch-worker
+  template:
+    metadata:
+      labels:
+        app: dispatch-worker
+    spec:
+      serviceAccountName: dispatch-workload
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: dispatch-worker
+          image: dispatch-dispatch-worker:kind
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: dispatch-config
+          env:
+            - name: HTTP_ADDR
+              value: ":8080"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 1
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispatch-worker
+  namespace: dispatch
+spec:
+  selector:
+    app: dispatch-worker
+  ports:
+    - port: 80
+      targetPort: http
+      name: http

@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/matheusgb/dispatch/internal/platform/idempotency"
+	"github.com/matheusgb/dispatch/internal/platform/outbox"
+	"github.com/matheusgb/dispatch/internal/platform/topics"
 )
 
 // idempotencyTTL é o prazo em que uma repetição da mesma chave ainda é
@@ -56,6 +58,11 @@ func (r *Repository) Create(ctx context.Context, req CreateRequest) (resp Create
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO deliveries (id, state, created_by_caller) VALUES ($1, $2, $3)
 		`, id, Created, req.Caller); err != nil {
+			return idempotency.Result{}, err
+		}
+		if _, err := outbox.Enqueue(ctx, tx, id, topics.DeliveryEvents, topics.KindDeliveryCreated, map[string]string{
+			"delivery_id": id,
+		}); err != nil {
 			return idempotency.Result{}, err
 		}
 		body, err := json.Marshal(CreateResponse{ID: id, State: Created})

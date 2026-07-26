@@ -1,6 +1,12 @@
-// Package httpapi expõe o monólito modular do tier 1 por HTTP. Não há
-// framework escondendo o ciclo da requisição: roteamento é o ServeMux da
-// biblioteca padrão, timeouts e deadlines são explícitos.
+// Package httpapi expõe o lifecycle e o dispatch de entregas por HTTP. Não
+// há framework escondendo o ciclo da requisição: roteamento é o ServeMux
+// da biblioteca padrão, timeouts e deadlines são explícitos.
+//
+// A partir do tier 3, este servidor não fala tracking nem notificação
+// diretamente: GPS vai para tracking-ingest, leitura de posição para
+// tracking-projector, e notificação para notification-worker, todos
+// reagindo a eventos publicados no outbox por este serviço (ver
+// internal/platform/outbox e cmd/dispatch-worker).
 package httpapi
 
 import (
@@ -15,62 +21,37 @@ import (
 	"github.com/matheusgb/dispatch/internal/courier"
 	"github.com/matheusgb/dispatch/internal/delivery"
 	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/notification"
 	"github.com/matheusgb/dispatch/internal/platform/auth"
 	"github.com/matheusgb/dispatch/internal/platform/idempotency"
-	"github.com/matheusgb/dispatch/internal/platform/ratelimit"
-	"github.com/matheusgb/dispatch/internal/platform/sse"
-	"github.com/matheusgb/dispatch/internal/tracking"
 )
 
 const requestTimeout = 5 * time.Second
 
 type Server struct {
-	deliveries    *delivery.Repository
-	couriers      *courier.Repository
-	dispatch      *dispatch.Service
-	trackingRepo  *tracking.Repository
-	trackingCache *tracking.Cache
-	broker        *sse.Broker
-	issuer        *auth.Issuer
-	adminSecret   string
-	notifier      *notification.Client
-	logger        *slog.Logger
+	deliveries  *delivery.Repository
+	couriers    *courier.Repository
+	dispatch    *dispatch.Service
+	issuer      *auth.Issuer
+	adminSecret string
+	logger      *slog.Logger
 }
 
-// Deps agrupa as dependências do tier 2 que não existiam no tier 1: o
-// tracking (repositório + cache), o broker de SSE e a emissão de tokens.
-// Nenhuma delas é opcional a partir daqui, mas manter um struct só para
-// isso evita uma lista de parâmetros posicionais cada vez maior em
-// NewServer.
 type Deps struct {
-	Deliveries    *delivery.Repository
-	Couriers      *courier.Repository
-	Dispatch      *dispatch.Service
-	TrackingRepo  *tracking.Repository
-	TrackingCache *tracking.Cache
-	Broker        *sse.Broker
-	Issuer        *auth.Issuer
-	AdminSecret   string
-	Notifier      *notification.Client
-	Logger        *slog.Logger
+	Deliveries  *delivery.Repository
+	Couriers    *courier.Repository
+	Dispatch    *dispatch.Service
+	Issuer      *auth.Issuer
+	AdminSecret string
+	Logger      *slog.Logger
 }
 
 func NewServer(d Deps) http.Handler {
 	s := &Server{
 		deliveries: d.Deliveries, couriers: d.Couriers, dispatch: d.Dispatch,
-		trackingRepo: d.TrackingRepo, trackingCache: d.TrackingCache, broker: d.Broker,
-		issuer: d.Issuer, adminSecret: d.AdminSecret, notifier: d.Notifier, logger: d.Logger,
+		issuer: d.Issuer, adminSecret: d.AdminSecret, logger: d.Logger,
 	}
-	limiter := ratelimit.NewPerCaller(20, 40)
-	// timed é para tudo que fala com o banco e deve ter um deadline curto.
 	timed := func(h http.HandlerFunc) http.Handler {
 		return withTimeout(requestTimeout)(h)
-	}
-	// authed é para o tracking: exige token e aplica rate limit por caller,
-	// além do deadline padrão.
-	authed := func(h http.HandlerFunc) http.Handler {
-		return chain(timed(h), s.issuer.Middleware, limiter.Middleware)
 	}
 
 	mux := http.NewServeMux()
@@ -87,14 +68,7 @@ func NewServer(d Deps) http.Handler {
 	mux.Handle("POST /deliveries/{id}/deliver", timed(s.handleDeliverDelivery))
 	mux.Handle("POST /couriers", timed(s.handleRegisterCourier))
 	mux.Handle("POST /couriers/{id}/availability", timed(s.handleSetAvailability))
-
 	mux.HandleFunc("POST /auth/tokens", s.handleIssueToken)
-	mux.Handle("POST /deliveries/{id}/positions", authed(s.handleRecordPosition))
-	mux.Handle("GET /deliveries/{id}/position", authed(s.handleCurrentPosition))
-	mux.Handle("GET /deliveries/{id}/positions", authed(s.handlePositionHistory))
-	// /stream fica de fora de authed: é de longa duração e não pode herdar
-	// o deadline curto de withTimeout. Usa auth e rate limit isoladamente.
-	mux.Handle("GET /deliveries/{id}/stream", chain(s.issuer.Middleware(http.HandlerFunc(s.handleStream)), limiter.Middleware))
 
 	return chain(mux, requestID, metricsMiddleware, logRequests(d.Logger))
 }
@@ -104,13 +78,8 @@ func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleReadyz(w http.ResponseWriter, r *http.Request) {
-	// No tier 1 a única dependência externa é o PostgreSQL, verificado pelo
-	// pool subjacente no wiring de cmd/delivery-api; aqui apenas confirmamos
-	// que o processo aceita tráfego.
 	w.WriteHeader(http.StatusOK)
 }
-
-type createDeliveryRequest struct{}
 
 func (s *Server) handleCreateDelivery(w http.ResponseWriter, r *http.Request) {
 	caller := r.Header.Get("X-Caller")
@@ -149,6 +118,10 @@ func (s *Server) handleGetDelivery(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, d)
 }
 
+// handleMarkReady e handleOfferDelivery continuam expostos para override
+// manual e para os testes: em operação normal, é o dispatch-worker quem
+// aciona as duas, reagindo aos eventos delivery.created e
+// delivery.ready_for_dispatch (ver cmd/dispatch-worker).
 func (s *Server) handleMarkReady(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	err := s.dispatch.MarkReadyForDispatch(r.Context(), id)
@@ -194,6 +167,8 @@ type assignRequest struct {
 	CourierID string `json:"courier_id"`
 }
 
+// handleAssignDelivery é sempre uma ação síncrona do entregador aceitando
+// a oferta: não faz sentido que um worker assíncrono decida isso por ele.
 func (s *Server) handleAssignDelivery(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var req assignRequest
@@ -206,7 +181,6 @@ func (s *Server) handleAssignDelivery(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err == nil:
 		deliveriesAssignedTotal.Inc()
-		s.notifier.Notify(r.Context(), notification.Event{DeliveryID: id, Kind: "assigned"})
 		w.WriteHeader(http.StatusNoContent)
 	case errors.Is(err, dispatch.ErrNotOffered), errors.Is(err, dispatch.ErrCourierAlreadyActive):
 		assignmentConflictsTotal.Inc()
@@ -248,7 +222,6 @@ func (s *Server) handleDeliverDelivery(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err == nil:
 		deliveriesCompletedTotal.Inc()
-		s.notifier.Notify(r.Context(), notification.Event{DeliveryID: id, Kind: "delivered"})
 		w.WriteHeader(http.StatusNoContent)
 	case errors.Is(err, dispatch.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
@@ -295,6 +268,31 @@ func (s *Server) handleSetAvailability(w http.ResponseWriter, r *http.Request) {
 	default:
 		s.internalError(w, err)
 	}
+}
+
+type issueTokenRequest struct {
+	Caller string `json:"caller"`
+}
+
+// handleIssueToken continua aqui: delivery-api é a identidade "raiz" do
+// sistema. tracking-ingest e tracking-projector validam o mesmo token
+// (segredo compartilhado), sem precisar chamar de volta este serviço.
+func (s *Server) handleIssueToken(w http.ResponseWriter, r *http.Request) {
+	if s.adminSecret == "" || r.Header.Get("X-Admin-Secret") != s.adminSecret {
+		writeError(w, http.StatusUnauthorized, "segredo administrativo inválido")
+		return
+	}
+	var req issueTokenRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Caller == "" {
+		writeError(w, http.StatusUnprocessableEntity, "caller é obrigatório")
+		return
+	}
+	token, err := s.issuer.IssueToken(req.Caller)
+	if err != nil {
+		s.internalError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]string{"token": token})
 }
 
 func (s *Server) internalError(w http.ResponseWriter, err error) {

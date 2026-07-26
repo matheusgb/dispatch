@@ -19,6 +19,8 @@ import (
 
 func main() {
 	baseURL := flag.String("base-url", "http://localhost:8080", "endereço do delivery-api")
+	trackingURL := flag.String("tracking-url", "", "endereço do tracking-ingest (default: o mesmo de base-url)")
+	projectorURL := flag.String("projector-url", "", "endereço do tracking-projector (default: o mesmo de base-url)")
 	seed := flag.Int64("seed", 20260717, "seed do gerador determinístico")
 	orders := flag.Int("orders", 200, "número de entregas simuladas")
 	courierCount := flag.Int("couriers", 20, "tamanho do pool de entregadores")
@@ -30,10 +32,12 @@ func main() {
 	expireOfferTTL := flag.Int("expire-offer-ttl-seconds", 2, "prazo curto usado só no caminho de expiração")
 	out := flag.String("out", "lunchrush-report", "prefixo dos arquivos de relatório (.json e .md)")
 	adminSecret := flag.String("admin-secret", os.Getenv("DISPATCH_ADMIN_SECRET"), "segredo administrativo para emitir o token de tracking")
+	distributed := flag.Bool("distributed", false, "tier 3+: não chama /ready e /offer manualmente, espera o dispatch-worker agir sozinho")
+	readyWaitSeconds := flag.Int("ready-wait-seconds", 30, "prazo de espera para o dispatch-worker mover a entrega até offered (modo -distributed); o relay do outbox publica a cada 1s e o caminho created -> offered atravessa o relay duas vezes")
 	flag.Parse()
 
 	ctx := context.Background()
-	c := newClient(*baseURL)
+	c := newClient(*baseURL, *trackingURL, *projectorURL)
 
 	if *adminSecret == "" {
 		log.Fatal("admin-secret é obrigatório (flag ou DISPATCH_ADMIN_SECRET): necessário para o token de tracking")
@@ -57,15 +61,17 @@ func main() {
 	}
 
 	sc := &scenario{
-		client:         c,
-		token:          token,
-		couriers:       couriers,
-		declineRate:    *declineRate,
-		expireRate:     *expireRate,
-		duplicateRate:  *duplicateRate,
-		offerTTL:       *offerTTL,
-		expireOfferTTL: *expireOfferTTL,
-		seed:           *seed,
+		client:           c,
+		token:            token,
+		couriers:         couriers,
+		declineRate:      *declineRate,
+		expireRate:       *expireRate,
+		duplicateRate:    *duplicateRate,
+		offerTTL:         *offerTTL,
+		expireOfferTTL:   *expireOfferTTL,
+		seed:             *seed,
+		distributed:      *distributed,
+		readyWaitSeconds: *readyWaitSeconds,
 	}
 
 	log.Printf("simulando %d ordens com concorrência %d (seed=%d)", *orders, *concurrency, *seed)

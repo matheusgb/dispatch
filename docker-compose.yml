@@ -23,6 +23,52 @@ services:
       timeout: 2s
       retries: 15
 
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+    # Dois listeners porque dois públicos diferentes precisam resolver o
+    # broker: containers dentro da rede do compose (nome "redpanda") e
+    # processos no host, como os testes de integração ou o LunchRush
+    # rodados com `go run` (precisam de "localhost"). Um cliente Kafka
+    # sempre reconecta usando o endereço anunciado nos metadados, não o do
+    # bootstrap, então sem os dois listeners um dos dois públicos falha ao
+    # produzir/consumir de verdade mesmo conseguindo o contato inicial.
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=512M
+      - --reserve-memory=0M
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:19092
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "info"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  redpanda-topics:
+    profiles: ["app"]
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+    entrypoint: ["/bin/sh", "-c"]
+    # `|| true`: recriar este container não deve falhar só porque os
+    # tópicos já existem de uma execução anterior (o Redpanda persiste
+    # dados entre recreações do container). Criar tópico é idempotente por
+    # natureza; o comando não é, então a tolerância fica aqui.
+    command:
+      - >
+        rpk topic create -X brokers=redpanda:9092 -p 3
+        dispatch.delivery-events dispatch.delivery-events.dlq
+        dispatch.tracking-positions dispatch.tracking-positions.dlq || true
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
   migrate:
     profiles: ["app"]
     build:
@@ -56,11 +102,10 @@ services:
       dockerfile: deploy/compose/Dockerfile.delivery-api
     environment:
       DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
-      REDIS_ADDR: redis:6379
       HTTP_ADDR: ":8080"
       DISPATCH_JWT_SECRET: compose-dev-secret
       DISPATCH_ADMIN_SECRET: compose-dev-admin-secret
-      NOTIFICATION_PROVIDER_URL: http://dependency-simulator:8090
+      KAFKA_BROKERS: redpanda:9092
     ports:
       # 8080 já está ocupada no host por outro laboratório (kind do
       # edge-lab); a porta interna do container continua 8080.
@@ -68,9 +113,79 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  dispatch-worker:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: deploy/compose/Dockerfile.dispatch-worker
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      KAFKA_BROKERS: redpanda:9092
+      OFFER_TTL_SECONDS: "120"
+    depends_on:
+      postgres:
         condition: service_healthy
       migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  tracking-ingest:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: deploy/compose/Dockerfile.tracking-ingest
+    environment:
+      HTTP_ADDR: ":8080"
+      DISPATCH_JWT_SECRET: compose-dev-secret
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "8084:8080"
+    depends_on:
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  tracking-projector:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: deploy/compose/Dockerfile.tracking-projector
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      REDIS_ADDR: redis:6379
+      HTTP_ADDR: ":8080"
+      DISPATCH_JWT_SECRET: compose-dev-secret
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "8085:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  notification-worker:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: deploy/compose/Dockerfile.notification-worker
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      KAFKA_BROKERS: redpanda:9092
+      NOTIFICATION_PROVIDER_URL: http://dependency-simulator:8090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
         condition: service_completed_successfully
 
   prometheus:

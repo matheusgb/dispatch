@@ -1,0 +1,89 @@
+# Deny-by-default: nada entra nem sai a menos que uma política permita
+# explicitamente. As três políticas seguintes abrem só o necessário: DNS,
+# a infra externa (Postgres/Redis/Redpanda/dependency-simulator, ver
+# external-infra.yaml) e a porta HTTP dos serviços que respondem requisição.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: dispatch
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: dispatch
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# A infra fica fora do cluster neste tier (ver external-infra.yaml), então
+# não dá para restringir por podSelector: liberamos as portas conhecidas
+# para qualquer destino. Isso é mais largo do que o ideal; documentado como
+# limitação do tier 3, não do tier 4 (onde a infra entra em VPC própria com
+# security group).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-external-infra-egress
+  namespace: dispatch
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 5432 # PostgreSQL
+        - protocol: TCP
+          port: 6379 # Redis
+        - protocol: TCP
+          port: 9092 # Redpanda
+        - protocol: TCP
+          port: 8092 # dependency-simulator
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-http-ingress
+  namespace: dispatch
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: ["delivery-api", "tracking-ingest", "tracking-projector", "dispatch-worker", "notification-worker"]
+  policyTypes: ["Ingress"]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+---
+# Os serviços HTTP também chamam uns aos outros? Não neste tier: cada um só
+# fala com a infra externa. Esta política existe separada da anterior para
+# deixar claro que tráfego entre pods do namespace não é liberado por
+# padrão, só a infra e o ingress HTTP.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-http-clients
+  namespace: dispatch
+spec:
+  podSelector:
+    matchLabels:
+      app: delivery-api
+  policyTypes: ["Egress"]
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 8080

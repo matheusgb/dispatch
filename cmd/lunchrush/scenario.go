@@ -34,17 +34,24 @@ type orderResult struct {
 }
 
 type scenario struct {
-	client         *client
-	token          string
-	couriers       []string
-	courierMu      sync.Mutex
-	courierCursor  int
-	declineRate    float64
-	expireRate     float64
-	duplicateRate  float64
-	offerTTL       int
-	expireOfferTTL int
-	seed           int64
+	client        *client
+	token         string
+	couriers      []string
+	courierMu     sync.Mutex
+	courierCursor int
+	declineRate   float64
+	expireRate    float64
+	duplicateRate float64
+	seed          int64
+
+	// distributed é true a partir do tier 3: ready_for_dispatch e offered
+	// acontecem sozinhos, via dispatch-worker reagindo a eventos, então o
+	// LunchRush espera em vez de chamar /ready e /offer manualmente. False
+	// mantém o comportamento do tier 1/2, onde o teste aciona as duas.
+	distributed      bool
+	offerTTL         int
+	expireOfferTTL   int
+	readyWaitSeconds int
 }
 
 // nextCourier faz round-robin sobre o pool de entregadores. A rotação é
@@ -77,10 +84,12 @@ func (s *scenario) runOrder(ctx context.Context, index int) orderResult {
 		res.DuplicateOK = err == nil && replay.ID == d.ID
 	}
 
-	if _, err := s.client.markReady(ctx, d.ID); err != nil {
-		res.Err = err.Error()
-		res.Duration = time.Since(start)
-		return res
+	if !s.distributed {
+		if _, err := s.client.markReady(ctx, d.ID); err != nil {
+			res.Err = err.Error()
+			res.Duration = time.Since(start)
+			return res
+		}
 	}
 
 	roll := rng.Float64()
@@ -99,8 +108,33 @@ func (s *scenario) runOrder(ctx context.Context, index int) orderResult {
 	return res
 }
 
+// waitForOffered espera o dispatch-worker mover created -> ready_for_dispatch
+// -> offered sozinho. Só é usado quando distributed é true.
+func (s *scenario) waitForOffered(ctx context.Context, id string) error {
+	deadline := time.Now().Add(time.Duration(s.readyWaitSeconds) * time.Second)
+	for time.Now().Before(deadline) {
+		d, err := s.client.getDelivery(ctx, id)
+		if err != nil {
+			return err
+		}
+		if d.State == "offered" {
+			return nil
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	return errors.New("dispatch-worker não moveu a entrega para offered dentro do prazo")
+}
+
+func (s *scenario) ensureOffered(ctx context.Context, id string) error {
+	if s.distributed {
+		return s.waitForOffered(ctx, id)
+	}
+	_, err := s.client.offer(ctx, id, s.offerTTL)
+	return err
+}
+
 func (s *scenario) runDecline(ctx context.Context, id string) (outcome, error) {
-	if _, err := s.client.offer(ctx, id, s.offerTTL); err != nil {
+	if err := s.ensureOffered(ctx, id); err != nil {
 		return "", err
 	}
 	if _, err := s.client.decline(ctx, id); err != nil {
@@ -110,14 +144,24 @@ func (s *scenario) runDecline(ctx context.Context, id string) (outcome, error) {
 }
 
 func (s *scenario) runExpire(ctx context.Context, id string) (outcome, error) {
-	if _, err := s.client.offer(ctx, id, s.expireOfferTTL); err != nil {
+	waitSeconds := s.expireOfferTTL + 8
+	if s.distributed {
+		// O modo distribuído usa o TTL configurado no próprio
+		// dispatch-worker (OFFER_TTL_SECONDS), não um valor por chamada:
+		// o teste precisa saber esperar por esse prazo, não escolhê-lo.
+		if err := s.waitForOffered(ctx, id); err != nil {
+			return "", err
+		}
+		waitSeconds = s.readyWaitSeconds
+	} else if _, err := s.client.offer(ctx, id, s.expireOfferTTL); err != nil {
 		return "", err
 	}
-	// O delivery-api recicla ofertas vencidas a cada 5s (ver
-	// expireOffersLoop em cmd/delivery-api). Espera o prazo mais uma
-	// margem para o loop rodar, sem depender de relógio injetável: isso é
-	// deliberadamente um teste de caixa preta.
-	deadline := time.Now().Add(time.Duration(s.expireOfferTTL)*time.Second + 8*time.Second)
+
+	// O dispatch-worker (ou delivery-api no modo monólito) recicla ofertas
+	// vencidas periodicamente. Espera o prazo mais uma margem, sem
+	// depender de relógio injetável: isso é deliberadamente um teste de
+	// caixa preta.
+	deadline := time.Now().Add(time.Duration(waitSeconds) * time.Second)
 	for time.Now().Before(deadline) {
 		d, err := s.client.getDelivery(ctx, id)
 		if err != nil {
@@ -132,7 +176,7 @@ func (s *scenario) runExpire(ctx context.Context, id string) (outcome, error) {
 }
 
 func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) (outcome, int, int, int, error) {
-	if _, err := s.client.offer(ctx, id, s.offerTTL); err != nil {
+	if err := s.ensureOffered(ctx, id); err != nil {
 		return "", 0, 0, 0, err
 	}
 
@@ -160,10 +204,13 @@ func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) 
 }
 
 // sendPositions simula o entregador se deslocando: um pequeno trajeto de
-// pontos crescentes em epoch/sequence, sempre monotônico, verificando ao
-// final que a leitura via GET reflete o último ponto enviado. Isso é o
-// LunchRush conhecendo o domínio: k6 não saberia dizer se a projeção
-// avançou de verdade.
+// pontos crescentes em epoch/sequence, sempre monotônico. Como a partir do
+// tier 3 a ingestão (tracking-ingest) e a projeção (tracking-projector)
+// são serviços diferentes ligados por Kafka, a confirmação não é mais
+// síncrona: o LunchRush manda os pontos e espera, com um poll curto, a
+// projeção alcançar a última sequência enviada. Isso é o LunchRush
+// conhecendo o domínio: k6 não saberia dizer se a projeção avançou de
+// verdade ou só aceitou a requisição.
 func (s *scenario) sendPositions(ctx context.Context, id string, rng *rand.Rand) (sent, current int, err error) {
 	epoch := 1
 	baseLat, baseLon := -23.55+rng.Float64()*0.05, -46.63+rng.Float64()*0.05
@@ -171,22 +218,23 @@ func (s *scenario) sendPositions(ctx context.Context, id string, rng *rand.Rand)
 	for i := 1; i <= steps; i++ {
 		lat := baseLat + float64(i)*0.001
 		lon := baseLon + float64(i)*0.001
-		isCurrent, err := s.client.recordPosition(ctx, s.token, id, epoch, i, lat, lon)
-		if err != nil {
+		if _, err := s.client.recordPosition(ctx, s.token, id, epoch, i, lat, lon); err != nil {
 			return sent, current, err
 		}
 		sent++
-		if isCurrent {
-			current++
-		}
 	}
 
-	status, err := s.client.currentPosition(ctx, s.token, id)
-	if err != nil {
-		return sent, current, err
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		status, sequence, err := s.client.currentPosition(ctx, s.token, id)
+		if err != nil {
+			return sent, current, err
+		}
+		if status == 200 && sequence == steps {
+			current = steps
+			return sent, current, nil
+		}
+		time.Sleep(200 * time.Millisecond)
 	}
-	if status != 200 {
-		return sent, current, fmt.Errorf("consultar posição atual: status %d", status)
-	}
-	return sent, current, nil
+	return sent, current, fmt.Errorf("projeção não alcançou a sequência %d dentro do prazo", steps)
 }

@@ -1,6 +1,8 @@
-// Comando delivery-api é o monólito modular do tier 1: lifecycle de entrega,
-// cadastro de entregador e atribuição, tudo em um único binário sobre
-// PostgreSQL.
+// Comando delivery-api é o serviço de lifecycle e dispatch: cadastro de
+// entregador, criação idempotente de entrega, oferta, aceite, coleta e
+// entrega. A partir do tier 3, tracking e notificação vivem em serviços
+// próprios (tracking-ingest, tracking-projector, notification-worker),
+// que reagem aos eventos publicados aqui pelo outbox relay.
 package main
 
 import (
@@ -10,20 +12,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
-
-	"github.com/redis/go-redis/v9"
 
 	"github.com/matheusgb/dispatch/internal/courier"
 	"github.com/matheusgb/dispatch/internal/delivery"
 	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/notification"
 	"github.com/matheusgb/dispatch/internal/platform/auth"
 	"github.com/matheusgb/dispatch/internal/platform/db"
 	"github.com/matheusgb/dispatch/internal/platform/httpapi"
-	"github.com/matheusgb/dispatch/internal/platform/sse"
-	"github.com/matheusgb/dispatch/internal/tracking"
+	"github.com/matheusgb/dispatch/internal/platform/kafka"
+	"github.com/matheusgb/dispatch/internal/platform/outbox"
 )
 
 func main() {
@@ -38,10 +38,6 @@ func main() {
 	if addr == "" {
 		addr = ":8080"
 	}
-	redisAddr := os.Getenv("REDIS_ADDR")
-	if redisAddr == "" {
-		redisAddr = "localhost:6379"
-	}
 	jwtSecret := os.Getenv("DISPATCH_JWT_SECRET")
 	if jwtSecret == "" {
 		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido")
@@ -52,10 +48,7 @@ func main() {
 		logger.Error("configuração inválida: DISPATCH_ADMIN_SECRET não definido")
 		os.Exit(1)
 	}
-	notificationProviderURL := os.Getenv("NOTIFICATION_PROVIDER_URL")
-	if notificationProviderURL == "" {
-		notificationProviderURL = "http://localhost:8090"
-	}
+	brokers := strings.Split(envOr("KAFKA_BROKERS", "localhost:19092"), ",")
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -73,16 +66,13 @@ func main() {
 	couriers := courier.NewRepository(pool)
 	dispatchSvc := dispatch.NewService(pool, dispatch.SystemClock{})
 
-	rdb := redis.NewClient(&redis.Options{Addr: redisAddr, DialTimeout: 500 * time.Millisecond, MaxRetries: 1})
-	defer rdb.Close()
-	trackingRepo := tracking.NewRepository(pool)
-	trackingCache := tracking.NewCache(trackingRepo, rdb, 5*time.Minute, logger)
+	producer := kafka.NewProducer(brokers)
+	defer producer.Close()
+	relay := outbox.NewRelay(pool, producer, logger)
 
 	handler := httpapi.NewServer(httpapi.Deps{
 		Deliveries: deliveries, Couriers: couriers, Dispatch: dispatchSvc,
-		TrackingRepo: trackingRepo, TrackingCache: trackingCache, Broker: sse.NewBroker(),
-		Issuer: auth.NewIssuer(jwtSecret, time.Hour), AdminSecret: adminSecret,
-		Notifier: notification.NewClient(notificationProviderURL, logger), Logger: logger,
+		Issuer: auth.NewIssuer(jwtSecret, time.Hour), AdminSecret: adminSecret, Logger: logger,
 	})
 
 	srv := &http.Server{
@@ -94,7 +84,7 @@ func main() {
 		IdleTimeout:       60 * time.Second,
 	}
 
-	go expireOffersLoop(ctx, dispatchSvc, logger)
+	go outboxRelayLoop(ctx, relay, logger)
 
 	serveErr := make(chan error, 1)
 	go func() {
@@ -118,25 +108,33 @@ func main() {
 	}
 }
 
-// expireOffersLoop recicla ofertas vencidas periodicamente. No tier 3 isso
-// se torna um worker próprio; aqui é uma goroutine do mesmo processo, com
-// ciclo de vida ligado ao contexto de shutdown.
-func expireOffersLoop(ctx context.Context, svc *dispatch.Service, logger *slog.Logger) {
-	ticker := time.NewTicker(5 * time.Second)
+// outboxRelayLoop publica eventos pendentes a cada segundo. Um ciclo que
+// morre no meio (processo matado entre o ack do Kafka e o UPDATE que marca
+// published_at) deixa o evento pendente para o próximo ciclo: é
+// at-least-once por desenho, nunca perde um evento silenciosamente.
+func outboxRelayLoop(ctx context.Context, relay *outbox.Relay, logger *slog.Logger) {
+	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			n, err := svc.ExpireOverdueOffers(ctx)
+			n, err := relay.PublishPending(ctx, 100)
 			if err != nil {
-				logger.Error("expirar ofertas vencidas", "error", err)
+				logger.Error("publicar eventos pendentes do outbox", "error", err)
 				continue
 			}
 			if n > 0 {
-				logger.Info("ofertas expiradas recicladas", "count", n)
+				logger.Info("eventos do outbox publicados", "count", n)
 			}
 		}
 	}
+}
+
+func envOr(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
 }

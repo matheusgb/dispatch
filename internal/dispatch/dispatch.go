@@ -11,10 +11,13 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/matheusgb/dispatch/internal/delivery"
+	"github.com/matheusgb/dispatch/internal/platform/outbox"
+	"github.com/matheusgb/dispatch/internal/platform/topics"
 )
 
 var (
@@ -69,7 +72,20 @@ func (s *Service) MarkReadyForDispatch(ctx context.Context, deliveryID string) e
 	if err := recordTransition(ctx, tx, deliveryID, delivery.Created, delivery.ReadyForDispatch, now); err != nil {
 		return err
 	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, topics.KindDeliveryReadyForDispatch); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
+}
+
+// enqueueDeliveryEvent grava o evento de lifecycle no outbox dentro da
+// mesma transação da transição de estado (ver internal/platform/outbox):
+// o evento e o efeito comitam juntos, ou nenhum dos dois.
+func enqueueDeliveryEvent(ctx context.Context, tx pgx.Tx, deliveryID, kind string) error {
+	_, err := outbox.Enqueue(ctx, tx, deliveryID, topics.DeliveryEvents, kind, map[string]string{
+		"delivery_id": deliveryID,
+	})
+	return err
 }
 
 // Offer move ready_for_dispatch -> offered com um prazo de expiração. Só
@@ -95,6 +111,9 @@ func (s *Service) Offer(ctx context.Context, deliveryID string, ttl time.Duratio
 		return ErrNotReadyForDispatch
 	}
 	if err := recordTransition(ctx, tx, deliveryID, delivery.ReadyForDispatch, delivery.Offered, now); err != nil {
+		return err
+	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, topics.KindDeliveryOffered); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
@@ -129,6 +148,9 @@ func (s *Service) Assign(ctx context.Context, deliveryID, courierID string) erro
 	if err := recordTransition(ctx, tx, deliveryID, delivery.Offered, delivery.Assigned, now); err != nil {
 		return err
 	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, topics.KindDeliveryAssigned); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
 }
 
@@ -140,17 +162,17 @@ func (s *Service) Decline(ctx context.Context, deliveryID string) error {
 
 // PickUp registra a coleta física da entrega: assigned -> picked_up.
 func (s *Service) PickUp(ctx context.Context, deliveryID string) error {
-	return s.simpleTransition(ctx, deliveryID, delivery.Assigned, delivery.PickedUp)
+	return s.simpleTransition(ctx, deliveryID, delivery.Assigned, delivery.PickedUp, topics.KindDeliveryPickedUp)
 }
 
 // Deliver conclui a entrega: picked_up -> delivered. O estado delivered não
 // participa mais do índice único de courier ativo (ver migrations/0001), então
 // o entregador volta a ficar livre para uma nova atribuição automaticamente.
 func (s *Service) Deliver(ctx context.Context, deliveryID string) error {
-	return s.simpleTransition(ctx, deliveryID, delivery.PickedUp, delivery.Delivered)
+	return s.simpleTransition(ctx, deliveryID, delivery.PickedUp, delivery.Delivered, topics.KindDeliveryDelivered)
 }
 
-func (s *Service) simpleTransition(ctx context.Context, deliveryID string, from, to delivery.State) error {
+func (s *Service) simpleTransition(ctx context.Context, deliveryID string, from, to delivery.State, eventKind string) error {
 	now := s.clock.Now()
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -168,6 +190,9 @@ func (s *Service) simpleTransition(ctx context.Context, deliveryID string, from,
 		return ErrUnexpectedState
 	}
 	if err := recordTransition(ctx, tx, deliveryID, from, to, now); err != nil {
+		return err
+	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, eventKind); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
@@ -234,6 +259,13 @@ func (s *Service) recycle(ctx context.Context, deliveryID string, via delivery.S
 	if err := recordTransition(ctx, tx, deliveryID, delivery.Offered, via, now); err != nil {
 		return err
 	}
+	viaKind := topics.KindDeliveryDeclined
+	if via == delivery.Expired {
+		viaKind = topics.KindDeliveryExpired
+	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, viaKind); err != nil {
+		return err
+	}
 
 	if _, err := tx.Exec(ctx, `
 		UPDATE deliveries
@@ -243,6 +275,9 @@ func (s *Service) recycle(ctx context.Context, deliveryID string, via delivery.S
 		return err
 	}
 	if err := recordTransition(ctx, tx, deliveryID, via, delivery.ReadyForDispatch, now); err != nil {
+		return err
+	}
+	if err := enqueueDeliveryEvent(ctx, tx, deliveryID, topics.KindDeliveryReadyForDispatch); err != nil {
 		return err
 	}
 

@@ -15,6 +15,24 @@ alternativa local capaz de reproduzir o comportamento que importa (latência
 real entre regiões, custo real, garantias de disponibilidade de um serviço
 gerenciado), o item entra como limitação abaixo, sem tentar forjar uma prova.
 
+## Tier 3: as duas primeiras substituições já entram aqui
+
+O roadmap original coloca Kafka e Kubernetes no tier 3, um antes de EKS e
+MSK aparecerem no diagrama do tier 4 como serviços gerenciados AWS. Este
+projeto já usa as versões locais desde o tier 3, não porque simula AWS
+cedo demais, mas porque o próprio roadmap pede Kafka e `kind` local
+*antes* da versão gerenciada:
+
+| Peça do roadmap | Substituição local | Nota |
+| --- | --- | --- |
+| Kafka (backbone de eventos) | Redpanda v24.3.1 | mesmo protocolo Kafka; `kafka-go` fala com os dois sem diferença de código |
+| Kubernetes local | `kind` (cluster próprio, nome `dispatch`, para não colidir com o do edge-lab) | idêntico ao que o tier 4 usa antes de qualquer serviço gerenciado entrar |
+
+Quando o tier 4 trocar Redpanda por "MSK" e o `kind` local por "EKS", a
+diferença registrada na tabela abaixo é sobre o que o **serviço gerenciado
+da AWS** adicionaria (multi-AZ real, IAM, cobrança), não sobre Kafka ou
+Kubernetes em si, que já são as ferramentas reais desde aqui.
+
 ## Tier 4: plataforma "AWS" localmente simulada
 
 | Peça do roadmap | Substituição local | O que se perde |

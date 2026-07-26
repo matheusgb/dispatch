@@ -1,0 +1,482 @@
+{
+  "seed": 31415,
+  "orders": 40,
+  "couriers": 10,
+  "completed": 15,
+  "declined": 2,
+  "expired": 0,
+  "errors": 23,
+  "duplicates_checked": 8,
+  "duplicates_ok": 8,
+  "total_assign_retries": 0,
+  "positions_sent": 45,
+  "positions_current": 45,
+  "duration_ns": 97814707982,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "705d41da-7c94-4d7d-b8ca-5aa017589ff2",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30195653802,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 1,
+      "delivery_id": "e3bdb514-9059-4b2c-ba01-c5bc65c76dac",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195498230,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 2,
+      "delivery_id": "4b6d7fb0-e400-440d-ae94-119e3e2afbc4",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3219326405
+    },
+    {
+      "index": 3,
+      "delivery_id": "316ebe32-43e8-4ea2-af9c-4c9166f76cfc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195785839,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 4,
+      "delivery_id": "d6cbed71-bab8-47c2-8e67-304c3020f631",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3018686542
+    },
+    {
+      "index": 5,
+      "delivery_id": "f9c7c9b8-26a6-4cbd-acaa-8e57094950eb",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195828618,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 6,
+      "delivery_id": "1c0489d7-03de-4d51-8b1d-13a71200f1cf",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195784631,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 7,
+      "delivery_id": "30f693f9-6e3e-47ef-b541-6b815b3e41dd",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30195859863,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 8,
+      "delivery_id": "3651bee1-0570-48c4-933c-6909b9dfae45",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3214401742
+    },
+    {
+      "index": 9,
+      "delivery_id": "1dcb3a73-a28a-4697-9bcc-eac51de2697a",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30194353390,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 10,
+      "delivery_id": "7c71b899-f92b-4af6-ad34-6f130a5e5f68",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3212621388
+    },
+    {
+      "index": 11,
+      "delivery_id": "5c6d58d4-ed60-44b3-9a38-abde63018911",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3215364448
+    },
+    {
+      "index": 12,
+      "delivery_id": "5f30f705-bb4d-4c91-a7b3-3c8e0657efec",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30190187720,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 13,
+      "delivery_id": "fbd17e8c-1668-4a0c-adf7-4b1fc7de7b2f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30174044113,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 14,
+      "delivery_id": "c173e3ec-2bde-4237-896d-dce0eb234c94",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3216843357
+    },
+    {
+      "index": 15,
+      "delivery_id": "2422fb7d-23e7-498c-b3ea-b06227b656a2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3217420263
+    },
+    {
+      "index": 16,
+      "delivery_id": "646b0bf1-5dfc-4676-a617-2ff5f77aef50",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30171518700,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 17,
+      "delivery_id": "0b4803dd-c2eb-4c3e-9fdd-ef7c06a66d51",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30173868789,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 18,
+      "delivery_id": "9f858531-1335-44a9-863d-7362463c73da",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30173933200,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 19,
+      "delivery_id": "82fef85f-f5fd-4ae2-ac8f-7e41b966e1bb",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3213240701
+    },
+    {
+      "index": 20,
+      "delivery_id": "8c12120d-12d7-45c4-8bf7-3ff308559d4c",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3136465
+    },
+    {
+      "index": 21,
+      "delivery_id": "1b2ba47e-f850-4666-abc4-8fd7f9ea4830",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30172097010,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 22,
+      "delivery_id": "ed616a96-85c0-4357-acba-d890dc540343",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30169546832,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 23,
+      "delivery_id": "b2e20898-9e92-4f36-983e-38c94b9cd99a",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30180954787,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 24,
+      "delivery_id": "a73de305-3702-4dde-9164-65d947f604c1",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 5026283713
+    },
+    {
+      "index": 25,
+      "delivery_id": "7003903a-0d98-418d-b1ba-8030fb6feb08",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30002043723,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 26,
+      "delivery_id": "d9dc2e7a-39c7-44d9-86c2-51c8a07d7e47",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30002551688,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 27,
+      "delivery_id": "eab08a8a-352e-45ab-8d3e-3dd0452d0333",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30201239715,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 28,
+      "delivery_id": "13a94a0a-eb47-45de-ac50-cd4a9d354fb7",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3218865453
+    },
+    {
+      "index": 29,
+      "delivery_id": "3cd12c81-8c72-488d-a14b-1097e7543d0d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3217779446
+    },
+    {
+      "index": 30,
+      "delivery_id": "e4422385-c514-401a-b929-fec9b953a429",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3214525371
+    },
+    {
+      "index": 31,
+      "delivery_id": "61ce267e-a0f9-4905-8926-adb366734df7",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3214859503
+    },
+    {
+      "index": 32,
+      "delivery_id": "a27f6b15-4545-42e6-aab8-697d0e92444e",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30001718640,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 33,
+      "delivery_id": "da90e684-602d-4bf0-85ad-efb5fbb43d84",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 4212629769
+    },
+    {
+      "index": 34,
+      "delivery_id": "429ab335-5efe-439c-8fd7-9e23c4fb56d1",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30009373410,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 35,
+      "delivery_id": "eea3c949-b748-4d0a-8346-b9d577131ba4",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30008995648,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 36,
+      "delivery_id": "5ac8abd4-bbc0-489f-b960-2c0807dda7ba",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30002987867,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 37,
+      "delivery_id": "7b20b1c3-2721-410a-865c-9927b991ff1d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30013361555,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 38,
+      "delivery_id": "7f157ad2-8140-4035-9293-fef03cbb153e",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7466389
+    },
+    {
+      "index": 39,
+      "delivery_id": "8952f6be-2f13-4dae-aa64-fca60144beeb",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3215582778
+    }
+  ],
+  "failure_samples": [
+    {
+      "index": 0,
+      "delivery_id": "705d41da-7c94-4d7d-b8ca-5aa017589ff2",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30195653802,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 1,
+      "delivery_id": "e3bdb514-9059-4b2c-ba01-c5bc65c76dac",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195498230,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 3,
+      "delivery_id": "316ebe32-43e8-4ea2-af9c-4c9166f76cfc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195785839,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 5,
+      "delivery_id": "f9c7c9b8-26a6-4cbd-acaa-8e57094950eb",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195828618,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 6,
+      "delivery_id": "1c0489d7-03de-4d51-8b1d-13a71200f1cf",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30195784631,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 7,
+      "delivery_id": "30f693f9-6e3e-47ef-b541-6b815b3e41dd",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30195859863,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 9,
+      "delivery_id": "1dcb3a73-a28a-4697-9bcc-eac51de2697a",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30194353390,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 12,
+      "delivery_id": "5f30f705-bb4d-4c91-a7b3-3c8e0657efec",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30190187720,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 13,
+      "delivery_id": "fbd17e8c-1668-4a0c-adf7-4b1fc7de7b2f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 30174044113,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    },
+    {
+      "index": 16,
+      "delivery_id": "646b0bf1-5dfc-4676-a617-2ff5f77aef50",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 30171518700,
+      "error": "dispatch-worker não moveu a entrega para offered dentro do prazo"
+    }
+  ]
+}

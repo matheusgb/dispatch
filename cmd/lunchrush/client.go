@@ -10,22 +10,40 @@ import (
 	"time"
 )
 
-// client é um cliente HTTP fino sobre o delivery-api. Não reimplementa
-// retry, backoff ou pool de conexões: usa o http.Client padrão, que já
-// resolve keep-alive e timeouts.
+// client é um cliente HTTP fino sobre os serviços do dispatch. Não
+// reimplementa retry, backoff ou pool de conexões: usa o http.Client
+// padrão, que já resolve keep-alive e timeouts.
+//
+// A partir do tier 3, lifecycle/dispatch (delivery-api), ingestão de GPS
+// (tracking-ingest) e leitura de tracking (tracking-projector) podem ser
+// três hosts diferentes. Os campos de URL ficam vazios por padrão e caem
+// de volta para baseURL, então o mesmo binário continua funcionando contra
+// o monólito do tier 1/2 sem mudar nenhuma flag.
 type client struct {
-	baseURL string
-	http    *http.Client
+	baseURL      string
+	trackingURL  string
+	projectorURL string
+	http         *http.Client
 }
 
-func newClient(baseURL string) *client {
+func newClient(baseURL, trackingURL, projectorURL string) *client {
+	if trackingURL == "" {
+		trackingURL = baseURL
+	}
+	if projectorURL == "" {
+		projectorURL = baseURL
+	}
 	return &client{
-		baseURL: baseURL,
-		http:    &http.Client{Timeout: 10 * time.Second},
+		baseURL: baseURL, trackingURL: trackingURL, projectorURL: projectorURL,
+		http: &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
 func (c *client) do(ctx context.Context, method, path string, headers map[string]string, body any) (int, []byte, error) {
+	return c.doAt(ctx, c.baseURL, method, path, headers, body)
+}
+
+func (c *client) doAt(ctx context.Context, base, method, path string, headers map[string]string, body any) (int, []byte, error) {
 	var reader io.Reader
 	if body != nil {
 		b, err := json.Marshal(body)
@@ -35,7 +53,7 @@ func (c *client) do(ctx context.Context, method, path string, headers map[string
 		reader = bytes.NewReader(b)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, reader)
+	req, err := http.NewRequestWithContext(ctx, method, base+path, reader)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -200,7 +218,7 @@ func (c *client) issueToken(ctx context.Context, adminSecret, caller string) (st
 }
 
 func (c *client) recordPosition(ctx context.Context, token, id string, epoch, sequence int, lat, lon float64) (bool, error) {
-	status, body, err := c.do(ctx, http.MethodPost, "/deliveries/"+id+"/positions", map[string]string{
+	status, body, err := c.doAt(ctx, c.trackingURL, http.MethodPost, "/deliveries/"+id+"/positions", map[string]string{
 		"Authorization": "Bearer " + token,
 	}, map[string]any{
 		"tracking_session_epoch": epoch,
@@ -214,20 +232,26 @@ func (c *client) recordPosition(ctx context.Context, token, id string, epoch, se
 	if status != http.StatusAccepted {
 		return false, fmt.Errorf("registrar posição: status %d: %s", status, body)
 	}
-	var v struct {
-		Current bool `json:"current"`
-	}
-	if err := json.Unmarshal(body, &v); err != nil {
-		return false, err
-	}
-	return v.Current, nil
+	// tracking-ingest não devolve "current": ele só publica no Kafka, quem
+	// sabe se a posição avançou a projeção é o tracking-projector. O
+	// chamador confirma consultando currentPosition depois de um instante.
+	return true, nil
 }
 
-func (c *client) currentPosition(ctx context.Context, token, id string) (int, error) {
-	status, _, err := c.do(ctx, http.MethodGet, "/deliveries/"+id+"/position", map[string]string{
+func (c *client) currentPosition(ctx context.Context, token, id string) (status int, sequence int, err error) {
+	status, body, err := c.doAt(ctx, c.projectorURL, http.MethodGet, "/deliveries/"+id+"/position", map[string]string{
 		"Authorization": "Bearer " + token,
 	}, nil)
-	return status, err
+	if err != nil || status != http.StatusOK {
+		return status, 0, err
+	}
+	var v struct {
+		Sequence int `json:"sequence"`
+	}
+	if err := json.Unmarshal(body, &v); err != nil {
+		return status, 0, err
+	}
+	return status, v.Sequence, nil
 }
 
 func (c *client) setAvailability(ctx context.Context, id string, available bool) error {
