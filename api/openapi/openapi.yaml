@@ -1,0 +1,165 @@
+openapi: 3.0.3
+info:
+  title: dispatch delivery-api
+  version: tier-1.0.0
+  description: >
+    Lifecycle de entrega, cadastro de entregador e atribuição do tier 1. Um
+    único monólito modular sobre PostgreSQL, sem Kafka, sem Redis, sem
+    microsserviços.
+paths:
+  /healthz:
+    get:
+      summary: processo vivo
+      responses:
+        "200": { description: ok }
+  /readyz:
+    get:
+      summary: processo pronto para tráfego
+      responses:
+        "200": { description: ok }
+  /deliveries:
+    post:
+      summary: cria uma entrega
+      parameters:
+        - name: X-Caller
+          in: header
+          required: true
+          schema: { type: string }
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          description: entrega criada, ou repetição da mesma chave com o mesmo payload
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Delivery" }
+        "409":
+          description: mesma chave usada com um payload diferente
+        "422":
+          description: X-Caller ou Idempotency-Key ausentes
+  /deliveries/{id}:
+    get:
+      summary: consulta uma entrega
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: estado atual da entrega
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Delivery" }
+        "404":
+          description: entrega não encontrada
+  /deliveries/{id}/offer:
+    post:
+      summary: move ready_for_dispatch -> offered com prazo de expiração
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: oferta criada }
+        "409": { description: entrega não estava pronta para despacho }
+  /deliveries/{id}/assign:
+    post:
+      summary: aceite concorrente, offered -> assigned
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [courier_id]
+              properties:
+                courier_id: { type: string }
+      responses:
+        "204": { description: atribuição confirmada }
+        "409":
+          description: >
+            outra tentativa venceu a disputa, ou o entregador já tem outra
+            entrega ativa
+  /deliveries/{id}/decline:
+    post:
+      summary: recusa a oferta e recicla para ready_for_dispatch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: recusa registrada }
+        "409": { description: entrega não estava em oferta }
+  /couriers:
+    post:
+      summary: cadastra um entregador, indisponível por padrão
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        "201":
+          description: entregador cadastrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Courier" }
+  /couriers/{id}/availability:
+    post:
+      summary: declara disponibilidade do entregador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [available]
+              properties:
+                available: { type: boolean }
+      responses:
+        "204": { description: disponibilidade atualizada }
+        "404": { description: entregador não encontrado }
+components:
+  schemas:
+    Delivery:
+      type: object
+      properties:
+        id: { type: string }
+        state:
+          type: string
+          enum:
+            - created
+            - ready_for_dispatch
+            - offered
+            - assigned
+            - picked_up
+            - delivered
+            - declined
+            - expired
+            - canceled
+        courier_id: { type: string, nullable: true }
+    Courier:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        available: { type: boolean }

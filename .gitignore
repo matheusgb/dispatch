@@ -10,3 +10,7 @@ graphify-out/
 CLAUDE.md
 AGENTS.md
 .claude/
+
+# Binários de teste deixados por go test -cpuprofile/-memprofile.
+*.test
+
