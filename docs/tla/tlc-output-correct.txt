@@ -1,0 +1,29 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 24 and seed 4701685449333301563 with 4 workers on 32 cores with 3513MB heap and 64MB offheap memory [pid: 326371] (Linux 5.15.167.4-microsoft-standard-WSL2 amd64, Ubuntu 17.0.19 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/ubuntu/me/labs/dispatch/docs/tla/DispatchFencing.tla
+Parsing file /tmp/Integers.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/TLC.tla
+Parsing file /tmp/Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module DispatchFencing
+Starting... (2026-07-26 19:10:54)
+Implied-temporal checking--satisfiability problem has 1 branches.
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-07-26 19:10:54.
+Progress(12) at 2026-07-26 19:10:54: 4,009 states generated, 1,086 distinct states found, 0 states left on queue.
+Checking temporal properties for the complete state space with 1086 total distinct states at (2026-07-26 19:10:54)
+Finished checking temporal properties in 00s at 2026-07-26 19:10:54
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.7E-13
+4009 states generated, 1086 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 12.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+Finished in 00s at (2026-07-26 19:10:54)

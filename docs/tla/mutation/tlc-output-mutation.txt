@@ -1,0 +1,64 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 107 and seed 7647740981378706568 with 4 workers on 32 cores with 3513MB heap and 64MB offheap memory [pid: 326983] (Linux 5.15.167.4-microsoft-standard-WSL2 amd64, Ubuntu 17.0.19 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/ubuntu/me/labs/dispatch/docs/tla/mutation/DispatchFencing_no_epoch_guard.tla
+Parsing file /tmp/Integers.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/TLC.tla
+Parsing file /tmp/Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module DispatchFencing_no_epoch_guard
+Starting... (2026-07-26 19:11:10)
+Implied-temporal checking--satisfiability problem has 1 branches.
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-07-26 19:11:10.
+Error: Invariant Safety is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ epoch = 1
+/\ owner = w1
+/\ assignment = (d1 :> "none" @@ d2 :> "none")
+/\ knownTokens = {<<w1, 1>>}
+/\ assignedBy = (d1 :> "none" @@ d2 :> "none")
+/\ courierState = (c1 :> "free" @@ c2 :> "free")
+/\ staleAssignHappened = FALSE
+/\ leaseValid = TRUE
+
+State 2: <LeaseExpire line 85, col 5 to line 87, col 105 of module DispatchFencing_no_epoch_guard>
+/\ epoch = 1
+/\ owner = w1
+/\ assignment = (d1 :> "none" @@ d2 :> "none")
+/\ knownTokens = {<<w1, 1>>}
+/\ assignedBy = (d1 :> "none" @@ d2 :> "none")
+/\ courierState = (c1 :> "free" @@ c2 :> "free")
+/\ staleAssignHappened = FALSE
+/\ leaseValid = FALSE
+
+State 3: <Promote line 97, col 5 to line 103, col 78 of module DispatchFencing_no_epoch_guard>
+/\ epoch = 2
+/\ owner = w1
+/\ assignment = (d1 :> "none" @@ d2 :> "none")
+/\ knownTokens = {<<w1, 1>>, <<w1, 2>>}
+/\ assignedBy = (d1 :> "none" @@ d2 :> "none")
+/\ courierState = (c1 :> "free" @@ c2 :> "free")
+/\ staleAssignHappened = FALSE
+/\ leaseValid = TRUE
+
+State 4: <Assign line 125, col 5 to line 138, col 58 of module DispatchFencing_no_epoch_guard>
+/\ epoch = 2
+/\ owner = w1
+/\ assignment = (d1 :> c1 @@ d2 :> "none")
+/\ knownTokens = {<<w1, 1>>, <<w1, 2>>}
+/\ assignedBy = (d1 :> w1 @@ d2 :> "none")
+/\ courierState = (c1 :> "assigned" @@ c2 :> "free")
+/\ staleAssignHappened = TRUE
+/\ leaseValid = TRUE
+
+28 states generated, 25 distinct states found, 19 states left on queue.
+The depth of the complete state graph search is 5.
+The average outdegree of the complete state graph is 6 (minimum is 4, the maximum 7 and the 95th percentile is 7).
+Finished in 00s at (2026-07-26 19:11:10)

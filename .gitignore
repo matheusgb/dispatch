@@ -30,3 +30,9 @@ crash.*.log
 
 # Chave privada de assinatura de imagem (ADR 0016). A pública fica versionada.
 docs/benchmarks/supply-chain/cosign.key
+
+# TLA+: binario de terceiros baixado localmente (ADR 0017), nao versionado.
+docs/tla/tools/tla2tools.jar
+
+# TLC: diretorios de checkpoint/estado gerados a cada execucao.
+docs/tla/**/states/

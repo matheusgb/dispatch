@@ -1,0 +1,458 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: loadtest/k6/tier-4-steady-spike.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 30 max VUs, 2m40s max duration (incl. graceful stop):
+              * steady_then_spike: Up to 30 looping VUs for 2m10s over 5 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+
+
+running (0m01.0s), 00/30 VUs, 0 complete and 0 interrupted iterations
+steady_then_spike   [   1% ] 00/30 VUs  0m01.0s/2m10.0s
+
+running (0m02.0s), 01/30 VUs, 4 complete and 0 interrupted iterations
+steady_then_spike   [   2% ] 01/30 VUs  0m02.0s/2m10.0s
+
+running (0m03.0s), 01/30 VUs, 13 complete and 0 interrupted iterations
+steady_then_spike   [   2% ] 01/30 VUs  0m03.0s/2m10.0s
+
+running (0m04.0s), 02/30 VUs, 29 complete and 0 interrupted iterations
+steady_then_spike   [   3% ] 02/30 VUs  0m04.0s/2m10.0s
+
+running (0m05.0s), 03/30 VUs, 51 complete and 0 interrupted iterations
+steady_then_spike   [   4% ] 03/30 VUs  0m05.0s/2m10.0s
+
+running (0m06.0s), 03/30 VUs, 78 complete and 0 interrupted iterations
+steady_then_spike   [   5% ] 03/30 VUs  0m06.0s/2m10.0s
+
+running (0m07.0s), 04/30 VUs, 110 complete and 0 interrupted iterations
+steady_then_spike   [   5% ] 04/30 VUs  0m07.0s/2m10.0s
+
+running (0m08.0s), 05/30 VUs, 150 complete and 0 interrupted iterations
+steady_then_spike   [   6% ] 05/30 VUs  0m08.0s/2m10.0s
+
+running (0m09.0s), 05/30 VUs, 190 complete and 0 interrupted iterations
+steady_then_spike   [   7% ] 05/30 VUs  0m09.0s/2m10.0s
+
+running (0m10.0s), 06/30 VUs, 243 complete and 0 interrupted iterations
+steady_then_spike   [   8% ] 06/30 VUs  0m10.0s/2m10.0s
+
+running (0m11.0s), 07/30 VUs, 301 complete and 0 interrupted iterations
+steady_then_spike   [   8% ] 07/30 VUs  0m11.0s/2m10.0s
+
+running (0m12.0s), 07/30 VUs, 357 complete and 0 interrupted iterations
+steady_then_spike   [   9% ] 07/30 VUs  0m12.0s/2m10.0s
+
+running (0m14.4s), 08/30 VUs, 428 complete and 0 interrupted iterations
+steady_then_spike   [  10% ] 08/30 VUs  0m13.0s/2m10.0s
+
+running (0m15.4s), 09/30 VUs, 487 complete and 0 interrupted iterations
+steady_then_spike   [  11% ] 09/30 VUs  0m14.0s/2m10.0s
+
+running (0m16.4s), 09/30 VUs, 568 complete and 0 interrupted iterations
+steady_then_spike   [  12% ] 09/30 VUs  0m15.0s/2m10.0s
+
+running (0m17.4s), 10/30 VUs, 648 complete and 0 interrupted iterations
+steady_then_spike   [  12% ] 10/30 VUs  0m16.0s/2m10.0s
+
+running (0m18.4s), 10/30 VUs, 728 complete and 0 interrupted iterations
+steady_then_spike   [  13% ] 10/30 VUs  0m17.0s/2m10.0s
+
+running (0m19.4s), 10/30 VUs, 818 complete and 0 interrupted iterations
+steady_then_spike   [  14% ] 10/30 VUs  0m18.0s/2m10.0s
+
+running (0m20.4s), 10/30 VUs, 898 complete and 0 interrupted iterations
+steady_then_spike   [  15% ] 10/30 VUs  0m19.0s/2m10.0s
+
+running (0m21.4s), 10/30 VUs, 988 complete and 0 interrupted iterations
+steady_then_spike   [  15% ] 10/30 VUs  0m20.0s/2m10.0s
+
+running (0m22.4s), 10/30 VUs, 1068 complete and 0 interrupted iterations
+steady_then_spike   [  16% ] 10/30 VUs  0m21.0s/2m10.0s
+
+running (0m23.4s), 10/30 VUs, 1158 complete and 0 interrupted iterations
+steady_then_spike   [  17% ] 10/30 VUs  0m22.0s/2m10.0s
+
+running (0m24.4s), 10/30 VUs, 1238 complete and 0 interrupted iterations
+steady_then_spike   [  18% ] 10/30 VUs  0m23.0s/2m10.0s
+
+running (0m25.4s), 10/30 VUs, 1328 complete and 0 interrupted iterations
+steady_then_spike   [  18% ] 10/30 VUs  0m24.0s/2m10.0s
+
+running (0m26.4s), 10/30 VUs, 1408 complete and 0 interrupted iterations
+steady_then_spike   [  19% ] 10/30 VUs  0m25.0s/2m10.0s
+
+running (0m27.4s), 10/30 VUs, 1498 complete and 0 interrupted iterations
+steady_then_spike   [  20% ] 10/30 VUs  0m26.0s/2m10.0s
+
+running (0m28.4s), 10/30 VUs, 1578 complete and 0 interrupted iterations
+steady_then_spike   [  21% ] 10/30 VUs  0m27.0s/2m10.0s
+time="2026-07-26T19:13:16-03:00" level=warning msg="The test has generated metrics with 100078 unique time series, which is higher than the suggested limit of 100000 and could cause high memory usage. Consider not using high-cardinality values like unique IDs as metric tags or, if you need them in the URL, use the name metric tag or URL grouping. See https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/ for details." component=metrics-engine-ingester
+
+running (0m29.4s), 10/30 VUs, 1658 complete and 0 interrupted iterations
+steady_then_spike   [  22% ] 10/30 VUs  0m28.0s/2m10.0s
+
+running (0m30.4s), 10/30 VUs, 1738 complete and 0 interrupted iterations
+steady_then_spike   [  22% ] 10/30 VUs  0m29.0s/2m10.0s
+
+running (0m31.4s), 10/30 VUs, 1828 complete and 0 interrupted iterations
+steady_then_spike   [  23% ] 10/30 VUs  0m30.0s/2m10.0s
+
+running (0m32.4s), 10/30 VUs, 1908 complete and 0 interrupted iterations
+steady_then_spike   [  24% ] 10/30 VUs  0m31.0s/2m10.0s
+
+running (0m33.4s), 10/30 VUs, 1998 complete and 0 interrupted iterations
+steady_then_spike   [  25% ] 10/30 VUs  0m32.0s/2m10.0s
+
+running (0m34.4s), 10/30 VUs, 2078 complete and 0 interrupted iterations
+steady_then_spike   [  25% ] 10/30 VUs  0m33.0s/2m10.0s
+
+running (0m35.4s), 10/30 VUs, 2168 complete and 0 interrupted iterations
+steady_then_spike   [  26% ] 10/30 VUs  0m34.0s/2m10.0s
+
+running (0m36.4s), 10/30 VUs, 2248 complete and 0 interrupted iterations
+steady_then_spike   [  27% ] 10/30 VUs  0m35.0s/2m10.0s
+
+running (0m37.4s), 10/30 VUs, 2338 complete and 0 interrupted iterations
+steady_then_spike   [  28% ] 10/30 VUs  0m36.0s/2m10.0s
+
+running (0m38.4s), 10/30 VUs, 2418 complete and 0 interrupted iterations
+steady_then_spike   [  28% ] 10/30 VUs  0m37.0s/2m10.0s
+
+running (0m39.4s), 10/30 VUs, 2508 complete and 0 interrupted iterations
+steady_then_spike   [  29% ] 10/30 VUs  0m38.0s/2m10.0s
+
+running (0m40.4s), 10/30 VUs, 2588 complete and 0 interrupted iterations
+steady_then_spike   [  30% ] 10/30 VUs  0m39.0s/2m10.0s
+
+running (0m41.4s), 10/30 VUs, 2678 complete and 0 interrupted iterations
+steady_then_spike   [  31% ] 10/30 VUs  0m40.0s/2m10.0s
+
+running (0m42.4s), 10/30 VUs, 2759 complete and 0 interrupted iterations
+steady_then_spike   [  32% ] 10/30 VUs  0m41.0s/2m10.0s
+
+running (0m43.4s), 10/30 VUs, 2848 complete and 0 interrupted iterations
+steady_then_spike   [  32% ] 10/30 VUs  0m42.0s/2m10.0s
+
+running (0m44.4s), 10/30 VUs, 2928 complete and 0 interrupted iterations
+steady_then_spike   [  33% ] 10/30 VUs  0m43.0s/2m10.0s
+
+running (0m45.4s), 10/30 VUs, 3018 complete and 0 interrupted iterations
+steady_then_spike   [  34% ] 10/30 VUs  0m44.0s/2m10.0s
+
+running (0m47.9s), 10/30 VUs, 3098 complete and 0 interrupted iterations
+steady_then_spike   [  35% ] 10/30 VUs  0m45.0s/2m10.0s
+time="2026-07-26T19:13:36-03:00" level=warning msg="The test has generated metrics with 200248 unique time series, which is higher than the suggested limit of 100000 and could cause high memory usage. Consider not using high-cardinality values like unique IDs as metric tags or, if you need them in the URL, use the name metric tag or URL grouping. See https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/ for details." component=metrics-engine-ingester
+
+running (0m48.9s), 10/30 VUs, 3188 complete and 0 interrupted iterations
+steady_then_spike   [  35% ] 10/30 VUs  0m46.0s/2m10.0s
+
+running (0m49.9s), 10/30 VUs, 3268 complete and 0 interrupted iterations
+steady_then_spike   [  36% ] 10/30 VUs  0m47.0s/2m10.0s
+
+running (0m50.9s), 10/30 VUs, 3358 complete and 0 interrupted iterations
+steady_then_spike   [  37% ] 10/30 VUs  0m48.0s/2m10.0s
+
+running (0m51.9s), 10/30 VUs, 3438 complete and 0 interrupted iterations
+steady_then_spike   [  38% ] 10/30 VUs  0m49.0s/2m10.0s
+
+running (0m52.9s), 10/30 VUs, 3528 complete and 0 interrupted iterations
+steady_then_spike   [  38% ] 10/30 VUs  0m50.0s/2m10.0s
+
+running (0m53.9s), 10/30 VUs, 3608 complete and 0 interrupted iterations
+steady_then_spike   [  39% ] 10/30 VUs  0m51.0s/2m10.0s
+
+running (0m54.9s), 10/30 VUs, 3698 complete and 0 interrupted iterations
+steady_then_spike   [  40% ] 10/30 VUs  0m52.0s/2m10.0s
+
+running (0m55.9s), 10/30 VUs, 3778 complete and 0 interrupted iterations
+steady_then_spike   [  41% ] 10/30 VUs  0m53.0s/2m10.0s
+
+running (0m56.9s), 10/30 VUs, 3868 complete and 0 interrupted iterations
+steady_then_spike   [  42% ] 10/30 VUs  0m54.0s/2m10.0s
+
+running (0m57.9s), 10/30 VUs, 3948 complete and 0 interrupted iterations
+steady_then_spike   [  42% ] 10/30 VUs  0m55.0s/2m10.0s
+
+running (0m58.9s), 10/30 VUs, 4038 complete and 0 interrupted iterations
+steady_then_spike   [  43% ] 10/30 VUs  0m56.0s/2m10.0s
+
+running (0m59.9s), 10/30 VUs, 4118 complete and 0 interrupted iterations
+steady_then_spike   [  44% ] 10/30 VUs  0m57.0s/2m10.0s
+
+running (1m00.9s), 10/30 VUs, 4198 complete and 0 interrupted iterations
+steady_then_spike   [  45% ] 10/30 VUs  0m58.0s/2m10.0s
+
+running (1m01.9s), 10/30 VUs, 4278 complete and 0 interrupted iterations
+steady_then_spike   [  45% ] 10/30 VUs  0m59.0s/2m10.0s
+
+running (1m02.9s), 10/30 VUs, 4368 complete and 0 interrupted iterations
+steady_then_spike   [  46% ] 10/30 VUs  1m00.0s/2m10.0s
+
+running (1m03.9s), 10/30 VUs, 4458 complete and 0 interrupted iterations
+steady_then_spike   [  47% ] 10/30 VUs  1m01.0s/2m10.0s
+
+running (1m04.9s), 10/30 VUs, 4538 complete and 0 interrupted iterations
+steady_then_spike   [  48% ] 10/30 VUs  1m02.0s/2m10.0s
+
+running (1m05.9s), 10/30 VUs, 4618 complete and 0 interrupted iterations
+steady_then_spike   [  48% ] 10/30 VUs  1m03.0s/2m10.0s
+
+running (1m06.9s), 10/30 VUs, 4698 complete and 0 interrupted iterations
+steady_then_spike   [  49% ] 10/30 VUs  1m04.0s/2m10.0s
+
+running (1m07.9s), 10/30 VUs, 4788 complete and 0 interrupted iterations
+steady_then_spike   [  50% ] 10/30 VUs  1m05.0s/2m10.0s
+
+running (1m08.9s), 10/30 VUs, 4868 complete and 0 interrupted iterations
+steady_then_spike   [  51% ] 10/30 VUs  1m06.0s/2m10.0s
+
+running (1m09.9s), 10/30 VUs, 4948 complete and 0 interrupted iterations
+steady_then_spike   [  52% ] 10/30 VUs  1m07.0s/2m10.0s
+
+running (1m10.9s), 10/30 VUs, 5038 complete and 0 interrupted iterations
+steady_then_spike   [  52% ] 10/30 VUs  1m08.0s/2m10.0s
+
+running (1m11.9s), 10/30 VUs, 5118 complete and 0 interrupted iterations
+steady_then_spike   [  53% ] 10/30 VUs  1m09.0s/2m10.0s
+
+running (1m12.9s), 10/30 VUs, 5198 complete and 0 interrupted iterations
+steady_then_spike   [  54% ] 10/30 VUs  1m10.0s/2m10.0s
+
+running (1m13.9s), 10/30 VUs, 5288 complete and 0 interrupted iterations
+steady_then_spike   [  55% ] 10/30 VUs  1m11.0s/2m10.0s
+
+running (1m14.9s), 10/30 VUs, 5368 complete and 0 interrupted iterations
+steady_then_spike   [  55% ] 10/30 VUs  1m12.0s/2m10.0s
+
+running (1m15.9s), 10/30 VUs, 5448 complete and 0 interrupted iterations
+steady_then_spike   [  56% ] 10/30 VUs  1m13.0s/2m10.0s
+
+running (1m16.9s), 10/30 VUs, 5538 complete and 0 interrupted iterations
+steady_then_spike   [  57% ] 10/30 VUs  1m14.0s/2m10.0s
+
+running (1m17.9s), 10/30 VUs, 5618 complete and 0 interrupted iterations
+steady_then_spike   [  58% ] 10/30 VUs  1m15.0s/2m10.0s
+
+running (1m18.9s), 11/30 VUs, 5712 complete and 0 interrupted iterations
+steady_then_spike   [  58% ] 11/30 VUs  1m16.0s/2m10.0s
+
+running (1m21.3s), 13/30 VUs, 5812 complete and 0 interrupted iterations
+steady_then_spike   [  59% ] 13/30 VUs  1m17.0s/2m10.0s
+
+running (1m22.3s), 15/30 VUs, 5941 complete and 0 interrupted iterations
+steady_then_spike   [  60% ] 15/30 VUs  1m18.0s/2m10.0s
+
+running (1m23.3s), 17/30 VUs, 6088 complete and 0 interrupted iterations
+steady_then_spike   [  61% ] 17/30 VUs  1m19.0s/2m10.0s
+
+running (1m24.3s), 19/30 VUs, 6239 complete and 0 interrupted iterations
+steady_then_spike   [  62% ] 19/30 VUs  1m20.0s/2m10.0s
+time="2026-07-26T19:14:12-03:00" level=warning msg="The test has generated metrics with 400840 unique time series, which is higher than the suggested limit of 100000 and could cause high memory usage. Consider not using high-cardinality values like unique IDs as metric tags or, if you need them in the URL, use the name metric tag or URL grouping. See https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/ for details." component=metrics-engine-ingester
+
+running (1m25.3s), 21/30 VUs, 6422 complete and 0 interrupted iterations
+steady_then_spike   [  62% ] 21/30 VUs  1m21.0s/2m10.0s
+
+running (1m26.3s), 23/30 VUs, 6623 complete and 0 interrupted iterations
+steady_then_spike   [  63% ] 23/30 VUs  1m22.0s/2m10.0s
+
+running (1m27.3s), 25/30 VUs, 6832 complete and 0 interrupted iterations
+steady_then_spike   [  64% ] 25/30 VUs  1m23.0s/2m10.0s
+
+running (1m28.3s), 27/30 VUs, 7060 complete and 0 interrupted iterations
+steady_then_spike   [  65% ] 27/30 VUs  1m24.0s/2m10.0s
+
+running (1m29.3s), 29/30 VUs, 7305 complete and 0 interrupted iterations
+steady_then_spike   [  65% ] 29/30 VUs  1m25.0s/2m10.0s
+
+running (1m30.3s), 30/30 VUs, 7563 complete and 0 interrupted iterations
+steady_then_spike   [  66% ] 30/30 VUs  1m26.0s/2m10.0s
+
+running (1m31.3s), 30/30 VUs, 7828 complete and 0 interrupted iterations
+steady_then_spike   [  67% ] 30/30 VUs  1m27.0s/2m10.0s
+
+running (1m32.3s), 30/30 VUs, 8069 complete and 0 interrupted iterations
+steady_then_spike   [  68% ] 30/30 VUs  1m28.0s/2m10.0s
+
+running (1m33.3s), 30/30 VUs, 8309 complete and 0 interrupted iterations
+steady_then_spike   [  68% ] 30/30 VUs  1m29.0s/2m10.0s
+
+running (1m34.3s), 30/30 VUs, 8519 complete and 0 interrupted iterations
+steady_then_spike   [  69% ] 30/30 VUs  1m30.0s/2m10.0s
+
+running (1m35.3s), 30/30 VUs, 8729 complete and 0 interrupted iterations
+steady_then_spike   [  70% ] 30/30 VUs  1m31.0s/2m10.0s
+
+running (1m36.3s), 30/30 VUs, 8969 complete and 0 interrupted iterations
+steady_then_spike   [  71% ] 30/30 VUs  1m32.0s/2m10.0s
+
+running (1m37.3s), 30/30 VUs, 9179 complete and 0 interrupted iterations
+steady_then_spike   [  72% ] 30/30 VUs  1m33.0s/2m10.0s
+
+running (1m38.3s), 30/30 VUs, 9419 complete and 0 interrupted iterations
+steady_then_spike   [  72% ] 30/30 VUs  1m34.0s/2m10.0s
+
+running (1m39.3s), 30/30 VUs, 9629 complete and 0 interrupted iterations
+steady_then_spike   [  73% ] 30/30 VUs  1m35.0s/2m10.0s
+
+running (1m40.3s), 30/30 VUs, 9869 complete and 0 interrupted iterations
+steady_then_spike   [  74% ] 30/30 VUs  1m36.0s/2m10.0s
+
+running (1m41.3s), 30/30 VUs, 10109 complete and 0 interrupted iterations
+steady_then_spike   [  75% ] 30/30 VUs  1m37.0s/2m10.0s
+
+running (1m42.3s), 30/30 VUs, 10319 complete and 0 interrupted iterations
+steady_then_spike   [  75% ] 30/30 VUs  1m38.0s/2m10.0s
+
+running (1m43.3s), 30/30 VUs, 10559 complete and 0 interrupted iterations
+steady_then_spike   [  76% ] 30/30 VUs  1m39.0s/2m10.0s
+
+running (1m44.3s), 30/30 VUs, 10769 complete and 0 interrupted iterations
+steady_then_spike   [  77% ] 30/30 VUs  1m40.0s/2m10.0s
+
+running (1m45.3s), 30/30 VUs, 11009 complete and 0 interrupted iterations
+steady_then_spike   [  78% ] 30/30 VUs  1m41.0s/2m10.0s
+
+running (1m46.3s), 30/30 VUs, 11249 complete and 0 interrupted iterations
+steady_then_spike   [  78% ] 30/30 VUs  1m42.0s/2m10.0s
+
+running (1m47.3s), 30/30 VUs, 11459 complete and 0 interrupted iterations
+steady_then_spike   [  79% ] 30/30 VUs  1m43.0s/2m10.0s
+
+running (1m48.3s), 30/30 VUs, 11699 complete and 0 interrupted iterations
+steady_then_spike   [  80% ] 30/30 VUs  1m44.0s/2m10.0s
+
+running (1m49.3s), 30/30 VUs, 11909 complete and 0 interrupted iterations
+steady_then_spike   [  81% ] 30/30 VUs  1m45.0s/2m10.0s
+
+running (1m50.3s), 30/30 VUs, 12149 complete and 0 interrupted iterations
+steady_then_spike   [  82% ] 30/30 VUs  1m46.0s/2m10.0s
+
+running (1m51.3s), 30/30 VUs, 12359 complete and 0 interrupted iterations
+steady_then_spike   [  82% ] 30/30 VUs  1m47.0s/2m10.0s
+
+running (1m52.3s), 30/30 VUs, 12599 complete and 0 interrupted iterations
+steady_then_spike   [  83% ] 30/30 VUs  1m48.0s/2m10.0s
+time="2026-07-26T19:14:40-03:00" level=warning msg="The test has generated metrics with 801331 unique time series, which is higher than the suggested limit of 100000 and could cause high memory usage. Consider not using high-cardinality values like unique IDs as metric tags or, if you need them in the URL, use the name metric tag or URL grouping. See https://grafana.com/docs/k6/latest/using-k6/tags-and-groups/ for details." component=metrics-engine-ingester
+
+running (1m53.3s), 30/30 VUs, 12809 complete and 0 interrupted iterations
+steady_then_spike   [  84% ] 30/30 VUs  1m49.0s/2m10.0s
+
+running (1m55.7s), 30/30 VUs, 13049 complete and 0 interrupted iterations
+steady_then_spike   [  85% ] 30/30 VUs  1m50.0s/2m10.0s
+
+running (1m56.7s), 30/30 VUs, 13259 complete and 0 interrupted iterations
+steady_then_spike   [  85% ] 30/30 VUs  1m51.0s/2m10.0s
+
+running (1m57.7s), 30/30 VUs, 13499 complete and 0 interrupted iterations
+steady_then_spike   [  86% ] 30/30 VUs  1m52.0s/2m10.0s
+
+running (1m58.7s), 30/30 VUs, 13709 complete and 0 interrupted iterations
+steady_then_spike   [  87% ] 30/30 VUs  1m53.0s/2m10.0s
+
+running (1m59.7s), 30/30 VUs, 13919 complete and 0 interrupted iterations
+steady_then_spike   [  88% ] 30/30 VUs  1m54.0s/2m10.0s
+
+running (2m00.7s), 30/30 VUs, 14159 complete and 0 interrupted iterations
+steady_then_spike   [  88% ] 30/30 VUs  1m55.0s/2m10.0s
+
+running (2m01.7s), 29/30 VUs, 14367 complete and 0 interrupted iterations
+steady_then_spike   [  89% ] 29/30 VUs  1m56.0s/2m10.0s
+
+running (2m02.7s), 27/30 VUs, 14589 complete and 0 interrupted iterations
+steady_then_spike   [  90% ] 27/30 VUs  1m57.0s/2m10.0s
+
+running (2m03.7s), 25/30 VUs, 14770 complete and 0 interrupted iterations
+steady_then_spike   [  91% ] 25/30 VUs  1m58.0s/2m10.0s
+
+running (2m04.7s), 23/30 VUs, 14960 complete and 0 interrupted iterations
+steady_then_spike   [  92% ] 23/30 VUs  1m59.0s/2m10.0s
+
+running (2m05.7s), 21/30 VUs, 15112 complete and 0 interrupted iterations
+steady_then_spike   [  92% ] 21/30 VUs  2m00.0s/2m10.0s
+
+running (2m06.7s), 19/30 VUs, 15270 complete and 0 interrupted iterations
+steady_then_spike   [  93% ] 19/30 VUs  2m01.0s/2m10.0s
+
+running (2m07.7s), 17/30 VUs, 15412 complete and 0 interrupted iterations
+steady_then_spike   [  94% ] 17/30 VUs  2m02.0s/2m10.0s
+
+running (2m08.7s), 15/30 VUs, 15538 complete and 0 interrupted iterations
+steady_then_spike   [  95% ] 15/30 VUs  2m03.0s/2m10.0s
+
+running (2m09.7s), 13/30 VUs, 15648 complete and 0 interrupted iterations
+steady_then_spike   [  95% ] 13/30 VUs  2m04.0s/2m10.0s
+
+running (2m10.7s), 11/30 VUs, 15742 complete and 0 interrupted iterations
+steady_then_spike   [  96% ] 11/30 VUs  2m05.0s/2m10.0s
+
+running (2m11.7s), 09/30 VUs, 15820 complete and 0 interrupted iterations
+steady_then_spike   [  97% ] 09/30 VUs  2m06.0s/2m10.0s
+
+running (2m12.7s), 07/30 VUs, 15882 complete and 0 interrupted iterations
+steady_then_spike   [  98% ] 07/30 VUs  2m07.0s/2m10.0s
+
+running (2m13.7s), 05/30 VUs, 15928 complete and 0 interrupted iterations
+steady_then_spike   [  98% ] 05/30 VUs  2m08.0s/2m10.0s
+
+running (2m14.7s), 03/30 VUs, 15958 complete and 0 interrupted iterations
+steady_then_spike   [  99% ] 03/30 VUs  2m09.0s/2m10.0s
+
+running (2m15.7s), 01/30 VUs, 15972 complete and 0 interrupted iterations
+steady_then_spike   [ 100% ] 01/30 VUs  2m10.0s/2m10.0s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<1000' p(95)=7.33ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 159730  1176.865822/s
+    checks_succeeded...: 100.00% 159730 out of 159730
+    checks_failed......: 0.00%   0 out of 159730
+
+    ✓ criar entrega: 201
+    ✓ marcar pronta: 204
+    ✓ oferecer: 204
+    ✓ cadastrar entregador: 201
+    ✓ disponibilizar entregador: 204
+    ✓ atribuir: 204
+    ✓ coletar: 204
+    ✓ concluir: 204
+    ✓ consultar: 200
+    ✓ estado final: delivered
+
+    HTTP
+    http_req_duration..............: avg=3.01ms   min=189.45µs med=1.9ms    max=1.46s    p(90)=4.05ms   p(95)=7.33ms  
+      { expected_response:true }...: avg=3.01ms   min=189.45µs med=1.9ms    max=1.46s    p(90)=4.05ms   p(95)=7.33ms  
+    http_req_failed................: 0.00%  0 out of 143757
+    http_reqs......................: 143757 1059.17924/s
+
+    EXECUTION
+    iteration_duration.............: avg=124.96ms min=108.46ms med=122.35ms max=194.47ms p(90)=137.17ms p(95)=140.34ms
+    iterations.....................: 15973  117.686582/s
+    vus............................: 1      min=0           max=30
+    vus_max........................: 30     min=30          max=30
+
+    NETWORK
+    data_received..................: 24 MB  174 kB/s
+    data_sent......................: 24 MB  179 kB/s
+
+
+
+
+running (2m15.7s), 00/30 VUs, 15973 complete and 0 interrupted iterations
+steady_then_spike ✓ [ 100% ] 00/30 VUs  2m10s
