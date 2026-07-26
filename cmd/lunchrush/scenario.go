@@ -28,7 +28,11 @@ type orderResult struct {
 	DuplicateOK      bool          `json:"duplicate_ok"`
 	AssignRetries    int           `json:"assign_retries,omitempty"`
 	PositionsSent    int           `json:"positions_sent,omitempty"`
+	PositionsDropped int           `json:"positions_dropped,omitempty"`
 	PositionsCurrent int           `json:"positions_current,omitempty"`
+	CourierCrashed   bool          `json:"courier_crashed,omitempty"`
+	ClockSkewTried   bool          `json:"clock_skew_tried,omitempty"`
+	ClockSkewSafe    bool          `json:"clock_skew_safe,omitempty"`
 	Duration         time.Duration `json:"duration_ns"`
 	Err              string        `json:"error,omitempty"`
 }
@@ -52,6 +56,12 @@ type scenario struct {
 	offerTTL         int
 	expireOfferTTL   int
 	readyWaitSeconds int
+
+	// net é o relógio e a rede virtuais do tier 5 (docs/tla e
+	// docs/adr/0020-lunchrush-rede-e-relogio-virtuais.md). Zero value
+	// (todas as taxas em 0) reproduz exatamente o comportamento anterior
+	// ao tier 5: nenhuma flag nova muda o default de nenhum tier anterior.
+	net netFault
 }
 
 // nextCourier faz round-robin sobre o pool de entregadores. A rotação é
@@ -99,7 +109,14 @@ func (s *scenario) runOrder(ctx context.Context, index int) orderResult {
 	case roll < s.declineRate+s.expireRate:
 		res.Outcome, err = s.runExpire(ctx, d.ID)
 	default:
-		res.Outcome, res.AssignRetries, res.PositionsSent, res.PositionsCurrent, err = s.runCompleted(ctx, d.ID, rng)
+		var stats positionStats
+		res.Outcome, res.AssignRetries, stats, err = s.runCompleted(ctx, d.ID, rng)
+		res.PositionsSent = stats.sent
+		res.PositionsDropped = stats.dropped
+		res.PositionsCurrent = stats.current
+		res.CourierCrashed = stats.crashed
+		res.ClockSkewTried = stats.skewTried
+		res.ClockSkewSafe = stats.skewSafe
 	}
 	if err != nil {
 		res.Err = err.Error()
@@ -175,9 +192,14 @@ func (s *scenario) runExpire(ctx context.Context, id string) (outcome, error) {
 	return "", errors.New("oferta não expirou dentro do prazo esperado")
 }
 
-func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) (outcome, int, int, int, error) {
+type positionStats struct {
+	sent, dropped, current       int
+	crashed, skewTried, skewSafe bool
+}
+
+func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) (outcome, int, positionStats, error) {
 	if err := s.ensureOffered(ctx, id); err != nil {
-		return "", 0, 0, 0, err
+		return "", 0, positionStats{}, err
 	}
 
 	retries := 0
@@ -186,55 +208,92 @@ func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) 
 		courierID := s.nextCourier()
 		_, assignErr = s.client.assign(ctx, id, courierID)
 		if assignErr == nil {
-			sent, current, err := s.sendPositions(ctx, id, rng)
+			stats, err := s.sendPositions(ctx, id, rng)
 			if err != nil {
-				return "", retries, sent, current, err
+				return "", retries, stats, err
 			}
 			if _, err := s.client.pickUp(ctx, id); err != nil {
-				return "", retries, sent, current, err
+				return "", retries, stats, err
 			}
 			if _, err := s.client.deliver(ctx, id); err != nil {
-				return "", retries, sent, current, err
+				return "", retries, stats, err
 			}
-			return outcomeCompleted, retries, sent, current, nil
+			return outcomeCompleted, retries, stats, nil
 		}
 		retries++
 	}
-	return "", retries, 0, 0, fmt.Errorf("nenhum entregador do pool ficou livre: %w", assignErr)
+	return "", retries, positionStats{}, fmt.Errorf("nenhum entregador do pool ficou livre: %w", assignErr)
 }
 
-// sendPositions simula o entregador se deslocando: um pequeno trajeto de
-// pontos crescentes em epoch/sequence, sempre monotônico. Como a partir do
-// tier 3 a ingestão (tracking-ingest) e a projeção (tracking-projector)
-// são serviços diferentes ligados por Kafka, a confirmação não é mais
-// síncrona: o LunchRush manda os pontos e espera, com um poll curto, a
-// projeção alcançar a última sequência enviada. Isso é o LunchRush
-// conhecendo o domínio: k6 não saberia dizer se a projeção avançou de
-// verdade ou só aceitou a requisição.
-func (s *scenario) sendPositions(ctx context.Context, id string, rng *rand.Rand) (sent, current int, err error) {
-	epoch := 1
+// sendPositions simula o entregador se deslocando, sob a rede e o relógio
+// virtuais do tier 5 (netfault.go): o trajeto planejado por
+// s.net.planPositions pode chegar reordenado, duplicado, com um crash de
+// sessão no meio e uma tentativa de clock skew ao final, mas toda posição
+// que de fato "chega" (não sorteada como dropped) é uma chamada HTTP real
+// contra o tracking-ingest real — o simulador não reimplementa
+// monotonicidade nem dedup, só cria as condições de corrida que o domínio
+// (internal/tracking) já promete resolver desde o tier 2. Como a partir do
+// tier 3 a ingestão e a projeção são serviços diferentes ligados por
+// Kafka, a confirmação não é síncrona: o LunchRush manda os pontos e
+// espera, com um poll curto, a projeção alcançar a maior sequência
+// aceita do epoch final.
+func (s *scenario) sendPositions(ctx context.Context, id string, rng *rand.Rand) (positionStats, error) {
 	baseLat, baseLon := -23.55+rng.Float64()*0.05, -46.63+rng.Float64()*0.05
 	const steps = 3
-	for i := 1; i <= steps; i++ {
-		lat := baseLat + float64(i)*0.001
-		lon := baseLon + float64(i)*0.001
-		if _, err := s.client.recordPosition(ctx, s.token, id, epoch, i, lat, lon); err != nil {
-			return sent, current, err
+	planned, dropped, crashed, skewAttempt := s.net.planPositions(rng, baseLat, baseLon, steps)
+
+	stats := positionStats{crashed: crashed}
+	finalEpoch, finalSeq := 1, 0
+	for i, p := range planned {
+		if dropped[i] {
+			stats.dropped++
+			continue
 		}
-		sent++
+		if d := s.net.delay(rng); d > 0 {
+			time.Sleep(d)
+		}
+		if _, err := s.client.recordPosition(ctx, s.token, id, p.epoch, p.seq, p.lat, p.lon); err != nil {
+			return stats, err
+		}
+		stats.sent++
+		if p.epoch > finalEpoch || (p.epoch == finalEpoch && p.seq > finalSeq) {
+			finalEpoch, finalSeq = p.epoch, p.seq
+		}
 	}
 
 	deadline := time.Now().Add(5 * time.Second)
+	reached := false
 	for time.Now().Before(deadline) {
 		status, sequence, err := s.client.currentPosition(ctx, s.token, id)
 		if err != nil {
-			return sent, current, err
+			return stats, err
 		}
-		if status == 200 && sequence == steps {
-			current = steps
-			return sent, current, nil
+		if status == 200 && sequence == finalSeq {
+			stats.current = sequence
+			reached = true
+			break
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
-	return sent, current, fmt.Errorf("projeção não alcançou a sequência %d dentro do prazo", steps)
+	if !reached {
+		return stats, fmt.Errorf("projeção não alcançou a sequência %d do epoch %d dentro do prazo", finalSeq, finalEpoch)
+	}
+
+	// Clock skew: reenvia um ponto do primeiro epoch, sequência 1 — mais
+	// antigo que qualquer coisa já confirmada. A invariante 7 (posição
+	// monotônica) exige que isto nunca regrida a posição atual.
+	if skewAttempt != nil {
+		stats.skewTried = true
+		if _, err := s.client.recordPosition(ctx, s.token, id, skewAttempt.epoch, skewAttempt.seq, skewAttempt.lat, skewAttempt.lon); err != nil {
+			return stats, err
+		}
+		time.Sleep(300 * time.Millisecond) // dá tempo do projector processar, se for processar
+		status, sequence, err := s.client.currentPosition(ctx, s.token, id)
+		if err != nil {
+			return stats, err
+		}
+		stats.skewSafe = status == 200 && sequence >= finalSeq
+	}
+
+	return stats, nil
 }

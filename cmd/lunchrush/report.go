@@ -19,7 +19,11 @@ type summary struct {
 	DuplicatesOK       int           `json:"duplicates_ok"`
 	TotalAssignRetries int           `json:"total_assign_retries"`
 	PositionsSent      int           `json:"positions_sent"`
+	PositionsDropped   int           `json:"positions_dropped"`
 	PositionsCurrent   int           `json:"positions_current"`
+	CouriersCrashed    int           `json:"couriers_crashed"`
+	ClockSkewTried     int           `json:"clock_skew_tried"`
+	ClockSkewSafe      int           `json:"clock_skew_safe"`
 	Duration           time.Duration `json:"duration_ns"`
 	Results            []orderResult `json:"results"`
 	FailureSamples     []orderResult `json:"failure_samples,omitempty"`
@@ -49,7 +53,17 @@ func summarize(seed int64, courierCount int, started time.Time, results []orderR
 		}
 		s.TotalAssignRetries += r.AssignRetries
 		s.PositionsSent += r.PositionsSent
+		s.PositionsDropped += r.PositionsDropped
 		s.PositionsCurrent += r.PositionsCurrent
+		if r.CourierCrashed {
+			s.CouriersCrashed++
+		}
+		if r.ClockSkewTried {
+			s.ClockSkewTried++
+			if r.ClockSkewSafe {
+				s.ClockSkewSafe++
+			}
+		}
 	}
 	return s
 }
@@ -93,10 +107,18 @@ func writeReport(prefix string, s summary) error {
 ## Tracking de GPS
 
 - posições enviadas (entregas concluídas): %d
+- posições descartadas pela rede virtual (nunca enviadas): %d
 - posições que avançaram a projeção de última posição: %d
 
+## Rede e relógio virtuais (tier 5)
+
+- entregadores com "crash" de sessão simulado (nova tracking_session_epoch): %d
+- tentativas de clock skew (reenvio de posição antiga): %d
+- tentativas de clock skew que não regrediram a posição atual: %d
+
 `, s.Seed, s.Orders, s.Couriers, s.Duration, s.Completed, s.Declined, s.Expired, s.Errors,
-		s.DuplicatesChecked, s.DuplicatesOK, s.TotalAssignRetries, s.PositionsSent, s.PositionsCurrent)
+		s.DuplicatesChecked, s.DuplicatesOK, s.TotalAssignRetries, s.PositionsSent, s.PositionsDropped, s.PositionsCurrent,
+		s.CouriersCrashed, s.ClockSkewTried, s.ClockSkewSafe)
 
 	if len(s.FailureSamples) > 0 {
 		md += "## Amostra de falhas\n\n"

@@ -34,6 +34,16 @@ func main() {
 	adminSecret := flag.String("admin-secret", os.Getenv("DISPATCH_ADMIN_SECRET"), "segredo administrativo para emitir o token de tracking")
 	distributed := flag.Bool("distributed", false, "tier 3+: não chama /ready e /offer manualmente, espera o dispatch-worker agir sozinho")
 	readyWaitSeconds := flag.Int("ready-wait-seconds", 30, "prazo de espera para o dispatch-worker mover a entrega até offered (modo -distributed); o relay do outbox publica a cada 1s e o caminho created -> offered atravessa o relay duas vezes")
+
+	// Rede e relógio virtuais (tier 5, ver docs/adr/0020). Defaults em 0:
+	// nenhuma flag nova muda o comportamento de nenhum tier anterior.
+	netDropRate := flag.Float64("net-drop-rate", 0, "fração de posições de GPS perdidas na rede virtual (nunca enviadas)")
+	netDelayMs := flag.Int("net-delay-ms", 0, "atraso mínimo, em ms, antes de cada envio de posição")
+	netDelayJitterMs := flag.Int("net-delay-jitter-ms", 0, "jitter adicional, em ms, somado a net-delay-ms")
+	netDuplicateRate := flag.Float64("net-duplicate-rate", 0, "fração de trajetos com uma posição duplicada")
+	netReorderRate := flag.Float64("net-reorder-rate", 0, "fração de trajetos com duas posições adjacentes trocadas de ordem")
+	netClockSkewRate := flag.Float64("net-clock-skew-rate", 0, "fração de trajetos que tentam reenviar uma posição antiga ao final, verificando que a posição atual não regride")
+	netCrashRate := flag.Float64("net-crash-rate", 0, "fração de trajetos em que o entregador \"reinicia o app\" no meio (nova tracking_session_epoch)")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -72,6 +82,15 @@ func main() {
 		seed:             *seed,
 		distributed:      *distributed,
 		readyWaitSeconds: *readyWaitSeconds,
+		net: netFault{
+			dropRate:      *netDropRate,
+			delayMs:       *netDelayMs,
+			delayJitterMs: *netDelayJitterMs,
+			duplicateRate: *netDuplicateRate,
+			reorderRate:   *netReorderRate,
+			clockSkewRate: *netClockSkewRate,
+			crashRate:     *netCrashRate,
+		},
 	}
 
 	log.Printf("simulando %d ordens com concorrência %d (seed=%d)", *orders, *concurrency, *seed)
@@ -98,7 +117,19 @@ func main() {
 
 	fmt.Printf("concluídas=%d declinadas=%d expiradas=%d erros=%d duração=%s\n",
 		s.Completed, s.Declined, s.Expired, s.Errors, s.Duration)
+	fmt.Printf("clock_skew_tried=%d clock_skew_safe=%d couriers_crashed=%d positions_dropped=%d\n",
+		s.ClockSkewTried, s.ClockSkewSafe, s.CouriersCrashed, s.PositionsDropped)
 	fmt.Printf("relatório em %s.json e %s.md\n", *out, *out)
+
+	// Verificador de histórico (invariante 7, posição monotônica): toda
+	// tentativa de clock skew tem que ter sido segura. Se alguma não foi,
+	// isto é uma violação de invariante sob rede virtual, não um erro de
+	// rede comum, e o run precisa falhar como tal.
+	if s.ClockSkewSafe < s.ClockSkewTried {
+		log.Printf("VIOLAÇÃO DE INVARIANTE: %d de %d tentativas de clock skew regrediram a posição atual",
+			s.ClockSkewTried-s.ClockSkewSafe, s.ClockSkewTried)
+		os.Exit(1)
+	}
 
 	if s.Errors > 0 {
 		os.Exit(1)

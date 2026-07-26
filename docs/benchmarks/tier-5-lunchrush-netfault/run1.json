@@ -1,0 +1,430 @@
+{
+  "seed": 20260726,
+  "orders": 40,
+  "couriers": 15,
+  "completed": 32,
+  "declined": 4,
+  "expired": 4,
+  "errors": 0,
+  "duplicates_checked": 9,
+  "duplicates_ok": 9,
+  "total_assign_retries": 0,
+  "positions_sent": 96,
+  "positions_dropped": 10,
+  "positions_current": 85,
+  "couriers_crashed": 7,
+  "clock_skew_tried": 5,
+  "clock_skew_safe": 5,
+  "duration_ns": 17679027754,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "97b12236-8199-4f4d-a0c2-f874c306ca4c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 1,
+      "courier_crashed": true,
+      "duration_ns": 3296230247
+    },
+    {
+      "index": 1,
+      "delivery_id": "8e01c6c1-a10c-4b64-a43a-119054d4c664",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 4114891134
+    },
+    {
+      "index": 2,
+      "delivery_id": "af48bd88-d4bd-4ff6-a2e6-3ddc755df265",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 4325144251
+    },
+    {
+      "index": 3,
+      "delivery_id": "5acd5f7e-0e54-46bd-8613-6ed98b87760a",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 4324359297
+    },
+    {
+      "index": 4,
+      "delivery_id": "93c85221-fda5-4494-a55a-26e90a7e9b63",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 4314882938
+    },
+    {
+      "index": 5,
+      "delivery_id": "f944bf2e-d663-456a-9ca3-950403e69d7d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3296685181
+    },
+    {
+      "index": 6,
+      "delivery_id": "c4d01341-b538-4657-aaf0-2c3908841503",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5026635954
+    },
+    {
+      "index": 7,
+      "delivery_id": "bcd0d0f3-a51c-46d8-b681-d11c101040b8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "clock_skew_tried": true,
+      "clock_skew_safe": true,
+      "duration_ns": 4597449116
+    },
+    {
+      "index": 8,
+      "delivery_id": "35efc0f9-e4ca-4edd-9bed-ee7b0bd81880",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5072396
+    },
+    {
+      "index": 9,
+      "delivery_id": "264de092-86bb-4379-a102-4a8b301e96e9",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 2,
+      "courier_crashed": true,
+      "duration_ns": 2900501724
+    },
+    {
+      "index": 10,
+      "delivery_id": "09562e16-336c-40ba-9ba3-ca85d5ef96ee",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "clock_skew_tried": true,
+      "clock_skew_safe": true,
+      "duration_ns": 4408364343
+    },
+    {
+      "index": 11,
+      "delivery_id": "e942901d-3b80-46c0-8e19-48999bc488d8",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6028029776
+    },
+    {
+      "index": 12,
+      "delivery_id": "3d227336-6243-4569-9ece-aa0031abb8f9",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3295601534
+    },
+    {
+      "index": 13,
+      "delivery_id": "b07173cf-3bdc-4b83-aec4-432b800ba287",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "clock_skew_tried": true,
+      "clock_skew_safe": true,
+      "duration_ns": 4476235302
+    },
+    {
+      "index": 14,
+      "delivery_id": "34966b9a-7b40-45eb-b24e-9b659ec7bc2f",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3127827528
+    },
+    {
+      "index": 15,
+      "delivery_id": "d8c4fbdc-d966-4e94-9df2-d67065c12be2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_dropped": 1,
+      "positions_current": 3,
+      "duration_ns": 3321168912
+    },
+    {
+      "index": 16,
+      "delivery_id": "5502b5b9-8226-4716-89f5-7d722aadb19a",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5031319466
+    },
+    {
+      "index": 17,
+      "delivery_id": "68e9ddba-8c2e-4d17-bf85-4a0b03d381c3",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_dropped": 1,
+      "positions_current": 3,
+      "duration_ns": 1720510031
+    },
+    {
+      "index": 18,
+      "delivery_id": "48012b21-4d6a-4900-8142-1a60c29755f0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 2,
+      "courier_crashed": true,
+      "duration_ns": 3303856639
+    },
+    {
+      "index": 19,
+      "delivery_id": "43733e68-f610-4e81-87a6-85d596ccbe41",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 1,
+      "positions_dropped": 2,
+      "positions_current": 3,
+      "duration_ns": 308443093
+    },
+    {
+      "index": 20,
+      "delivery_id": "22c04301-b25a-42ff-b117-8080a8388b5b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 3867995853
+    },
+    {
+      "index": 21,
+      "delivery_id": "ad73e4f1-f41d-4350-99be-fb4eb424e499",
+      "outcome": "expired",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 7040982937
+    },
+    {
+      "index": 22,
+      "delivery_id": "d584951b-4511-4e6d-a32d-5cdf69497c0e",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_dropped": 1,
+      "positions_current": 1,
+      "courier_crashed": true,
+      "duration_ns": 2299561150
+    },
+    {
+      "index": 23,
+      "delivery_id": "83234e37-7b26-41cf-bede-7ab602c8d14d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 2836813551
+    },
+    {
+      "index": 24,
+      "delivery_id": "65a3808b-712d-4142-aa94-464ce8c2da54",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3330828054
+    },
+    {
+      "index": 25,
+      "delivery_id": "e27aa3e8-65cd-42d7-bd2d-5c0cb524bc9d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3114152962
+    },
+    {
+      "index": 26,
+      "delivery_id": "d32c5317-19c8-4eea-b29f-9749e3293995",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7863342
+    },
+    {
+      "index": 27,
+      "delivery_id": "0002c5e5-92ba-4784-9383-e6eb6be74899",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_dropped": 1,
+      "positions_current": 1,
+      "courier_crashed": true,
+      "duration_ns": 1775530382
+    },
+    {
+      "index": 28,
+      "delivery_id": "0ec6e30c-5e95-40e9-89b5-eef3970e1249",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3305312540
+    },
+    {
+      "index": 29,
+      "delivery_id": "65c46831-3753-4405-a8ea-37ca9b9a6856",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "clock_skew_tried": true,
+      "clock_skew_safe": true,
+      "duration_ns": 5264109298
+    },
+    {
+      "index": 30,
+      "delivery_id": "83bd5d1e-d765-420a-b5de-243db3711c89",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 1,
+      "courier_crashed": true,
+      "duration_ns": 3083579311
+    },
+    {
+      "index": 31,
+      "delivery_id": "bef4afbc-de57-48d4-ae50-0b98a569ee58",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5157961
+    },
+    {
+      "index": 32,
+      "delivery_id": "5eccd299-dab8-4aca-9f59-c3d00317a970",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 3463143393
+    },
+    {
+      "index": 33,
+      "delivery_id": "63d3132c-b010-4619-9704-dffc7d372ebd",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 1,
+      "positions_dropped": 2,
+      "positions_current": 2,
+      "courier_crashed": true,
+      "duration_ns": 876645955
+    },
+    {
+      "index": 34,
+      "delivery_id": "e1660c7d-15f0-49e6-af1a-45e2d31af23c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 3481515136
+    },
+    {
+      "index": 35,
+      "delivery_id": "e682b766-07bb-4486-addd-5a5460fc03cc",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 3116171655
+    },
+    {
+      "index": 36,
+      "delivery_id": "330fab9d-eecb-4e49-8ddb-e729083804dd",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5616517
+    },
+    {
+      "index": 37,
+      "delivery_id": "526b2eb7-ff50-45ff-b825-14d6840411b6",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 2,
+      "positions_dropped": 1,
+      "positions_current": 3,
+      "clock_skew_tried": true,
+      "clock_skew_safe": true,
+      "duration_ns": 2841269067
+    },
+    {
+      "index": 38,
+      "delivery_id": "ada9043a-edf8-4f49-9b16-1aca3b1df91d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_dropped": 1,
+      "positions_current": 3,
+      "duration_ns": 2088818041
+    },
+    {
+      "index": 39,
+      "delivery_id": "47d4293d-8582-46dd-aa72-6349c2c47d9d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 4,
+      "positions_current": 3,
+      "duration_ns": 3838458921
+    }
+  ]
+}
