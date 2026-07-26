@@ -115,9 +115,12 @@ deixaram de ser pendência).
 
 | Peça do roadmap | Substituição local | O que se perde |
 | --- | --- | --- |
-| Segundo provedor de nuvem (`cloud-b`) | um segundo `docker compose` independente, com sua própria rede Docker, representando "outro provedor" | não existe um segundo provedor de verdade: IAM, rede, DNS, billing e os limites reais de um provedor diferente não são exercitados |
+| Segundo provedor de nuvem (`cloud-b`) | um segundo `docker compose` inteiramente independente (`docker-compose.cloud-b.yml`), rede Docker própria (projeto `cloudb`), Postgres/Redis/Redpanda/LocalStack próprios, faixa de portas nova, rodando a mesma imagem OCI de `cloud-a` sem rebuild (confirmado por `docker inspect`, mesmo digest nos dois) | não existe um segundo provedor de verdade: IAM, rede, DNS, billing e os limites reais de um provedor diferente não são exercitados; ambos os stacks competem pelos mesmos recursos físicos desta única máquina, então nenhuma comparação de desempenho entre "cloud-a" e "cloud-b" tem significado além de ruído de contenção local |
 | Egress, custo de transferência entre clouds | não medido; qualquer valor citado é rotulado como Premissa | nenhum custo real de rede entre provedores é produzido aqui |
-| Matriz de portabilidade | preenchida com evidência de contrato local (mesma imagem OCI, mesmo schema, mesmos testes) rodando nos dois `docker compose` | prova portabilidade de contrato e formato, não prova portabilidade de infraestrutura gerenciada real |
+| Matriz de portabilidade | preenchida com evidência de contrato real nos dois stacks: mesmo digest, `k6 run loadtest/k6/smoke.js` com 0% de erro nos dois, `go test -tags=integration -race` completo passando nos dois bancos, `pg_dump`/`pg_restore` real entre os dois Postgres, dois roots Terraform aplicados e destruídos contra dois LocalStack independentes — ver `docs/tier-6-matriz-portabilidade.md` | prova portabilidade de contrato e formato, não prova portabilidade de infraestrutura gerenciada real; a linha de Kafka da matriz continua sem prova de replicação cross-stack (cada Redpanda foi populado de forma independente, não por cópia real de um para o outro) |
+| Autoridade de fencing multi-região (Aurora DSQL) promovendo entre provedores | o mesmo `internal/fencing` do tier 5, sem alteração de protocolo, promovendo entre dois Postgres **fisicamente separados** (um por stack), via `cmd/cloudfailover` e um `pg_dump`/`pg_restore` real orquestrando a transferência de dados entre eles | RTO (~11,5s nesta execução) e RPO (5 assignments perdidos numa janela de 0,58s) medidos, não estimados, mas dominados por overhead de laboratório (banco pequeno, processo manual), não generalizáveis para um banco de produção real nem para latência real entre provedores geograficamente distantes; a promoção depende de um backup ter sido tirado a tempo, não de replicação contínua — ver ADR 0023 |
+| Dependência compartilhada oculta entre "clouds" | testada de verdade: remover a imagem `dispatch-delivery-api` do daemon Docker (depois de parar todos os containers que a referenciavam nos dois stacks) faz `cloud-b` falhar ao recriar seu container com `pull access denied` | a dependência real revelada não é rede, banco ou Kafka (já duplicados e isolados por stack) — é o processo de build/registry de imagem, único no laboratório. Não testado: uma configuração com registry por provedor, que eliminaria esse acoplamento |
+| Terraform separado por provedor | dois roots (`infra/terraform/environments/cloud-a`, `.../cloud-b`), cada um com `.tfstate` próprio, aplicados contra dois LocalStack independentes (portas 4566 e 14566) e destruídos com sucesso | mesma limitação de LocalStack community do tier 4 (ADR 0012): só S3 e Secrets Manager/KMS, nenhum módulo para EKS/MSK/RDS/ElastiCache |
 
 ## O que continua sendo prova real, mesmo local
 
@@ -129,7 +132,13 @@ deixaram de ser pendência).
   de verdade, só o control plane gerenciado é que não existe;
 - a especificação TLA+ e o simulador determinístico (LunchRush) não perdem
   nada por serem locais: são ferramentas de verificação, não de
-  infraestrutura.
+  infraestrutura;
+- o protocolo de fencing promovendo entre dois bancos PostgreSQL
+  fisicamente separados (tier 6) é uma prova mais forte que a do tier 5
+  (dois bancos reais, não duas células no mesmo processo) sobre a mesma
+  propriedade: um writer com epoch antigo nunca escreve depois da
+  promoção. O que continua sem prova é a rede e a latência reais entre
+  dois provedores geograficamente distantes.
 
 Qualquer número deste repositório que pareça uma métrica de produção AWS
 deve ser lido como ambiente local, salvo indicação contrária explícita.

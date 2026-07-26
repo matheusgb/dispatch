@@ -12,7 +12,7 @@ conta de nuvem paga: veja `docs/limitacoes-simulacao-local.md` para o que é
 simulado com ferramentas locais maduras e o que não tem equivalente honesto.
 
 ```text
-tier atual: 5, itens A-D do escopo pragmático concluídos
+roadmap completo: tiers 1-6, tag tier-6.0.0
 Clientes -> delivery-api ---------> outbox -> Kafka -> dispatch-worker (escala por lag via KEDA)
                                                      -> notification-worker
 Entregador -> tracking-ingest ----> Kafka -> tracking-projector -> Postgres + Redis
@@ -23,6 +23,11 @@ Tier 5: Global entry -> cellrouter (X-Cell-ID, sem consultar banco)
                             +-- cell-b: delivery-api próprio, banco lógico próprio
         internal/fencing: dispatch_fences (epoch/lease) + active_assignments,
         verificado formalmente em docs/tla/DispatchFencing.tla (TLC real)
+
+Tier 6: cloud-a (docker-compose.yml) e cloud-b (docker-compose.cloud-b.yml),
+        dois stacks independentes, mesmo digest de imagem OCI nos dois,
+        cmd/cloudfailover promove internal/fencing entre dois Postgres
+        fisicamente separados; writer antigo rejeitado após a promoção
 ```
 
 ## Invariantes já exigidas até este tier
@@ -78,6 +83,11 @@ Detalhes e a partir de qual tier cada invariante entra:
 | arquitetura celular local + noisy neighbor    | isolamento de dados provado; p95 sobe 14ms→24ms sob célula vizinha saturada | `docs/benchmarks/tier-5-cells/README.md` |
 | LunchRush com rede/relógio virtuais           | 2 execuções, mesma seed, relatórios idênticos; 171/171 clock skew seguros | `docs/benchmarks/tier-5-lunchrush-netfault/README.md` |
 | soak reduzido (tier 5)                        | 2000 ordens, 1800 concluídas, 5295 posições de GPS, 0 violação | `docs/benchmarks/tier-5-baseline.md` |
+| mesmo digest OCI em cloud-a e cloud-b          | confirmado por `docker inspect`, sem rebuild em cloud-b | `docs/adr/0021-objetivo-e-limites-da-estrategia-multi-cloud.md` |
+| contrato HTTP/dados nos dois provedores        | k6 smoke 0% erro e `go test -race` de integração `ok` nos dois bancos | `docs/tier-6-matriz-portabilidade.md` |
+| Terraform separado por provedor                | 8 recursos aplicados e destruídos em cloud-a e cloud-b, independentes | `docs/benchmarks/tier-6-portability/terraform-evidence.md` |
+| failover de fencing entre cloud-a e cloud-b    | RTO 11,54s, RPO de 5 assignments, writer antigo 10/10 rejeitado | `docs/benchmarks/tier-6-baseline.md` |
+| dependência oculta compartilhada revelada      | `pull access denied` em cloud-b ao remover a imagem compartilhada | `docs/benchmarks/tier-6-portability/shared-dependency-transcript.txt` |
 
 Todos os números acima são **Medido** em ambiente local de desenvolvimento,
 não em produção. Os rótulos usados neste repositório são Premissa, Meta e
@@ -141,8 +151,23 @@ docker compose -f docker-compose.yml -f deploy/compose/cells.yml \
   delivery-api-cell-a delivery-api-cell-b cellrouter
 ```
 
+Para o segundo "provedor" simulado e o failover de fencing entre eles
+(tier 6, nunca uma cloud real, ver ADR 0021):
+
+```bash
+docker compose --profile app build
+docker compose --profile app up -d
+docker compose -f docker-compose.cloud-b.yml --profile app up -d
+# confirma o mesmo digest:
+docker inspect dispatch-delivery-api-1 --format '{{.Image}}'
+docker inspect cloudb-delivery-api-1 --format '{{.Image}}'
+```
+
+Passo a passo completo do failover (backup, interrupção, promoção,
+rejeição do writer antigo, RTO/RPO): `docs/passo-a-passo/tier-6.md`.
+
 Passo a passo completo, com o que esperar em cada comando:
-`docs/passo-a-passo/tier-1.md` até `tier-5.md`.
+`docs/passo-a-passo/tier-1.md` até `tier-6.md`.
 
 ## Estágio atual e próximo gate
 
@@ -211,6 +236,69 @@ flag do LunchRush, e qualquer coisa que dependa de multi-região AWS real
 (Aurora DSQL, MSK Replicator, latência entre regiões reais, soak de
 24h/100M eventos).
 
-O próximo gate é o tier 6 (portabilidade entre provedores), que só faz
-sentido depois de decidir, por ADR, qual seria o segundo provedor e por
-quê — não começar pelo Terraform do segundo provedor.
+## Tier 6: portabilidade entre provedores (último tier, roadmap fechado)
+
+Missão: provar quais partes do sistema mudam de provedor sem alteração e
+quais exigem adapters, migração ou uma decisão nova — não usando duas
+clouds reais (regra do projeto inteiro), mas um segundo `docker compose`
+inteiramente independente (`cloud-b`, `docker-compose.cloud-b.yml`),
+rotulado como tal em todo lugar (ADR 0021, `docs/limitacoes-simulacao-local.md`).
+
+Concluído com evidência real (ver `docs/benchmarks/tier-6-baseline.md`):
+
+- **Mesmo artefato, dois ambientes** (ADR 0021): `docker-compose.cloud-b.yml`
+  não builda nenhuma imagem; referencia por nome a que `cloud-a` já
+  construiu. Confirmado por `docker inspect`: mesmo digest nos dois;
+- **Contrato testado nos dois lados** (ADR 0022,
+  `docs/tier-6-matriz-portabilidade.md`): k6 smoke com 0% de erro e
+  `go test -tags=integration -race` completo (incluindo os testes de
+  fencing do tier 5) passando sem alteração de código contra os dois
+  bancos;
+- **Terraform separado por provedor**: dois roots independentes
+  (`infra/terraform/environments/cloud-a`, `.../cloud-b`), cada um com
+  seu próprio `.tfstate`, aplicados e destruídos contra dois LocalStack
+  independentes;
+- **Failover de fencing entre provedores** (ADR 0023): `cmd/cloudfailover`
+  reusa `internal/fencing` do tier 5 sem alteração de protocolo, promove
+  a autoridade de `cloud-a` para `cloud-b` via `pg_dump`/`pg_restore`
+  real entre dois Postgres fisicamente separados; RTO de 11,54s, RPO de
+  5 assignments numa janela de 0,58s, writer antigo rejeitado em 10/10
+  tentativas depois da promoção, writer novo aceito em 5/5;
+- **Dependência oculta revelada, não escondida**: remover a imagem
+  compartilhada do daemon Docker local faz `cloud-b` falhar ao recriar o
+  container com `pull access denied` — o acoplamento real desta
+  configuração é o processo de build/registry de imagem, não rede, banco
+  ou Kafka (já isolados por stack).
+
+Não entregue neste tier, por escolha de escopo (mapa completo:
+`docs/benchmarks/tier-6-what-breaks-next.md`): replicação real de Kafka
+entre `cloud-a` e `cloud-b`, Helm chart reaplicado a um segundo cluster
+`kind`, observabilidade duplicada por provedor, runbook de promoção
+automatizado, e qualquer coisa que dependa de um segundo provedor de
+nuvem pago de verdade (custo real de egress, IAM, DNS e billing de duas
+contas reais, RPO próximo de zero contra infraestrutura gerenciada real).
+
+## Roadmap fechado: o que este projeto prova, e o que fica como limite conhecido
+
+Os seis tiers de `dispatch.md` (monólito modular → produto local operável
+→ sistema distribuído com Kafka → plataforma "AWS" simulada em três zonas
+→ células multi-região com fencing e TLA+ → portabilidade entre "clouds")
+estão implementados, testados e taggeados (`tier-1.0.0` a `tier-6.0.0`).
+
+**O que este repositório prova com execução real:** correção sob
+concorrência e idempotência (`-race`, constraints, disputa concorrente),
+entrega distribuída at-least-once com efeito deduplicado (outbox, inbox,
+Kafka via Redpanda — mesmo protocolo que o MSK expõe), um protocolo de
+fencing verificado formalmente em TLA+ e exercitado em código real (tier
+5), e a sobrevivência desse mesmo protocolo e do mesmo artefato a uma
+troca de "provedor" (tier 6), com RTO/RPO medidos e uma dependência
+oculta revelada em vez de escondida.
+
+**O que este repositório não prova, e nunca alegou provar:** operação
+real em produção, alta disponibilidade real entre zonas ou regiões AWS,
+ou independência real de dois provedores de nuvem pagos. Toda vez que uma
+peça do roadmap dependia de conta AWS real, de um segundo provedor pago,
+ou de escala além do que esta máquina compartilhada aguenta, a
+substituição local e o que se perde estão documentados, tier a tier, em
+`docs/limitacoes-simulacao-local.md` — nunca escondidos atrás de um
+número que pareça medição de produção.
