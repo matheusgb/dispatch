@@ -61,6 +61,15 @@ provider nunca considera a configuração propagada, mesmo com o LocalStack
 respondendo 200 a cada tentativa). O recurso foi removido do módulo
 `storage`; detalhes em ADR 0012.
 
+### KEDA numa versão de Kubernetes não suportada oficialmente
+
+O chart `kedacore/keda` instalado (KEDA 2.20) declara suporte formal a
+partir do Kubernetes 1.33; o `kind` deste laboratório roda 1.31
+(`kindest/node:v1.31.0`). O `helm install` avisa isso explicitamente e o
+`ScaledObject` funcionou corretamente na prática (escalou `dispatch-worker`
+de 0 a 3 réplicas por lag real do consumer group, ver ADR 0014), mas o
+combo não é o que a documentação oficial do KEDA testa.
+
 ## Tier 5: células e multi-região
 
 | Peça do roadmap | Substituição local | O que se perde |

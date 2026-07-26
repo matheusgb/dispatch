@@ -48,7 +48,16 @@ serviceAccount:
 # group no lugar do HPA de CPU.
 keda:
   enabled: false
-  bootstrapServers: "redpanda:9092"
+  # Namespace onde o operador do KEDA está instalado (scripts/keda-install.sh
+  # usa este valor). Precisa bater com o --namespace do `helm install keda`,
+  # porque este chart cria um Service ExternalName lá para resolver o nome
+  # curto "redpanda" que o broker anuncia entre namespaces (ver
+  # templates/keda-cross-namespace-dns.yaml e ADR 0014).
+  operatorNamespace: "keda"
+  # FQDN completo, não o nome curto "redpanda:9092": o operador do KEDA
+  # roda fora do namespace "dispatch", então o nome curto não resolveria
+  # sem o Service ExternalName criado por este chart quando keda.enabled.
+  bootstrapServers: "redpanda.dispatch.svc.cluster.local:9092"
   consumerGroup: "dispatch-worker"
   topic: "dispatch.delivery-events"
   lagThreshold: 5
