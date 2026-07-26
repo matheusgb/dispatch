@@ -26,7 +26,7 @@ cedo demais, mas porque o próprio roadmap pede Kafka e `kind` local
 | Peça do roadmap | Substituição local | Nota |
 | --- | --- | --- |
 | Kafka (backbone de eventos) | Redpanda v24.3.1 | mesmo protocolo Kafka; `kafka-go` fala com os dois sem diferença de código |
-| Kubernetes local | `kind` (cluster próprio, nome `dispatch`, para não colidir com o do edge-lab) | idêntico ao que o tier 4 usa antes de qualquer serviço gerenciado entrar |
+| Kubernetes local | `kind` (cluster próprio, nome `dispatch`, para não colidir com o do edge) | idêntico ao que o tier 4 usa antes de qualquer serviço gerenciado entrar |
 
 Quando o tier 4 trocar Redpanda por "MSK" e o `kind` local por "EKS", a
 diferença registrada na tabela abaixo é sobre o que o **serviço gerenciado

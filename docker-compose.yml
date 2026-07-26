@@ -92,7 +92,7 @@ services:
       LATENCY_MS: "20"
     ports:
       # 8090 já está ocupada no host por outro laboratório (kind do
-      # edge-lab); a porta interna do container continua 8090.
+      # edge); a porta interna do container continua 8090.
       - "8092:8090"
 
   delivery-api:
@@ -108,7 +108,7 @@ services:
       KAFKA_BROKERS: redpanda:9092
     ports:
       # 8080 já está ocupada no host por outro laboratório (kind do
-      # edge-lab); a porta interna do container continua 8080.
+      # edge); a porta interna do container continua 8080.
       - "8083:8080"
     depends_on:
       postgres:
