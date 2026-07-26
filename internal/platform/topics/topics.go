@@ -24,4 +24,8 @@ const (
 	KindDeliveryExpired          = "delivery.expired"
 	KindDeliveryPickedUp         = "delivery.picked_up"
 	KindDeliveryDelivered        = "delivery.delivered"
+
+	// KindAssignmentConfirmed é emitido por internal/fencing dentro da
+	// mesma transação do INSERT em active_assignments (tier 5).
+	KindAssignmentConfirmed = "assignment.confirmed"
 )
