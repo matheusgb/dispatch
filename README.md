@@ -12,10 +12,11 @@ conta de nuvem paga: veja `docs/limitacoes-simulacao-local.md` para o que é
 simulado com ferramentas locais maduras e o que não tem equivalente honesto.
 
 ```text
-tier atual: 3, concluído
-Clientes -> delivery-api ---------> outbox -> Kafka -> dispatch-worker
+tier atual: 4, itens A-D concluídos
+Clientes -> delivery-api ---------> outbox -> Kafka -> dispatch-worker (escala por lag via KEDA)
                                                      -> notification-worker
 Entregador -> tracking-ingest ----> Kafka -> tracking-projector -> Postgres + Redis
+delivery-api -> S3 (comprovante) e Secrets Manager (JWT), via Terraform contra LocalStack
 ```
 
 ## Invariantes já exigidas até este tier
@@ -53,6 +54,12 @@ Detalhes e a partir de qual tier cada invariante entra:
 | chaos: Redis fora do ar                       | 0 falhas de leitura, latência maior | `docs/benchmarks/chaos-tier-2.md` |
 | chaos: delivery-api morto sob carga           | 0 entregadores com dupla atribuição | `docs/benchmarks/chaos-tier-2.md` |
 | chaos: 300ms de latência no PostgreSQL        | 0% de falha, p95 de 4,5ms para 1,5s | `docs/benchmarks/chaos-tier-2.md` |
+| Terraform contra LocalStack                   | bucket S3 + segredo no Secrets Manager criados de verdade | `docs/adr/0012-terraform-contra-localstack.md` |
+| deploy via Helm no `kind`                     | 5 Deployments 2/2, HPA, PDB, NetworkPolicy | `docs/benchmarks/tier-4-helm-evidencia.txt` |
+| KEDA escalando por lag do consumer group      | 0 → 3 réplicas com lag artificial de 40 msgs | `docs/benchmarks/tier-4-keda-evidencia.txt` |
+| chaos: pod kill do delivery-api no `kind`     | 100/100 requisições OK via Service | `docs/benchmarks/chaos-tier-4.md` |
+| chaos: Redpanda pausado                       | escrita continua; outbox publica tudo em <5s após voltar | `docs/benchmarks/chaos-tier-4.md` |
+| SLOs como código (burn-rate multi-janela)     | 6 grupos de regras carregados, 0 erro de avaliação | `docs/adr/0015-slo-como-codigo.md` |
 
 Todos os números acima são **Medido** em ambiente local de desenvolvimento,
 não em produção. Os rótulos usados neste repositório são Premissa, Meta e
@@ -71,11 +78,22 @@ serviços (`delivery-api`, `dispatch-worker`, `tracking-ingest`,
 padrão (`8083`, `8084`, `8085`, `8092`) evitam colidir com outro laboratório
 já rodando no mesmo host — ver `docker-compose.yml`.
 
-Para rodar em Kubernetes local:
+Para rodar em Kubernetes local via Helm (tier 4, ver ADR 0013; substitui
+o Kustomize do tier 3, que continua em `deploy/kubernetes/` como
+histórico congelado):
 
 ```bash
-make kind-up    # cria o cluster kind "dispatch", builda e aplica os manifests
-make kind-down  # destrói o cluster
+make helm-up   # cria o cluster kind "dispatch", builda as imagens e instala o chart Helm
+make keda-up   # instala o KEDA e liga o ScaledObject de dispatch-worker (escala por lag)
+make kind-down # destrói o cluster
+```
+
+Para provisionar S3 e Secrets Manager contra o LocalStack (tier 4, nunca
+AWS real, ver ADR 0012):
+
+```bash
+make tf-aws-lab-up    # sobe o LocalStack e aplica o Terraform
+make tf-aws-lab-down  # destrói os recursos e para o LocalStack
 ```
 
 Testes e carga:
@@ -89,21 +107,34 @@ make load-lunchrush    # LunchRush, requer o delivery-api no ar
 ```
 
 Passo a passo completo, com o que esperar em cada comando:
-`docs/passo-a-passo/tier-1.md`, `tier-2.md` e `tier-3.md`.
+`docs/passo-a-passo/tier-1.md`, `tier-2.md`, `tier-3.md` e `tier-4.md`.
 
 ## Estágio atual e próximo gate
 
-Tier 3 concluído: Kafka (Redpanda) com outbox transacional e relay, inbox
-com dedup por consumidor, DLQ para poison pill, `dispatch-worker` reagindo
-a eventos em vez de chamada manual, `tracking-ingest`/`tracking-projector`
-separados do lifecycle, `notification-worker` assíncrono, e manifests
-Kubernetes reais (probes, HPA, NetworkPolicy deny-by-default,
-PodDisruptionBudget, sem root) validados num cluster `kind` de verdade.
+Tier 4 com os itens A-D do escopo concluídos, com evidência real (ver
+`docs/benchmarks/tier-4-baseline.md`):
 
-Não entregue neste tier, por não ser possível nesta forma de trabalho:
-demonstração em vídeo. Schema Protobuf/AsyncAPI e evolução de schema
-ficaram fora por escopo, não por limite técnico (ver
-`docs/benchmarks/tier-3-what-breaks-next.md`).
+- **Terraform contra LocalStack** (ADR 0012): bucket S3 e segredo no
+  Secrets Manager/KMS provisionados de verdade, consumidos em runtime
+  pelo `delivery-api`;
+- **Helm no lugar de Kustomize** (ADR 0013): um chart parametrizado
+  substitui os cinco manifests quase idênticos do tier 3, validado com
+  `helm lint` e deploy real no `kind`;
+- **KEDA por lag de consumer group** (ADR 0014): `dispatch-worker` escala
+  de 0 a 6 réplicas por lag real do Kafka, não por CPU;
+- **Chaos reduzido** (`docs/benchmarks/chaos-tier-4.md`): quatro
+  cenários contra infraestrutura real (pod kill, falha do Redis,
+  Redpanda pausado, latência via Toxiproxy no PostgreSQL);
+- **SLOs como código** (ADR 0015): três SLOs com recording rules
+  multi-janela e alertas de burn-rate no Prometheus.
 
-O tier 4 (AWS simulada localmente — ver
-`docs/limitacoes-simulacao-local.md`) começa a partir daqui.
+Não entregue neste tier, por restrição de tempo e memória da máquina
+compartilhada com outro laboratório (`edge-lab`), rodando em paralelo:
+SBOM/scan/assinatura de imagem, teste de carga dedicado ao tier 4 e
+runbook de backup/recuperação distribuída. EKS, MSK, RDS/Aurora e
+ElastiCache continuam fora de escopo local (LocalStack community não os
+implementa; ver `docs/limitacoes-simulacao-local.md`). Mapa completo do
+que falta: `docs/benchmarks/tier-4-what-breaks-next.md`.
+
+O próximo gate é fechar os itens que sobraram do tier 4 (carga, supply
+chain, backup) antes de considerar o tier 5 (células e multi-região).

@@ -70,6 +70,17 @@ partir do Kubernetes 1.33; o `kind` deste laboratório roda 1.31
 de 0 a 3 réplicas por lag real do consumer group, ver ADR 0014), mas o
 combo não é o que a documentação oficial do KEDA testa.
 
+### Itens do tier 4 não executados por restrição de tempo e memória local
+
+A máquina deste laboratório roda em paralelo com outro laboratório
+(`edge-lab`), compartilhando CPU e memória. Nesta passada do tier 4, os
+seguintes itens do escopo (marcados como "se sobrar fôlego" no roadmap
+interno) não foram executados, e nenhum número relacionado a eles deve
+ser lido como medido: SBOM/scan/assinatura de imagem (`syft`, `grype`,
+`cosign`), teste de carga dedicado ao tier 4 (steady state + spike 3x +
+soak reduzido) e o runbook de backup/recuperação distribuída. Ver
+`docs/benchmarks/tier-4-what-breaks-next.md` para o detalhamento.
+
 ## Tier 5: células e multi-região
 
 | Peça do roadmap | Substituição local | O que se perde |
