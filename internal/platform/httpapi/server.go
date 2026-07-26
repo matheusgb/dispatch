@@ -10,6 +10,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -23,6 +24,7 @@ import (
 	"github.com/matheusgb/dispatch/internal/dispatch"
 	"github.com/matheusgb/dispatch/internal/platform/auth"
 	"github.com/matheusgb/dispatch/internal/platform/idempotency"
+	"github.com/matheusgb/dispatch/internal/platform/objectstore"
 )
 
 const requestTimeout = 5 * time.Second
@@ -34,6 +36,7 @@ type Server struct {
 	issuer      *auth.Issuer
 	adminSecret string
 	logger      *slog.Logger
+	receipts    *objectstore.Client
 }
 
 type Deps struct {
@@ -43,12 +46,17 @@ type Deps struct {
 	Issuer      *auth.Issuer
 	AdminSecret string
 	Logger      *slog.Logger
+	// Receipts sobe o comprovante de entrega concluída para S3/LocalStack
+	// (tier 4). Pode ser nil ou desabilitado: nesse caso o comportamento é
+	// idêntico ao tier 3, sem comprovante.
+	Receipts *objectstore.Client
 }
 
 func NewServer(d Deps) http.Handler {
 	s := &Server{
 		deliveries: d.Deliveries, couriers: d.Couriers, dispatch: d.Dispatch,
 		issuer: d.Issuer, adminSecret: d.AdminSecret, logger: d.Logger,
+		receipts: d.Receipts,
 	}
 	timed := func(h http.HandlerFunc) http.Handler {
 		return withTimeout(requestTimeout)(h)
@@ -223,11 +231,44 @@ func (s *Server) handleDeliverDelivery(w http.ResponseWriter, r *http.Request) {
 	case err == nil:
 		deliveriesCompletedTotal.Inc()
 		w.WriteHeader(http.StatusNoContent)
+		s.uploadReceiptAsync(id)
 	case errors.Is(err, dispatch.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)
 	}
+}
+
+// uploadReceiptAsync sobe o comprovante da entrega concluída para S3/LocalStack
+// depois que a resposta HTTP já foi enviada: a transição de estado já está
+// commitada no Postgres, então o comprovante nunca pode atrasar ou reprovar
+// o efeito de negócio (tier 4, ADR 0012).
+func (s *Server) uploadReceiptAsync(deliveryID string) {
+	if s.receipts == nil || !s.receipts.Enabled() {
+		return
+	}
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		d, err := s.deliveries.Get(ctx, deliveryID)
+		if err != nil {
+			s.logger.Warn("buscar entrega para comprovante", "delivery_id", deliveryID, "error", err)
+			return
+		}
+		receipt := objectstore.Receipt{
+			DeliveryID:  d.ID,
+			State:       string(d.State),
+			DeliveredAt: time.Now().UTC(),
+		}
+		if d.CourierID != nil {
+			receipt.CourierID = *d.CourierID
+		}
+		if err := s.receipts.PutReceipt(ctx, receipt); err != nil {
+			s.logger.Warn("subir comprovante de entrega", "delivery_id", deliveryID, "error", err)
+			return
+		}
+		s.logger.Info("comprovante de entrega persistido", "delivery_id", deliveryID)
+	}()
 }
 
 type registerCourierRequest struct {

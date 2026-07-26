@@ -1,0 +1,54 @@
+=== s3 ls ===
+2026-07-26 17:58:11 dispatch-delivery-receipts
+=== s3api get-bucket-versioning ===
+{
+    "Status": "Enabled"
+}
+=== secretsmanager list-secrets ===
+{
+    "SecretList": [
+        {
+            "ARN": "arn:aws:secretsmanager:us-east-1:000000000000:secret:dispatch/jwt-secret-uLAWQs",
+            "Name": "dispatch/jwt-secret",
+            "KmsKeyId": "301ad61a-ac52-447c-9602-e60464a9d0aa",
+            "LastChangedDate": 1785099496.063,
+            "LastAccessedDate": 1785024000.0,
+            "Tags": [
+                {
+                    "Key": "Owner",
+                    "Value": "dispatch"
+                },
+                {
+                    "Key": "Environment",
+                    "Value": "aws-lab"
+                },
+                {
+                    "Key": "Project",
+                    "Value": "dispatch"
+                }
+            ],
+            "SecretVersionsToStages": {
+                "terraform-20260726205816062000000002": [
+                    "AWSCURRENT"
+                ]
+            },
+            "CreatedDate": 1785099496.052747
+        }
+    ]
+}
+=== secretsmanager get-secret-value ===
+{
+    "Name": "dispatch/jwt-secret",
+    "VersionId": "terraform-20260726205816062000000002"
+}
+=== kms list-keys ===
+{
+    "Aliases": [
+        {
+            "AliasName": "alias/dispatch-aws-lab-jwt",
+            "AliasArn": "arn:aws:kms:us-east-1:000000000000:alias/dispatch-aws-lab-jwt",
+            "TargetKeyId": "301ad61a-ac52-447c-9602-e60464a9d0aa",
+            "CreationDate": 1785099496.008898
+        }
+    ]
+}

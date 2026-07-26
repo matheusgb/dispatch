@@ -17,4 +17,15 @@ AGENTS.md
 # Saída ad-hoc do LunchRush e do k6. Evidência curada vai para docs/benchmarks/.
 lunchrush-report.*
 
+# Terraform: estado e cache de provider são locais deste laboratório contra
+# LocalStack (sem persistência entre `docker compose down`), nunca um
+# backend real. Ver infra/terraform/bootstrap/main.tf.
+**/.terraform/
+**/.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
 

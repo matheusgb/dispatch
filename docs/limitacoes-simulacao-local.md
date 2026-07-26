@@ -46,6 +46,21 @@ Kubernetes em si, que já são as ferramentas reais desde aqui.
 | Terraform contra AWS | Terraform contra LocalStack, quando o provider suporta | LocalStack open source não implementa EKS nem MSK; os módulos que dependem desses serviços ficam documentados, não aplicados |
 | Multi-AZ real, RPO/RTO medidos em zona de verdade | três instâncias locais rotuladas como "zona", sem isolamento de rede físico real | qualquer RTO/RPO medido aqui é do ambiente local, não de uma zona AWS |
 
+### Terraform contra LocalStack: só S3 e Secrets Manager/KMS
+
+`infra/terraform/` (ver ADR 0012) só tem módulo para os serviços que o
+LocalStack **community** (edição gratuita) implementa de forma honesta:
+S3 e Secrets Manager (com KMS por baixo). EKS, MSK, RDS/Aurora e
+ElastiCache ficam atrás do LocalStack Pro, que é pago; nenhum módulo
+Terraform foi escrito para eles neste laboratório, para não fingir um
+recurso que nunca aceitaria uma conexão de verdade.
+
+Limitação adicional encontrada na prática: `aws_s3_bucket_lifecycle_configuration`
+trava `terraform apply` indefinidamente contra o LocalStack 3.8.1 (o
+provider nunca considera a configuração propagada, mesmo com o LocalStack
+respondendo 200 a cada tentativa). O recurso foi removido do módulo
+`storage`; detalhes em ADR 0012.
+
 ## Tier 5: células e multi-região
 
 | Peça do roadmap | Substituição local | O que se perde |

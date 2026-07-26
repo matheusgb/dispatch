@@ -188,6 +188,25 @@ services:
       redpanda-topics:
         condition: service_completed_successfully
 
+  localstack:
+    profiles: ["aws-lab"]
+    image: localstack/localstack:3.8.1
+    environment:
+      SERVICES: s3,secretsmanager,kms,sts,iam,dynamodb
+      DEFAULT_REGION: us-east-1
+      PERSISTENCE: "0"
+    ports:
+      # 4566 é a porta padrão do LocalStack (edge de todos os serviços
+      # emulados); nenhum outro laboratório neste host usa essa porta.
+      - "4566:4566"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   prometheus:
     profiles: ["observability"]
     image: prom/prometheus:v3.0.1

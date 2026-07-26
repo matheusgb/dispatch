@@ -23,7 +23,9 @@ import (
 	"github.com/matheusgb/dispatch/internal/platform/db"
 	"github.com/matheusgb/dispatch/internal/platform/httpapi"
 	"github.com/matheusgb/dispatch/internal/platform/kafka"
+	"github.com/matheusgb/dispatch/internal/platform/objectstore"
 	"github.com/matheusgb/dispatch/internal/platform/outbox"
+	"github.com/matheusgb/dispatch/internal/platform/secrets"
 )
 
 func main() {
@@ -38,9 +40,21 @@ func main() {
 	if addr == "" {
 		addr = ":8080"
 	}
-	jwtSecret := os.Getenv("DISPATCH_JWT_SECRET")
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	// Tier 4: se AWS_SECRETS_ENDPOINT estiver configurado (LocalStack, ver
+	// docker-compose.yml profile aws-lab), o JWT secret vem do Secrets
+	// Manager. Caso contrário, cai para DISPATCH_JWT_SECRET como nos tiers
+	// anteriores. Ver internal/platform/secrets.
+	secretsCtx, secretsCancel := context.WithTimeout(ctx, 5*time.Second)
+	jwtSecret := secrets.ResolveJWTSecret(secretsCtx,
+		os.Getenv("AWS_SECRETS_ENDPOINT"), envOr("AWS_REGION", "us-east-1"),
+		envOr("DISPATCH_JWT_SECRET_NAME", "dispatch/jwt-secret"),
+		os.Getenv("DISPATCH_JWT_SECRET"), logger)
+	secretsCancel()
 	if jwtSecret == "" {
-		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido")
+		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido e secrets manager não devolveu segredo")
 		os.Exit(1)
 	}
 	adminSecret := os.Getenv("DISPATCH_ADMIN_SECRET")
@@ -49,9 +63,6 @@ func main() {
 		os.Exit(1)
 	}
 	brokers := strings.Split(envOr("KAFKA_BROKERS", "localhost:19092"), ",")
-
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 
 	connectCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	pool, err := db.Connect(connectCtx, dsn)
@@ -70,9 +81,28 @@ func main() {
 	defer producer.Close()
 	relay := outbox.NewRelay(pool, producer, logger)
 
+	// Tier 4: comprovante de entrega concluída sobe para S3 (LocalStack no
+	// laboratório, ver internal/platform/objectstore). Sem
+	// AWS_S3_ENDPOINT, o client fica desabilitado e o comportamento é
+	// idêntico ao tier 3.
+	receipts, err := objectstore.New(ctx, os.Getenv("AWS_S3_ENDPOINT"),
+		envOr("AWS_REGION", "us-east-1"), envOr("DISPATCH_RECEIPTS_BUCKET", "dispatch-receipts"), logger)
+	if err != nil {
+		logger.Error("configurar objectstore de comprovantes", "error", err)
+		os.Exit(1)
+	}
+	if receipts.Enabled() {
+		bucketCtx, bucketCancel := context.WithTimeout(ctx, 5*time.Second)
+		if err := receipts.EnsureBucket(bucketCtx); err != nil {
+			logger.Warn("garantir bucket de comprovantes, comprovantes ficarão indisponíveis até o bucket existir", "error", err)
+		}
+		bucketCancel()
+	}
+
 	handler := httpapi.NewServer(httpapi.Deps{
 		Deliveries: deliveries, Couriers: couriers, Dispatch: dispatchSvc,
 		Issuer: auth.NewIssuer(jwtSecret, time.Hour), AdminSecret: adminSecret, Logger: logger,
+		Receipts: receipts,
 	})
 
 	srv := &http.Server{
