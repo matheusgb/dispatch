@@ -36,9 +36,12 @@ func NewServer(deliveries *delivery.Repository, couriers *courier.Repository, di
 	mux.Handle("GET /metrics", promhttp.Handler())
 	mux.HandleFunc("POST /deliveries", s.handleCreateDelivery)
 	mux.HandleFunc("GET /deliveries/{id}", s.handleGetDelivery)
+	mux.HandleFunc("POST /deliveries/{id}/ready", s.handleMarkReady)
 	mux.HandleFunc("POST /deliveries/{id}/offer", s.handleOfferDelivery)
 	mux.HandleFunc("POST /deliveries/{id}/assign", s.handleAssignDelivery)
 	mux.HandleFunc("POST /deliveries/{id}/decline", s.handleDeclineDelivery)
+	mux.HandleFunc("POST /deliveries/{id}/pickup", s.handlePickUpDelivery)
+	mux.HandleFunc("POST /deliveries/{id}/deliver", s.handleDeliverDelivery)
 	mux.HandleFunc("POST /couriers", s.handleRegisterCourier)
 	mux.HandleFunc("POST /couriers/{id}/availability", s.handleSetAvailability)
 
@@ -95,11 +98,37 @@ func (s *Server) handleGetDelivery(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, d)
 }
 
+func (s *Server) handleMarkReady(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := s.dispatch.MarkReadyForDispatch(r.Context(), id)
+	switch {
+	case err == nil:
+		w.WriteHeader(http.StatusNoContent)
+	case errors.Is(err, dispatch.ErrNotCreated):
+		writeError(w, http.StatusConflict, err.Error())
+	default:
+		s.internalError(w, err)
+	}
+}
+
 const defaultOfferTTL = 2 * time.Minute
+
+type offerRequest struct {
+	TTLSeconds int `json:"ttl_seconds"`
+}
 
 func (s *Server) handleOfferDelivery(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	if err := s.dispatch.Offer(r.Context(), id, defaultOfferTTL); err != nil {
+
+	ttl := defaultOfferTTL
+	if r.ContentLength > 0 {
+		var req offerRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err == nil && req.TTLSeconds > 0 {
+			ttl = time.Duration(req.TTLSeconds) * time.Second
+		}
+	}
+
+	if err := s.dispatch.Offer(r.Context(), id, ttl); err != nil {
 		if errors.Is(err, dispatch.ErrNotReadyForDispatch) {
 			writeError(w, http.StatusConflict, "entrega não está pronta para despacho")
 			return
@@ -142,6 +171,33 @@ func (s *Server) handleDeclineDelivery(w http.ResponseWriter, r *http.Request) {
 	case err == nil:
 		w.WriteHeader(http.StatusNoContent)
 	case errors.Is(err, dispatch.ErrNotOffered):
+		writeError(w, http.StatusConflict, err.Error())
+	default:
+		s.internalError(w, err)
+	}
+}
+
+func (s *Server) handlePickUpDelivery(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := s.dispatch.PickUp(r.Context(), id)
+	switch {
+	case err == nil:
+		w.WriteHeader(http.StatusNoContent)
+	case errors.Is(err, dispatch.ErrUnexpectedState):
+		writeError(w, http.StatusConflict, err.Error())
+	default:
+		s.internalError(w, err)
+	}
+}
+
+func (s *Server) handleDeliverDelivery(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	err := s.dispatch.Deliver(r.Context(), id)
+	switch {
+	case err == nil:
+		deliveriesCompletedTotal.Inc()
+		w.WriteHeader(http.StatusNoContent)
+	case errors.Is(err, dispatch.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)

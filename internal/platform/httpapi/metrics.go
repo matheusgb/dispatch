@@ -37,12 +37,16 @@ var (
 		Name: "dispatch_assignment_conflicts_total",
 		Help: "Total de tentativas de atribuição rejeitadas por disputa concorrente.",
 	})
+	deliveriesCompletedTotal = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "dispatch_deliveries_completed_total",
+		Help: "Total de entregas concluídas (picked_up -> delivered).",
+	})
 )
 
 func init() {
 	prometheus.MustRegister(
 		requestsTotal, requestDuration,
-		deliveriesCreatedTotal, deliveriesAssignedTotal, assignmentConflictsTotal,
+		deliveriesCreatedTotal, deliveriesAssignedTotal, assignmentConflictsTotal, deliveriesCompletedTotal,
 	)
 }
 

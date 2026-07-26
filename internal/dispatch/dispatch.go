@@ -27,6 +27,12 @@ var (
 	// ErrNotReadyForDispatch indica que a entrega não estava disponível
 	// para receber uma oferta.
 	ErrNotReadyForDispatch = errors.New("dispatch: entrega não está pronta para despacho")
+	// ErrNotCreated indica que a entrega não estava em created ao tentar
+	// marcá-la como pronta para despacho.
+	ErrNotCreated = errors.New("dispatch: entrega não está em created")
+	// ErrUnexpectedState indica que a entrega não estava no estado de
+	// origem esperado para a transição simples solicitada.
+	ErrUnexpectedState = errors.New("dispatch: entrega não está no estado esperado para esta transição")
 )
 
 const uniqueViolation = "23505"
@@ -38,6 +44,32 @@ type Service struct {
 
 func NewService(pool *pgxpool.Pool, clock Clock) *Service {
 	return &Service{pool: pool, clock: clock}
+}
+
+// MarkReadyForDispatch move created -> ready_for_dispatch. No tier 1 isso é
+// uma chamada explícita; a partir do tier 3 o dispatch-worker assume essa
+// decisão sozinho, a partir de uma regra de seleção.
+func (s *Service) MarkReadyForDispatch(ctx context.Context, deliveryID string) error {
+	now := s.clock.Now()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	tag, err := tx.Exec(ctx, `
+		UPDATE deliveries SET state = $1, updated_at = $2 WHERE id = $3 AND state = $4
+	`, delivery.ReadyForDispatch, now, deliveryID, delivery.Created)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotCreated
+	}
+	if err := recordTransition(ctx, tx, deliveryID, delivery.Created, delivery.ReadyForDispatch, now); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 // Offer move ready_for_dispatch -> offered com um prazo de expiração. Só
@@ -104,6 +136,41 @@ func (s *Service) Assign(ctx context.Context, deliveryID, courierID string) erro
 // explícita do entregador.
 func (s *Service) Decline(ctx context.Context, deliveryID string) error {
 	return s.recycle(ctx, deliveryID, delivery.Declined)
+}
+
+// PickUp registra a coleta física da entrega: assigned -> picked_up.
+func (s *Service) PickUp(ctx context.Context, deliveryID string) error {
+	return s.simpleTransition(ctx, deliveryID, delivery.Assigned, delivery.PickedUp)
+}
+
+// Deliver conclui a entrega: picked_up -> delivered. O estado delivered não
+// participa mais do índice único de courier ativo (ver migrations/0001), então
+// o entregador volta a ficar livre para uma nova atribuição automaticamente.
+func (s *Service) Deliver(ctx context.Context, deliveryID string) error {
+	return s.simpleTransition(ctx, deliveryID, delivery.PickedUp, delivery.Delivered)
+}
+
+func (s *Service) simpleTransition(ctx context.Context, deliveryID string, from, to delivery.State) error {
+	now := s.clock.Now()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	tag, err := tx.Exec(ctx, `
+		UPDATE deliveries SET state = $1, updated_at = $2 WHERE id = $3 AND state = $4
+	`, to, now, deliveryID, from)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrUnexpectedState
+	}
+	if err := recordTransition(ctx, tx, deliveryID, from, to, now); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 // ExpireOverdueOffers move para expired, e em seguida para

@@ -52,3 +52,29 @@ configurado no benchmark. Isso é esperado e coerente com a decisão do ADR
 0001: o tier 1 não tenta otimizar um caminho que ainda não tem carga real
 medida. O próximo limite conhecido está descrito em
 `tier-1-what-breaks-next.md`.
+
+## LunchRush (carga semântica de caixa preta)
+
+`go run ./cmd/lunchrush` contra o `delivery-api` real, com jornada completa
+(criar, marcar pronta, oferecer, aceitar/recusar/expirar, coletar, concluir):
+
+- `lunchrush-tier-1.md`: 200 ordens, pool de 20 entregadores, concorrência 20.
+  161 concluídas, 20 recusadas, 19 expiradas, **0 erros**. 40 repetições de
+  chave de idempotência testadas, todas devolveram o mesmo ID.
+- `lunchrush-tier-1-pool-escasso.md`: mesmo cenário com pool de apenas 5
+  entregadores para 150 ordens em concorrência 30, para forçar disputa real.
+  240 tentativas de atribuição rejeitadas por entregador ocupado, todas
+  absorvidas por retry no pool; 22 ordens esgotaram o pool de retry sem
+  encontrar entregador livre, que é o comportamento correto sob demanda
+  maior que oferta, não uma falha de aplicação.
+
+Nenhuma dupla atribuição, nenhum efeito duplicado por chave repetida, em
+nenhum dos dois cenários.
+
+## k6 (smoke)
+
+`loadtest/k6/smoke.js`, 5 VUs por 10s, jornada feliz completa por iteração
+(criar, marcar pronta, oferecer, cadastrar e disponibilizar entregador,
+atribuir, coletar, concluir, consultar): 430 iterações, 3.870 requisições,
+**0% de falha**, p95 de 3,61 ms. Saída completa em `k6-smoke-tier-1.txt`,
+resumo estruturado em `k6-smoke-tier-1.json`.

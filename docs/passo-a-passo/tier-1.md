@@ -237,6 +237,58 @@ trip de rede, não CPU.
 
 ---
 
+## Passo 11: rodar o smoke test em k6
+
+```bash
+BASE_URL=http://localhost:8080 k6 run loadtest/k6/smoke.js
+```
+
+**O que você vai ver:** 5 VUs por 10 segundos, cada iteração passando pela
+jornada completa (criar, marcar pronta, oferecer, cadastrar entregador,
+disponibilizar, atribuir, coletar, concluir, consultar), com
+`checks_succeeded: 100.00%`.
+
+**O que roda por baixo:** [loadtest/k6/smoke.js](../../loadtest/k6/smoke.js)
+é caixa preta: só fala HTTP, não conhece o domínio. Ele existe para validar
+que o script e o ambiente funcionam antes de qualquer cenário maior (load,
+spike, breakpoint, soak), que ainda não existem neste tier.
+
+---
+
+## Passo 12: rodar o LunchRush
+
+```bash
+go run ./cmd/lunchrush -base-url http://localhost:8080 \
+  -orders 200 -couriers 20 -concurrency 20 -out lunchrush-report
+```
+
+**O que você vai ver:**
+
+```text
+concluídas=161 declinadas=20 expiradas=19 erros=0 duração=5.3s
+relatório em lunchrush-report.json e lunchrush-report.md
+```
+
+**O que roda por baixo:**
+[cmd/lunchrush](../../cmd/lunchrush) conhece o domínio, diferente do k6: ele
+decide por seed reproduzível se cada ordem vai ser concluída, recusada ou
+vai expirar, testa repetição de chave de idempotência numa fração das
+ordens e faz retry no pool de entregadores quando recebe `409` por
+entregador ocupado. Para observar disputa real, rode com um pool menor que
+a demanda:
+
+```bash
+go run ./cmd/lunchrush -base-url http://localhost:8080 \
+  -orders 150 -couriers 5 -concurrency 30 -seed 999 -out lunchrush-contencao
+```
+
+Os `erros` desse segundo cenário não são bug: são o pool de retry se
+esgotando porque a demanda passou a oferta, o que é o comportamento
+correto sob a invariante 2. Ver
+[docs/benchmarks/lunchrush-tier-1-pool-escasso.md](../benchmarks/lunchrush-tier-1-pool-escasso.md).
+
+---
+
 ## Resumo da ópera
 
 O tier 1 prova uma coisa difícil e pequena: vinte tentativas concorrentes

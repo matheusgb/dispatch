@@ -14,3 +14,7 @@ AGENTS.md
 # Binários de teste deixados por go test -cpuprofile/-memprofile.
 *.test
 
+# Saída ad-hoc do LunchRush e do k6. Evidência curada vai para docs/benchmarks/.
+lunchrush-report.*
+
+

@@ -7,8 +7,12 @@ essa plataforma em Go, começando por um monólito modular correto e evoluindo,
 tier por tier, até uma arquitetura celular multi-região com prova formal de
 protocolo.
 
+A partir do tier 4, o roadmap original pede AWS real. Este projeto não usa
+conta de nuvem paga: veja `docs/limitacoes-simulacao-local.md` para o que é
+simulado com ferramentas locais maduras e o que não tem equivalente honesto.
+
 ```text
-tier atual: 1, início
+tier atual: 1, concluído
 REST API -> monólito modular -> PostgreSQL
 ```
 
@@ -33,12 +37,13 @@ Ver a lista completa e a partir de qual tier cada invariante entra em
 | sequências de estado sem transição inválida   | 100.000 (fuzz table) + 18.049.426 (fuzz nativo) | local | `docs/benchmarks/tier-1-baseline.md` |
 | criação idempotente (round trip PostgreSQL)   | 1,10 ms/op                | local    | `docs/benchmarks/tier-1-baseline.md` |
 | aceite condicional (round trip PostgreSQL)    | 0,97 ms/op                | local    | `docs/benchmarks/tier-1-baseline.md` |
-| p50/p95/p99 sob carga concorrente real (k6/LunchRush) | ainda não medido   | n/a      | pendente  |
+| k6 smoke (jornada completa, 5 VUs, 10s)       | 0% de falha, p95 3,61 ms  | local    | `docs/benchmarks/k6-smoke-tier-1.txt` |
+| LunchRush (200 ordens, pool dimensionado)     | 0 erros, 40/40 chaves repetidas resolvidas corretamente | local | `docs/benchmarks/lunchrush-tier-1.md` |
+| LunchRush (pool de entregadores escasso)      | 240 disputas resolvidas sem dupla atribuição | local | `docs/benchmarks/lunchrush-tier-1-pool-escasso.md` |
 
-Os números acima são **Medido** em ambiente local de desenvolvimento, não em
-um cenário de carga real: falta o LunchRush e o k6 do backlog do tier 1 para
-produzir p50/p95/p99 sob concorrência sustentada. Os rótulos usados neste
-repositório são Premissa, Meta e Medido, nunca um número solto.
+Todos os números acima são **Medido** em ambiente local de desenvolvimento,
+não em produção. Os rótulos usados neste repositório são Premissa, Meta e
+Medido, nunca um número solto.
 
 ## Como executar
 
@@ -49,23 +54,29 @@ go run ./cmd/migrate up
 go run ./cmd/delivery-api
 ```
 
-Testes:
+Testes e carga:
 
 ```bash
-make test            # unitários, incluindo as 100 mil sequências de estado
-make test-race       # com o detector de corrida
-make test-integration # requer o Postgres do docker compose acima, já migrado
+make test              # unitários, incluindo as 100 mil sequências de estado
+make test-race         # com o detector de corrida
+make test-integration  # requer o Postgres do docker compose acima, já migrado
+make load-smoke        # k6, requer o delivery-api no ar
+make load-lunchrush    # LunchRush, requer o delivery-api no ar
 ```
+
+Passo a passo completo, com o que esperar em cada comando, em
+`docs/passo-a-passo/tier-1.md`.
 
 ## Estágio atual e próximo gate
 
-Tier 1: núcleo correto e mensurável em Go concluído (lifecycle da entrega,
+Tier 1 concluído: núcleo correto e mensurável em Go (lifecycle da entrega,
 cadastro e disponibilidade de entregador, oferta e expiração com relógio
-injetável, aceite concorrente, API HTTP com graceful shutdown e métricas
-RED/negócio). Passo a passo completo em
-`docs/passo-a-passo/tier-1.md`.
+injetável, aceite concorrente, ciclo completo até `delivered`, API HTTP com
+graceful shutdown, métricas RED/negócio, OpenAPI, LunchRush e smoke em k6).
 
-Falta, para fechar o tier 1 por completo: o simulador LunchRush, os cenários
-de carga em k6, a demonstração gravada e a tag `tier-1.0.0`. O próximo tier
-(2) só começa depois que esses três itens estiverem resolvidos e um novo
-limite for medido, não antes.
+Não entregue neste tier, por não ser possível nesta forma de trabalho:
+demonstração em vídeo (sem gravação de tela disponível) e release formal no
+GitHub além da tag `tier-1.0.0` e do próprio histórico de commits.
+
+O tier 2 (Redis, tracking de GPS, SSE, observabilidade, autenticação e
+chaos local) começa a partir daqui.

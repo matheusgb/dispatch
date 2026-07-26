@@ -189,3 +189,49 @@ func TestDispatch_ExpireOverdueOffersRecyclesAfterDeadline(t *testing.T) {
 		t.Fatalf("estado após expiração = %s, want %s", got.State, delivery.ReadyForDispatch)
 	}
 }
+
+func TestDispatch_CourierFreedAfterDeliveryCompletes(t *testing.T) {
+	truncateAll(t)
+	ctx := context.Background()
+
+	couriers := courier.NewRepository(pool)
+	c, err := couriers.Register(ctx, "entregador-reciclado")
+	if err != nil {
+		t.Fatalf("cadastrar entregador: %v", err)
+	}
+	if err := couriers.SetAvailability(ctx, c.ID, true); err != nil {
+		t.Fatalf("disponibilizar entregador: %v", err)
+	}
+
+	svc := dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()})
+	deliveries := delivery.NewRepository(pool)
+
+	first := setupOfferedDelivery(t, ctx, t.Name()+"-first")
+	if err := svc.Assign(ctx, first, c.ID); err != nil {
+		t.Fatalf("atribuir primeira entrega: %v", err)
+	}
+
+	second := setupOfferedDelivery(t, ctx, t.Name()+"-second")
+	if err := svc.Assign(ctx, second, c.ID); !errors.Is(err, dispatch.ErrCourierAlreadyActive) {
+		t.Fatalf("segunda atribuição deveria falhar com entregador ocupado, got %v", err)
+	}
+
+	if err := svc.PickUp(ctx, first); err != nil {
+		t.Fatalf("coletar primeira entrega: %v", err)
+	}
+	if err := svc.Deliver(ctx, first); err != nil {
+		t.Fatalf("concluir primeira entrega: %v", err)
+	}
+
+	if err := svc.Assign(ctx, second, c.ID); err != nil {
+		t.Fatalf("entregador deveria estar livre para a segunda entrega: %v", err)
+	}
+
+	got, err := deliveries.Get(ctx, second)
+	if err != nil {
+		t.Fatalf("buscar segunda entrega: %v", err)
+	}
+	if got.State != delivery.Assigned {
+		t.Fatalf("estado da segunda entrega = %s, want %s", got.State, delivery.Assigned)
+	}
+}
