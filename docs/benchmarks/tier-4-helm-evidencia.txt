@@ -1,0 +1,79 @@
+=== helm lint ===
+==> Linting /home/ubuntu/me/labs/dispatch/deploy/helm/dispatch
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+=== helm list ===
+NAME    	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART         	APP VERSION
+dispatch	default  	3       	2026-07-26 18:15:32.066812686 -0300 -03	deployed	dispatch-0.1.0	tier-4     
+
+=== kubectl get all no namespace dispatch ===
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/delivery-api          2/2     2            2           6m16s
+deployment.apps/dispatch-worker       2/2     2            2           6m16s
+deployment.apps/notification-worker   2/2     2            2           6m16s
+deployment.apps/tracking-ingest       2/2     2            2           6m16s
+deployment.apps/tracking-projector    2/2     2            2           6m16s
+
+NAME                                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/delivery-api                    ClusterIP   10.96.213.5     <none>        80/TCP     6m16s
+service/dependency-simulator-external   ClusterIP   10.96.219.55    <none>        8092/TCP   6m16s
+service/dispatch-worker                 ClusterIP   10.96.224.100   <none>        80/TCP     22s
+service/notification-worker             ClusterIP   10.96.110.179   <none>        80/TCP     22s
+service/postgres-external               ClusterIP   10.96.156.209   <none>        5432/TCP   6m16s
+service/redis-external                  ClusterIP   10.96.16.206    <none>        6379/TCP   6m16s
+service/redpanda                        ClusterIP   10.96.8.60      <none>        9092/TCP   6m16s
+service/redpanda-external               ClusterIP   10.96.96.24     <none>        9092/TCP   6m16s
+service/tracking-ingest                 ClusterIP   10.96.178.217   <none>        80/TCP     6m16s
+service/tracking-projector              ClusterIP   10.96.84.24     <none>        80/TCP     6m16s
+
+NAME                                                  REFERENCE                    TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/delivery-api      Deployment/delivery-api      cpu: <unknown>/70%   2         6         2          22s
+horizontalpodautoscaler.autoscaling/tracking-ingest   Deployment/tracking-ingest   cpu: <unknown>/70%   2         8         2          22s
+
+NAME                                            MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/delivery-api         1               N/A               1                     6m16s
+poddisruptionbudget.policy/tracking-projector   1               N/A               1                     6m16s
+
+NAME                                                          POD-SELECTOR                                                                                   AGE
+networkpolicy.networking.k8s.io/allow-dns                     <none>                                                                                         6m16s
+networkpolicy.networking.k8s.io/allow-egress-http-clients     app=delivery-api                                                                               6m16s
+networkpolicy.networking.k8s.io/allow-external-infra-egress   <none>                                                                                         6m16s
+networkpolicy.networking.k8s.io/allow-http-ingress            app in (delivery-api,dispatch-worker,notification-worker,tracking-ingest,tracking-projector)   6m16s
+networkpolicy.networking.k8s.io/default-deny-all              <none>                                                                                         6m16s
+
+NAME                         DATA   AGE
+configmap/dispatch-config    5      6m16s
+configmap/kube-root-ca.crt   1      6m16s
+
+NAME                      TYPE     DATA   AGE
+secret/dispatch-secrets   Opaque   2      6m16s
+
+NAME                                      ENDPOINTS                           AGE
+endpoints/delivery-api                    10.244.0.13:8080,10.244.0.9:8080    6m16s
+endpoints/dependency-simulator-external   172.19.0.1:8092                     6m16s
+endpoints/dispatch-worker                 10.244.0.11:8080,10.244.0.12:8080   22s
+endpoints/notification-worker             10.244.0.14:8080,10.244.0.5:8080    22s
+endpoints/postgres-external               172.19.0.1:5432                     6m16s
+endpoints/redis-external                  172.19.0.1:6379                     6m16s
+endpoints/redpanda                        172.19.0.1:9092                     6m16s
+endpoints/redpanda-external               172.19.0.1:9092                     6m16s
+endpoints/tracking-ingest                 10.244.0.15:8080,10.244.0.17:8080   6m16s
+endpoints/tracking-projector              10.244.0.16:8080,10.244.0.18:8080   6m16s
+
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/delivery-api-58955ddb5c-9c8lh         1/1     Running   0          6m16s
+pod/delivery-api-58955ddb5c-f9spj         1/1     Running   0          6m16s
+pod/dispatch-worker-5478675b7b-fbf64      1/1     Running   0          6m16s
+pod/dispatch-worker-5478675b7b-w4sg5      1/1     Running   0          6m16s
+pod/notification-worker-8f547448c-kq6w5   1/1     Running   0          6m16s
+pod/notification-worker-8f547448c-lgd8k   1/1     Running   0          6m16s
+pod/tracking-ingest-5bf97668b7-49ltf      1/1     Running   0          2m45s
+pod/tracking-ingest-5bf97668b7-m6lvp      1/1     Running   0          2m43s
+pod/tracking-projector-7c9f7c8788-6x5gn   1/1     Running   0          2m45s
+pod/tracking-projector-7c9f7c8788-hwhk8   1/1     Running   0          2m43s
+
+=== smoke test via port-forward ===
+healthz: 200 (medido)
+readyz: 200 (medido)

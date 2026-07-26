@@ -1,0 +1,111 @@
+# Deny-by-default: nada entra nem sai a menos que uma política permita
+# explicitamente. As políticas seguintes abrem só o necessário: DNS, a
+# infra externa (Postgres/Redis/Redpanda/dependency-simulator, ver
+# external-infra.yaml), a porta HTTP dos serviços que respondem requisição
+# e, quando KEDA está ligado, o metrics-server do operador KEDA.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# A infra fica fora do cluster neste tier (ver external-infra.yaml), então
+# não dá para restringir por podSelector: liberamos as portas conhecidas
+# para qualquer destino. Isso é mais largo do que o ideal; documentado como
+# limitação do tier 3, mantida no tier 4 (onde a infra entraria em VPC
+# própria com security group, fora de escopo local).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-external-infra-egress
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.externalInfra.postgres.port }}
+        - protocol: TCP
+          port: {{ .Values.externalInfra.redis.port }}
+        - protocol: TCP
+          port: {{ .Values.externalInfra.redpanda.port }}
+        - protocol: TCP
+          port: {{ .Values.externalInfra.dependencySimulator.port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-http-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: [{{ range $name, $wl := .Values.workloads }}{{ $name | quote }}, {{ end }}]
+  policyTypes: ["Ingress"]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+---
+# Os serviços HTTP também chamam uns aos outros? Não neste tier: cada um só
+# fala com a infra externa. Esta política existe separada da anterior para
+# deixar claro que tráfego entre pods do namespace não é liberado por
+# padrão, só a infra e o ingress HTTP.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-http-clients
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: delivery-api
+  policyTypes: ["Egress"]
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+{{- if .Values.keda.enabled }}
+---
+# KEDA (instalado em outro namespace, ver docs/adr/0014) precisa alcançar o
+# Redpanda para medir lag do consumer group. O egress de infra acima já
+# libera a porta do Redpanda para qualquer pod deste namespace; esta
+# política adicional permite que o operador KEDA, rodando fora do
+# namespace dispatch, faça scrape do lag sem ser bloqueado por
+# default-deny-all no lado de ingress dos pods alvo do ScaledObject.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-keda-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: dispatch-worker
+  policyTypes: ["Ingress"]
+  ingress:
+    - {}
+{{- end }}

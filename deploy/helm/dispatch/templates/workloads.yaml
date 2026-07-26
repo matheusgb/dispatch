@@ -1,0 +1,151 @@
+{{- $root := . -}}
+{{- range $name, $wl := .Values.workloads }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Values.namespace }}
+  labels:
+    app: {{ $name }}
+    {{- include "dispatch.labels" $root | nindent 4 }}
+spec:
+  replicas: {{ $wl.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      serviceAccountName: {{ $root.Values.serviceAccount.name }}
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      {{- if $wl.pdb }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: {{ $name }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: {{ include "dispatch.image" (dict "root" $root "name" $name) }}
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $wl.port }}
+              name: http
+          envFrom:
+            - configMapRef:
+                name: dispatch-config
+            {{- if $wl.envSecret }}
+            - secretRef:
+                name: dispatch-secrets
+            {{- end }}
+          env:
+            - name: HTTP_ADDR
+              value: ":{{ $wl.port }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml $wl.resources | nindent 12 }}
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            failureThreshold: 30
+            periodSeconds: 1
+          {{- if $wl.readinessProbe }}
+          readinessProbe:
+            httpGet: { path: {{ $wl.readinessPath | default "/healthz" }}, port: http }
+            periodSeconds: 5
+            failureThreshold: 2
+          {{- end }}
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+      terminationGracePeriodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Values.namespace }}
+spec:
+  selector:
+    app: {{ $name }}
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+{{- if $wl.pdb }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Values.namespace }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: {{ $name }}
+{{- end }}
+{{- if $wl.hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  minReplicas: {{ $wl.hpa.minReplicas }}
+  maxReplicas: {{ $wl.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $wl.hpa.cpuUtilization }}
+{{- end }}
+{{- if and $root.Values.keda.enabled $wl.keda }}
+---
+# ScaledObject substitui o HPA de CPU para este workload quando KEDA está
+# ligado: escala por lag do consumer group Kafka/Redpanda, não por CPU.
+# Ver docs/adr/0014-keda-lag-de-consumer-group.md.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ $name }}
+  namespace: {{ $root.Values.namespace }}
+spec:
+  scaleTargetRef:
+    name: {{ $name }}
+  minReplicaCount: {{ $root.Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ $root.Values.keda.maxReplicaCount }}
+  pollingInterval: {{ $root.Values.keda.pollingInterval }}
+  cooldownPeriod: {{ $root.Values.keda.cooldownPeriod }}
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ $root.Values.keda.bootstrapServers | quote }}
+        consumerGroup: {{ $root.Values.keda.consumerGroup | quote }}
+        topic: {{ $root.Values.keda.topic | quote }}
+        lagThreshold: {{ $root.Values.keda.lagThreshold | quote }}
+        allowIdleConsumers: "false"
+{{- end }}
+{{- end }}

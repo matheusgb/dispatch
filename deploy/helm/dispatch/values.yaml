@@ -1,0 +1,134 @@
+# Valores padrão do laboratório local (kind). Um ambiente real trocaria
+# externalInfra.hostGatewayIP por endpoints gerenciados de verdade (RDS,
+# ElastiCache, MSK) e secrets.* por referências a um cofre de segredos, não
+# por valores em texto puro: ver docs/limitacoes-simulacao-local.md.
+
+namespace: dispatch
+
+image:
+  # Prefixo das imagens; o nome final é "<repository>-<workload>:<tag>",
+  # ex: dispatch-delivery-api:kind (mesmo nome que scripts/kind-deploy.sh
+  # já constrói e carrega no cluster).
+  repository: dispatch
+  tag: kind
+  pullPolicy: IfNotPresent
+
+# Preenchido em runtime por scripts/helm-deploy.sh com o gateway da rede
+# docker do kind (mesma necessidade documentada em ADR 0011): a infra
+# (Postgres, Redis, Redpanda, dependency-simulator) roda no docker compose
+# do host, fora do cluster, neste tier.
+externalInfra:
+  hostGatewayIP: "REPLACE_ME"
+  postgres:
+    port: 5432
+  redis:
+    port: 6379
+  redpanda:
+    port: 9092
+  dependencySimulator:
+    port: 8092
+
+config:
+  offerTTLSeconds: "120"
+
+# Secret de desenvolvimento local: versionado de propósito, só porque não
+# protege nada real (kind local, sem dado sensível). Ver
+# deploy/kubernetes/base/secret.yaml (equivalente Kustomize) e
+# docs/limitacoes-simulacao-local.md.
+secrets:
+  jwtSecret: kind-dev-jwt-secret
+  adminSecret: kind-dev-admin-secret
+
+serviceAccount:
+  name: dispatch-workload
+
+# KEDA (tier 4): desligado por padrão porque exige o operador KEDA
+# instalado no cluster (ver scripts/keda-install.sh). Quando ligado,
+# dispatch-worker ganha um ScaledObject que escala por lag do consumer
+# group no lugar do HPA de CPU.
+keda:
+  enabled: false
+  bootstrapServers: "redpanda:9092"
+  consumerGroup: "dispatch-worker"
+  topic: "dispatch.delivery-events"
+  lagThreshold: 5
+  pollingInterval: 5
+  cooldownPeriod: 30
+  minReplicaCount: 0
+  maxReplicaCount: 6
+
+workloads:
+  delivery-api:
+    replicas: 2
+    port: 8080
+    envSecret: true
+    readinessProbe: true
+    # Único workload com /readyz de verdade (checa dependências além do
+    # processo estar de pé, ver internal/platform/httpapi/server.go). Os
+    # demais workloads com readinessProbe usam /healthz, igual ao que já
+    # era feito em deploy/kubernetes/base.
+    readinessPath: /readyz
+    pdb: true
+    resources:
+      requests: { cpu: 50m, memory: 32Mi }
+      limits: { memory: 64Mi }
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 6
+      cpuUtilization: 70
+
+  dispatch-worker:
+    # Réplicas úteis de um consumer group são limitadas pelo número de
+    # partições do tópico: dispatch.delivery-events tem 3 partições (ver
+    # docs/adr/0010, docs/benchmarks/tier-3-baseline.md).
+    replicas: 2
+    port: 8080
+    envSecret: false
+    readinessProbe: false
+    pdb: false
+    resources:
+      requests: { cpu: 50m, memory: 32Mi }
+      limits: { memory: 64Mi }
+    hpa:
+      enabled: false
+    keda: true
+
+  tracking-ingest:
+    replicas: 2
+    port: 8080
+    envSecret: true
+    readinessProbe: true
+    pdb: false
+    resources:
+      requests: { cpu: 50m, memory: 32Mi }
+      limits: { memory: 64Mi }
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      cpuUtilization: 70
+
+  tracking-projector:
+    replicas: 2
+    port: 8080
+    envSecret: true
+    readinessProbe: true
+    pdb: true
+    resources:
+      requests: { cpu: 50m, memory: 32Mi }
+      limits: { memory: 64Mi }
+    hpa:
+      enabled: false
+
+  notification-worker:
+    replicas: 2
+    port: 8080
+    envSecret: false
+    readinessProbe: false
+    pdb: false
+    resources:
+      requests: { cpu: 25m, memory: 32Mi }
+      limits: { memory: 64Mi }
+    hpa:
+      enabled: false

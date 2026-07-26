@@ -1,0 +1,10 @@
+apiVersion: v2
+name: dispatch
+description: >-
+  Chart do sistema dispatch (tier 4). Empacota os cinco serviços do tier 3
+  (delivery-api, dispatch-worker, tracking-ingest, tracking-projector,
+  notification-worker) que antes eram cinco manifests quase idênticos em
+  deploy/kubernetes/ (Kustomize). Ver docs/adr/0013-helm-em-vez-de-kustomize.md.
+type: application
+version: 0.1.0
+appVersion: "tier-4"

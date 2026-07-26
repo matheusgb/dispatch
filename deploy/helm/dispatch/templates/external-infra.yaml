@@ -1,0 +1,117 @@
+# Infra compartilhada (PostgreSQL, Redis, Redpanda, dependency-simulator)
+# continua fora do cluster neste tier: roda no docker compose do host, como
+# qualquer serviço gerenciado externo faria. Cada par Service/Endpoints
+# abaixo é o único acoplamento entre o cluster kind e essa infra.
+#
+# Um Service comum sem selector, com um Endpoints apontando para um IP
+# literal, é o jeito correto de referenciar algo fora do cluster: um
+# Service do tipo ExternalName exige um nome DNS, não aceita IP (ver ADR
+# 0011). O IP real (gateway docker do host, que muda por ambiente) vem de
+# .Values.externalInfra.hostGatewayIP, preenchido em runtime por
+# scripts/helm-deploy.sh via --set, nunca hardcodado neste chart.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-external
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.externalInfra.postgres.port }}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: postgres-external
+  namespace: {{ .Values.namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.externalInfra.hostGatewayIP }}
+    ports:
+      - port: {{ .Values.externalInfra.postgres.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-external
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.externalInfra.redis.port }}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: redis-external
+  namespace: {{ .Values.namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.externalInfra.hostGatewayIP }}
+    ports:
+      - port: {{ .Values.externalInfra.redis.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda-external
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.externalInfra.redpanda.port }}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: redpanda-external
+  namespace: {{ .Values.namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.externalInfra.hostGatewayIP }}
+    ports:
+      - port: {{ .Values.externalInfra.redpanda.port }}
+---
+# O Redpanda do docker compose anuncia a si mesmo como "redpanda:9092"
+# (endereço válido dentro da rede do compose). Um cliente Kafka sempre
+# reconecta usando o endereço anunciado pelo próprio broker, não o que foi
+# usado no bootstrap inicial; sem isso, "redpanda-external" resolveria o
+# primeiro contato, mas toda produção/consumo real falharia tentando
+# resolver "redpanda" sozinho (ADR 0011). Este Service replica o mesmo
+# apontamento sob o nome curto "redpanda".
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.externalInfra.redpanda.port }}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: redpanda
+  namespace: {{ .Values.namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.externalInfra.hostGatewayIP }}
+    ports:
+      - port: {{ .Values.externalInfra.redpanda.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dependency-simulator-external
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.externalInfra.dependencySimulator.port }}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: dependency-simulator-external
+  namespace: {{ .Values.namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.externalInfra.hostGatewayIP }}
+    ports:
+      - port: {{ .Values.externalInfra.dependencySimulator.port }}
