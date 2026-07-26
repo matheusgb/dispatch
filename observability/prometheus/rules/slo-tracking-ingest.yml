@@ -1,0 +1,76 @@
+# SLO 3: disponibilidade do tracking-ingest.
+#
+# Objetivo (Meta): 99% das requisições HTTP não-5xx em uma janela de 30
+# dias. Meta mais frouxa que a do delivery-api (99,5%, ver
+# slo-delivery-api.yml) de propósito: tracking-ingest não usa outbox (ver
+# docs/adr/0007-tracking-nao-usa-outbox.md), a garantia de entrega de uma
+# posição de GPS é mais fraca por decisão de produto (perder uma posição
+# intermediária é aceitável; perder uma transição de entrega não).
+groups:
+  - name: slo-tracking-ingest-recording
+    interval: 30s
+    rules:
+      - record: slo:tracking_ingest_errors:ratio_rate5m
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[5m]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[5m]))
+      - record: slo:tracking_ingest_errors:ratio_rate30m
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[30m]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[30m]))
+      - record: slo:tracking_ingest_errors:ratio_rate1h
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[1h]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[1h]))
+      - record: slo:tracking_ingest_errors:ratio_rate6h
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[6h]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[6h]))
+
+  - name: slo-tracking-ingest-alerting
+    rules:
+      - alert: TrackingIngestErrorBudgetBurnFast
+        expr: |
+          slo:tracking_ingest_errors:ratio_rate5m > (14.4 * 0.01)
+          and
+          slo:tracking_ingest_errors:ratio_rate1h > (14.4 * 0.01)
+        for: 2m
+        labels:
+          severity: page
+          slo: tracking-ingest-availability
+        annotations:
+          summary: "tracking-ingest queimando o orçamento de erro rápido demais"
+          description: >-
+            Taxa de erro 5xx do tracking-ingest acima de 14.4x o
+            orçamento (Meta 99%) nas janelas de 5m e 1h simultaneamente.
+
+      - alert: TrackingIngestErrorBudgetBurnSlow
+        expr: |
+          slo:tracking_ingest_errors:ratio_rate30m > (6 * 0.01)
+          and
+          slo:tracking_ingest_errors:ratio_rate6h > (6 * 0.01)
+        for: 15m
+        labels:
+          severity: ticket
+          slo: tracking-ingest-availability
+        annotations:
+          summary: "tracking-ingest queimando o orçamento de erro acima do sustentável"
+          description: >-
+            Taxa de erro 5xx do tracking-ingest acima de 6x o orçamento
+            (Meta 99%) nas janelas de 30m e 6h simultaneamente.

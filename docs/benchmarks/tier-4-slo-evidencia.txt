@@ -1,0 +1,16 @@
+=== rule groups carregados ===
+slo-delivery-api-latency-alerting - /etc/prometheus/rules/slo-delivery-api-latency.yml - 2 regras
+slo-delivery-api-latency-recording - /etc/prometheus/rules/slo-delivery-api-latency.yml - 4 regras
+slo-delivery-api-alerting - /etc/prometheus/rules/slo-delivery-api.yml - 2 regras
+slo-delivery-api-recording - /etc/prometheus/rules/slo-delivery-api.yml - 4 regras
+slo-tracking-ingest-alerting - /etc/prometheus/rules/slo-tracking-ingest.yml - 2 regras
+slo-tracking-ingest-recording - /etc/prometheus/rules/slo-tracking-ingest.yml - 4 regras
+
+=== valores das recording rules com trafego real (20 POST /deliveries bem-sucedidos) ===
+-- slo:delivery_api_errors:ratio_rate5m --
+{'__name__': 'slo:delivery_api_errors:ratio_rate5m'} = 0
+-- slo:delivery_api_latency_breach:ratio_rate5m --
+{'__name__': 'slo:delivery_api_latency_breach:ratio_rate5m'} = 0
+
+=== estado dos alertas (todos inactive, sem burn de orcamento) ===
+total alertas ativos: 0

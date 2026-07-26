@@ -1,0 +1,90 @@
+# SLO 1: disponibilidade do delivery-api.
+#
+# Objetivo (Meta): 99,5% das requisições HTTP não-5xx em uma janela de 30
+# dias. 99,5% é a Meta declarada aqui, não uma medição: este laboratório
+# roda localmente, sem 30 dias de tráfego real acumulado (ver
+# docs/limitacoes-simulacao-local.md). O orçamento de erro correspondente
+# é 0,5% das requisições no período.
+#
+# As regras de burn rate seguem a técnica de múltiplas janelas do Google
+# SRE Workbook (https://sre.google/workbook/alerting-on-slos/): comparar
+# a taxa de erro atual contra um múltiplo da taxa de consumo constante do
+# orçamento, em duas velocidades (queima rápida = alerta imediato, queima
+# lenta = alerta de menor urgência). Os multiplicadores 14.4 e 6 são os
+# valores padrão da tabela de exemplo do workbook para um período de 30
+# dias com dois alertas (não foram recalculados aqui; citados como
+# Premissa herdada da fonte, não Medido).
+groups:
+  - name: slo-delivery-api-recording
+    interval: 30s
+    rules:
+      - record: slo:delivery_api_errors:ratio_rate5m
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[5m]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="delivery-api"}[5m]))
+      - record: slo:delivery_api_errors:ratio_rate30m
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[30m]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="delivery-api"}[30m]))
+      - record: slo:delivery_api_errors:ratio_rate1h
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[1h]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="delivery-api"}[1h]))
+      - record: slo:delivery_api_errors:ratio_rate6h
+        expr: |
+          (
+            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[6h]))
+            or on() vector(0)
+          )
+          /
+          sum(rate(dispatch_http_requests_total{job="delivery-api"}[6h]))
+
+  - name: slo-delivery-api-alerting
+    rules:
+      - alert: DeliveryAPIErrorBudgetBurnFast
+        # Queima rápida: consumiria 2% do orçamento de 30 dias em 1h se
+        # sustentada. Confirmada em duas janelas (5m e 1h) para reduzir
+        # falso positivo de um pico curto.
+        expr: |
+          slo:delivery_api_errors:ratio_rate5m > (14.4 * 0.005)
+          and
+          slo:delivery_api_errors:ratio_rate1h > (14.4 * 0.005)
+        for: 2m
+        labels:
+          severity: page
+          slo: delivery-api-availability
+        annotations:
+          summary: "delivery-api queimando o orçamento de erro rápido demais"
+          description: >-
+            Taxa de erro 5xx do delivery-api acima de 14.4x o orçamento
+            (Meta 99,5%) nas janelas de 5m e 1h simultaneamente. Nesta
+            velocidade, o orçamento de 30 dias esgota em menos de 2 dias.
+
+      - alert: DeliveryAPIErrorBudgetBurnSlow
+        # Queima lenta: consumiria 5% do orçamento de 30 dias em 6h se
+        # sustentada. Confirmada em duas janelas (30m e 6h).
+        expr: |
+          slo:delivery_api_errors:ratio_rate30m > (6 * 0.005)
+          and
+          slo:delivery_api_errors:ratio_rate6h > (6 * 0.005)
+        for: 15m
+        labels:
+          severity: ticket
+          slo: delivery-api-availability
+        annotations:
+          summary: "delivery-api queimando o orçamento de erro acima do sustentável"
+          description: >-
+            Taxa de erro 5xx do delivery-api acima de 6x o orçamento
+            (Meta 99,5%) nas janelas de 30m e 6h simultaneamente.

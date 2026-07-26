@@ -1,6 +1,11 @@
 global:
   scrape_interval: 5s
 
+# SLOs como código (tier 4): regras de gravação e alerta em
+# observability/prometheus/rules/. Ver docs/adr/0015-slo-como-codigo.md.
+rule_files:
+  - "rules/*.yml"
+
 scrape_configs:
   - job_name: delivery-api
     static_configs:

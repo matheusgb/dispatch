@@ -1,0 +1,72 @@
+# SLO 2: latência do delivery-api.
+#
+# Objetivo (Meta): 95% das requisições respondidas em até 500ms, em uma
+# janela de 30 dias. O limiar de 500ms é o mesmo já usado como threshold
+# de aceite no k6 smoke deste repositório (ver docs/benchmarks/tier-1 em
+# diante); reaproveitado aqui como Meta declarada de SLO, não recalculado.
+groups:
+  - name: slo-delivery-api-latency-recording
+    interval: 30s
+    rules:
+      - record: slo:delivery_api_latency_breach:ratio_rate5m
+        expr: |
+          1 - (
+            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[5m]))
+            /
+            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[5m]))
+          )
+      - record: slo:delivery_api_latency_breach:ratio_rate30m
+        expr: |
+          1 - (
+            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[30m]))
+            /
+            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[30m]))
+          )
+      - record: slo:delivery_api_latency_breach:ratio_rate1h
+        expr: |
+          1 - (
+            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[1h]))
+            /
+            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[1h]))
+          )
+      - record: slo:delivery_api_latency_breach:ratio_rate6h
+        expr: |
+          1 - (
+            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[6h]))
+            /
+            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[6h]))
+          )
+
+  - name: slo-delivery-api-latency-alerting
+    rules:
+      - alert: DeliveryAPILatencyBudgetBurnFast
+        expr: |
+          slo:delivery_api_latency_breach:ratio_rate5m > (14.4 * 0.05)
+          and
+          slo:delivery_api_latency_breach:ratio_rate1h > (14.4 * 0.05)
+        for: 2m
+        labels:
+          severity: page
+          slo: delivery-api-latency
+        annotations:
+          summary: "delivery-api acima de 500ms com mais frequência que o orçamento permite"
+          description: >-
+            Fração de requisições acima de 500ms superior a 14.4x o
+            orçamento (Meta 95% em até 500ms) nas janelas de 5m e 1h.
+            Ver docs/benchmarks/chaos-tier-4.md cenário D: latência no
+            PostgreSQL é a causa mais provável já observada neste tier.
+
+      - alert: DeliveryAPILatencyBudgetBurnSlow
+        expr: |
+          slo:delivery_api_latency_breach:ratio_rate30m > (6 * 0.05)
+          and
+          slo:delivery_api_latency_breach:ratio_rate6h > (6 * 0.05)
+        for: 15m
+        labels:
+          severity: ticket
+          slo: delivery-api-latency
+        annotations:
+          summary: "delivery-api queimando o orçamento de latência acima do sustentável"
+          description: >-
+            Fração de requisições acima de 500ms superior a 6x o
+            orçamento (Meta 95%) nas janelas de 30m e 6h.

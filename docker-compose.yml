@@ -212,6 +212,7 @@ services:
     image: prom/prometheus:v3.0.1
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/rules:/etc/prometheus/rules:ro
     ports:
       - "9090:9090"
 
