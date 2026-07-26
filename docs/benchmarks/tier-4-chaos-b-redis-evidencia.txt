@@ -1,0 +1,36 @@
+=== steady state (redis up) ===
+token obtido: eyJhbGciOiJIUzI1NiIs...
+delivery criada: {"id":"19d4ad68-82d3-484d-a3fc-f9e4884e5fb7","state":"created"}
+id=19d4ad68-82d3-484d-a3fc-f9e4884e5fb7
+
+posicao ingerida
+leitura via tracking-projector:
+status=200
+
+=== injecao: docker compose stop redis ===
+ Container dispatch-redis-1  Stopping
+ Container dispatch-redis-1  Stopped
+Error response from daemon: container 9f57ee78e0324ff9f590f9ee75c29c42c8370d4fc97315a78480280d87d8ba95 is not running
+
+=== observacao com redis fora do ar ===
+token obtido: eyJhbGciOiJIUzI1NiIs...
+delivery criada: {"id":"6286aa03-9b92-42c8-a283-31ec39359300","state":"created"}
+id=6286aa03-9b92-42c8-a283-31ec39359300
+
+posicao ingerida
+leitura via tracking-projector:
+status=200
+
+=== recuperacao: docker compose start redis ===
+ Container dispatch-redis-1  Starting
+ Container dispatch-redis-1  Started
+PONG
+
+=== observacao pos-recuperacao ===
+token obtido: eyJhbGciOiJIUzI1NiIs...
+delivery criada: {"id":"7ea067d0-8749-47ae-916c-68717f33fcbd","state":"created"}
+id=7ea067d0-8749-47ae-916c-68717f33fcbd
+
+posicao ingerida
+leitura via tracking-projector:
+status=200

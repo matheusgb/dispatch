@@ -1,0 +1,38 @@
+=== steady state (toxiproxy sem toxic) ===
+req 1 -> status=201 latencia_s=0.003114
+req 2 -> status=201 latencia_s=0.002908
+req 3 -> status=201 latencia_s=0.002429
+req 4 -> status=201 latencia_s=0.002380
+req 5 -> status=201 latencia_s=0.002456
+req 6 -> status=201 latencia_s=0.002619
+req 7 -> status=201 latencia_s=0.002743
+req 8 -> status=201 latencia_s=0.002393
+req 9 -> status=201 latencia_s=0.002415
+req 10 -> status=201 latencia_s=0.002606
+
+=== injecao: toxic latency 300ms +-100ms no Postgres via Toxiproxy ===
+req 1 -> status=201 latencia_s=2.014778
+req 2 -> status=201 latencia_s=4.394848
+req 3 -> status=201 latencia_s=1.792866
+req 4 -> status=201 latencia_s=1.921405
+req 5 -> status=201 latencia_s=2.148016
+req 6 -> status=201 latencia_s=2.293086
+req 7 -> status=201 latencia_s=1.783498
+req 8 -> status=201 latencia_s=1.889636
+req 9 -> status=201 latencia_s=2.042353
+req 10 -> status=201 latencia_s=2.455656
+
+=== remocao do toxic ===
+=== observacao pos-recuperacao ===
+req 1 -> status=201 latencia_s=0.003067
+req 2 -> status=201 latencia_s=0.002628
+req 3 -> status=201 latencia_s=0.002908
+req 4 -> status=201 latencia_s=0.004808
+req 5 -> status=201 latencia_s=0.002489
+req 6 -> status=201 latencia_s=0.002484
+req 7 -> status=201 latencia_s=0.002397
+req 8 -> status=201 latencia_s=0.002941
+req 9 -> status=201 latencia_s=0.002722
+req 10 -> status=201 latencia_s=0.002890
+=== toxiproxy admin api responsiva apos remocao (checagem do bug conhecido) ===
+{"postgres":{"name":"postgres","listen":"[::]:15432","upstream":"postgres:5432","enabled":true,"Logger":{},"toxics":[]}}

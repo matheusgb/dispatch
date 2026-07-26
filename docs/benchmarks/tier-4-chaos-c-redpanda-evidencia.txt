@@ -1,0 +1,20 @@
+=== steady state (redpanda up) ===
+delivery 1 -> status=201
+delivery 2 -> status=201
+delivery 3 -> status=201
+
+=== injecao: docker pause redpanda ===
+dispatch-redpanda-1
+=== observacao com redpanda pausado ===
+delivery 1 -> status=201
+delivery 2 -> status=201
+delivery 3 -> status=201
+
+=== outbox_events pendentes com redpanda pausado: 6 ===
+=== recuperacao: docker unpause redpanda ===
+dispatch-redpanda-1
+ pendentes 
+-----------
+         0
+(1 row)
+
