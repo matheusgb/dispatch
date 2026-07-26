@@ -28,4 +28,5 @@ lunchrush-report.*
 crash.log
 crash.*.log
 
-
+# Chave privada de assinatura de imagem (ADR 0016). A pública fica versionada.
+docs/benchmarks/supply-chain/cosign.key
