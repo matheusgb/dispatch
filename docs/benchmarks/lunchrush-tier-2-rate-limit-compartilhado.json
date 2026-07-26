@@ -1,0 +1,1052 @@
+{
+  "seed": 777,
+  "orders": 100,
+  "couriers": 15,
+  "completed": 10,
+  "declined": 11,
+  "expired": 10,
+  "errors": 69,
+  "duplicates_checked": 20,
+  "duplicates_ok": 20,
+  "total_assign_retries": 810,
+  "positions_sent": 30,
+  "positions_current": 30,
+  "duration_ns": 12468921165,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "8fd20ed9-a608-4ee0-a52b-d4016d60fad0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 15960494
+    },
+    {
+      "index": 1,
+      "delivery_id": "15ca71bd-c9bc-42b2-86b8-0ba64ad400dc",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 16900736
+    },
+    {
+      "index": 2,
+      "delivery_id": "f6dfd504-0e30-4a05-8e5f-5573f3a41e5b",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 8716156
+    },
+    {
+      "index": 3,
+      "delivery_id": "86caec00-3f71-440c-8acc-1d6ab6adf7f0",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 16021344
+    },
+    {
+      "index": 4,
+      "delivery_id": "3a30aaf2-97c6-4df3-b82d-c0bddb34dfb8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 16481094
+    },
+    {
+      "index": 5,
+      "delivery_id": "0ac791fa-5839-433e-b490-371945a3c291",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 14405698
+    },
+    {
+      "index": 6,
+      "delivery_id": "3b3f21a9-3272-4f98-b110-86a196ae396d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12026587
+    },
+    {
+      "index": 7,
+      "delivery_id": "d6e08331-2b17-40c7-ba6b-e34c4566154e",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5307032
+    },
+    {
+      "index": 8,
+      "delivery_id": "4415b793-1206-492e-b97f-aab9ae4a3b97",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12432374
+    },
+    {
+      "index": 9,
+      "delivery_id": "69a8086f-0097-4d59-a8d6-205b834948cb",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12687520
+    },
+    {
+      "index": 10,
+      "delivery_id": "79ee2937-f111-44db-b615-f5da8cf74b1f",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 13002874
+    },
+    {
+      "index": 11,
+      "delivery_id": "b4742cf3-972c-4669-9c22-7bf5924227a7",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12805798
+    },
+    {
+      "index": 12,
+      "delivery_id": "f2aaee33-ced6-4228-a4d1-721319b99c82",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5483198
+    },
+    {
+      "index": 13,
+      "delivery_id": "08904f3c-6fb4-48fb-a4cc-cb53e1723055",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6523966,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 14,
+      "delivery_id": "22bc445f-99ca-430d-8ab0-987afdffaf0c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 6596960,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "8a76e7af-2a00-4489-83b4-b0b9a2ac85b1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5549674,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 16,
+      "delivery_id": "67ae9948-047d-4159-9a0c-a2ccfd32a53f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5527152,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 17,
+      "delivery_id": "a7d566fe-4fad-4ef5-8b0d-a8c473e2fc1d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5335808,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 18,
+      "delivery_id": "048f1f49-a607-40b8-aa73-f33754db67c4",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5856715,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 19,
+      "delivery_id": "6cfdf130-e883-494d-8e23-3ccf17021463",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5646912,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 20,
+      "delivery_id": "972c55b3-536d-46ad-80e1-5aa02cd75f9f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5835041,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 21,
+      "delivery_id": "4d33e3c6-f517-4f67-8783-2feac018c916",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 5828415,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 22,
+      "delivery_id": "9a9777e3-82a0-4223-8bb2-545fc061442f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6033171,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 23,
+      "delivery_id": "2a4c421f-f07f-4bec-ab5a-0a761d7541ef",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 6403061,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 24,
+      "delivery_id": "94839a4b-6a6d-4fe8-a43b-4bc54b39d467",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5681979,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 25,
+      "delivery_id": "fcf63738-c84e-42de-8952-95f2e42e2b9a",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2511432718
+    },
+    {
+      "index": 26,
+      "delivery_id": "d495d842-b03a-4beb-a43b-a259e3e170d9",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5900991,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 27,
+      "delivery_id": "8900f0aa-4a8b-4a72-9a96-b88485c34fac",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6572877,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 28,
+      "delivery_id": "02e10990-2f2e-4be7-a6e5-51bccde7ea89",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5741166,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 29,
+      "delivery_id": "80c703a2-19cb-46b8-8012-ca7a03d5b7b3",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14192173,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 30,
+      "delivery_id": "75a1a645-1db6-44a3-a61f-085c7e6ce693",
+      "outcome": "expired",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 2511671853
+    },
+    {
+      "index": 31,
+      "delivery_id": "7d3110a4-87a2-4367-9eb9-a13220d699dc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14337929,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 32,
+      "delivery_id": "990119a8-509c-4594-9f42-df0ff625a3f7",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13523404,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 33,
+      "delivery_id": "120fdc38-0663-4051-bc61-9e5abbf752cb",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12600281,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 34,
+      "delivery_id": "e7a04b33-e456-446e-946a-c9db077b001c",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13433391,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 35,
+      "delivery_id": "63a50f54-0ae1-431a-883b-9c97e953dcf5",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2509130005
+    },
+    {
+      "index": 36,
+      "delivery_id": "5f2a8245-c59b-4061-a273-54bbae50e9b5",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12312005,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 37,
+      "delivery_id": "b14baa72-46cb-4839-93a6-389acfa61087",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12894650,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 38,
+      "delivery_id": "6e63fa96-6bdb-49c3-ac6b-20e10eb19082",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12955231,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 39,
+      "delivery_id": "f1d1c85f-a5ff-4898-a909-960715b44d8f",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 12918966,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 40,
+      "delivery_id": "4fe19e9c-fdf3-484e-955e-91e47617be3c",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7601974
+    },
+    {
+      "index": 41,
+      "delivery_id": "ebb1d117-f6de-4599-8951-1a4570e4ea82",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 14104178,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 42,
+      "delivery_id": "910c9abf-c5b1-4a08-95c7-0215f2af5d01",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13966592,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 43,
+      "delivery_id": "c84e40c6-2425-4eee-bfaf-c01060d7b2f8",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13505375,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 44,
+      "delivery_id": "67086c13-d656-4957-b85e-7d3cc968ca23",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13862735,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 45,
+      "delivery_id": "5dafbfef-1c54-4aff-81cb-8095e43d8f87",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5434407
+    },
+    {
+      "index": 46,
+      "delivery_id": "61fec091-431b-4b39-9ab8-11b397e42722",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13815316,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 47,
+      "delivery_id": "cb51c124-8923-4043-9824-309409e43846",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13554173,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 48,
+      "delivery_id": "4c942c5d-0ab5-4062-a518-c7ea35655dd7",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13880323,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 49,
+      "delivery_id": "ac76e502-2864-4757-bc85-f0a93cde5ec7",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13865227,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 50,
+      "delivery_id": "4c1fdca0-13fc-4371-89b3-b2de3d8d2b58",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5034357
+    },
+    {
+      "index": 51,
+      "delivery_id": "7399693c-457a-43a3-a47b-23531d9ad0e4",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13927746,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 52,
+      "delivery_id": "87ed56fb-0e40-4b31-a0ca-b916cae7431f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14112920,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 53,
+      "delivery_id": "61535837-5827-4740-b420-450a28e1d1bf",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2510664888
+    },
+    {
+      "index": 54,
+      "delivery_id": "8d8f412d-cc03-47e9-baee-b9a21d684fbc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14730443,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 55,
+      "delivery_id": "e0060195-c8d9-4614-b4ed-224f1a85890f",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5211671
+    },
+    {
+      "index": 56,
+      "delivery_id": "1763a021-8604-4848-88de-23fbef739180",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13834723,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 57,
+      "delivery_id": "3f0a8852-20db-4da0-b647-c8f91c2aa42f",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 14719519,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 58,
+      "delivery_id": "eda0313d-374d-4b3d-b9d5-716ac2e14f5b",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7521312168
+    },
+    {
+      "index": 59,
+      "delivery_id": "a328ad51-d242-42ac-8c87-22ad824efe4c",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14867141,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 60,
+      "delivery_id": "1581e40a-0202-4af9-b3f9-095df8e3dc8d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12706379,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 61,
+      "delivery_id": "d37ba2d4-cd74-4853-8548-f142049a613d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13828835,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 62,
+      "delivery_id": "9b72f65a-1545-4e53-8ad8-d9a6fdd124f2",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13836960,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 63,
+      "delivery_id": "1579be12-3663-4c03-a524-7ab9ab8439a5",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5016380647
+    },
+    {
+      "index": 64,
+      "delivery_id": "245402bd-33a3-4679-8b05-ce51c82a9c95",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13728201,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 65,
+      "delivery_id": "73fe4cfe-9ba1-4440-9e90-3f24e2a13dbd",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13150161,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 66,
+      "delivery_id": "b71bd17f-7b12-4003-b68d-2860fa9508d7",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13202185,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 67,
+      "delivery_id": "b0c6ac59-5c18-41fe-a05d-3f44840e642b",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12615787,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 68,
+      "delivery_id": "b80b2320-690d-4fe9-af31-28860d609bf8",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5014735831
+    },
+    {
+      "index": 69,
+      "delivery_id": "3d689e30-39b8-45be-8635-c1ff7d788764",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13663443,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 70,
+      "delivery_id": "e44217e2-c79b-4566-b01f-8c5f66e8efe0",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13037047,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 71,
+      "delivery_id": "f979272a-de9c-41bf-b284-c76bc8aaafd9",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13024364,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 72,
+      "delivery_id": "986def5e-d31a-4905-bb08-acdebe8e6bbe",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13390773,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 73,
+      "delivery_id": "0aa6464b-278d-4fe6-a802-9d859272cab6",
+      "outcome": "expired",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 5016758569
+    },
+    {
+      "index": 74,
+      "delivery_id": "7aaa18e5-cfe2-4b02-9120-6c7e53b127cc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 14689217,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 75,
+      "delivery_id": "13eaad01-63e8-48e6-911b-4e134244687c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13709940,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 76,
+      "delivery_id": "e1d178b1-50d9-43ce-8b7c-f5f1678e63fa",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13219651,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 77,
+      "delivery_id": "49a4aabd-4cc8-47e5-baf6-1f88b174f6b4",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13176418,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 78,
+      "delivery_id": "a6c79069-e63b-4d21-9184-09b9148e48c9",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 4234277
+    },
+    {
+      "index": 79,
+      "delivery_id": "c738af90-2dad-4630-94f4-7ae50a92f1bc",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13400442,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 80,
+      "delivery_id": "33bac384-b2c9-4b80-9207-ece7df870795",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12572619,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 81,
+      "delivery_id": "06edea8c-40ef-48bf-8631-c5d3518f3104",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13084911,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 82,
+      "delivery_id": "f0b1381f-6a68-4cfd-a892-bbdf5fe02790",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13532303,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 83,
+      "delivery_id": "30549ce3-2221-43f0-8b5a-e1e9917800ed",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 4573673
+    },
+    {
+      "index": 84,
+      "delivery_id": "70fe7ec8-6b28-449b-ae53-81f57214152c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13123733,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 85,
+      "delivery_id": "325796bf-8ca2-42b5-9d09-c8af29fb9082",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12805827,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 86,
+      "delivery_id": "e81c3649-8bb8-4ff2-9fae-0d607949bfbe",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13381482,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 87,
+      "delivery_id": "00f25021-c545-4ded-bf30-5be8d0754c57",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13313183,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 88,
+      "delivery_id": "f78d13f7-51eb-4a07-aabe-c02250c22d17",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5236225
+    },
+    {
+      "index": 89,
+      "delivery_id": "733fdee7-00ef-447a-b6f9-76d24c3f36b2",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 15,
+      "duration_ns": 13482323,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 90,
+      "delivery_id": "d4fa4eca-9126-4054-a23f-e4d1102b0c31",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13346948,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 91,
+      "delivery_id": "829a871e-b1c9-43e6-9cb7-6b6b9c6017fb",
+      "outcome": "expired",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 4516236801
+    },
+    {
+      "index": 92,
+      "delivery_id": "2fa50d65-742a-459c-a192-b5ec656aafdb",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13454447,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 93,
+      "delivery_id": "f91d9642-6bfb-46e1-afcf-d5594248bb08",
+      "outcome": "declined",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 4706739
+    },
+    {
+      "index": 94,
+      "delivery_id": "57c113eb-ce8a-463a-8154-4f6bf36c8f80",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13298228,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 95,
+      "delivery_id": "0e22d1f0-605a-479f-8dcf-b22f479514be",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 13035562,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 96,
+      "delivery_id": "730b508e-ad37-47ef-875c-17920af7941c",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5015754460
+    },
+    {
+      "index": 97,
+      "delivery_id": "5741941c-ff7e-4db9-9591-d2edde880ca3",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 15297278,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 98,
+      "delivery_id": "f24b252e-c517-41d0-aa65-c3f41b7bb395",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12870198,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 99,
+      "delivery_id": "9e6c29eb-e4fb-4dae-9c2f-794dbe2be9b0",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 15,
+      "duration_ns": 12528302,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    }
+  ],
+  "failure_samples": [
+    {
+      "index": 13,
+      "delivery_id": "08904f3c-6fb4-48fb-a4cc-cb53e1723055",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6523966,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 14,
+      "delivery_id": "22bc445f-99ca-430d-8ab0-987afdffaf0c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 6596960,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "8a76e7af-2a00-4489-83b4-b0b9a2ac85b1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5549674,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 16,
+      "delivery_id": "67ae9948-047d-4159-9a0c-a2ccfd32a53f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5527152,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 17,
+      "delivery_id": "a7d566fe-4fad-4ef5-8b0d-a8c473e2fc1d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5335808,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 18,
+      "delivery_id": "048f1f49-a607-40b8-aa73-f33754db67c4",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5856715,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 19,
+      "delivery_id": "6cfdf130-e883-494d-8e23-3ccf17021463",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5646912,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 20,
+      "delivery_id": "972c55b3-536d-46ad-80e1-5aa02cd75f9f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5835041,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 21,
+      "delivery_id": "4d33e3c6-f517-4f67-8783-2feac018c916",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 5828415,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 22,
+      "delivery_id": "9a9777e3-82a0-4223-8bb2-545fc061442f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6033171,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    }
+  ]
+}

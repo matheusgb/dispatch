@@ -18,6 +18,8 @@ type summary struct {
 	DuplicatesChecked  int           `json:"duplicates_checked"`
 	DuplicatesOK       int           `json:"duplicates_ok"`
 	TotalAssignRetries int           `json:"total_assign_retries"`
+	PositionsSent      int           `json:"positions_sent"`
+	PositionsCurrent   int           `json:"positions_current"`
 	Duration           time.Duration `json:"duration_ns"`
 	Results            []orderResult `json:"results"`
 	FailureSamples     []orderResult `json:"failure_samples,omitempty"`
@@ -46,6 +48,8 @@ func summarize(seed int64, courierCount int, started time.Time, results []orderR
 			}
 		}
 		s.TotalAssignRetries += r.AssignRetries
+		s.PositionsSent += r.PositionsSent
+		s.PositionsCurrent += r.PositionsCurrent
 	}
 	return s
 }
@@ -86,8 +90,13 @@ func writeReport(prefix string, s summary) error {
 
 - total de tentativas de atribuição rejeitadas por entregador ocupado, absorvidas por retry no pool: %d
 
+## Tracking de GPS
+
+- posições enviadas (entregas concluídas): %d
+- posições que avançaram a projeção de última posição: %d
+
 `, s.Seed, s.Orders, s.Couriers, s.Duration, s.Completed, s.Declined, s.Expired, s.Errors,
-		s.DuplicatesChecked, s.DuplicatesOK, s.TotalAssignRetries)
+		s.DuplicatesChecked, s.DuplicatesOK, s.TotalAssignRetries, s.PositionsSent, s.PositionsCurrent)
 
 	if len(s.FailureSamples) > 0 {
 		md += "## Amostra de falhas\n\n"

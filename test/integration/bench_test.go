@@ -75,7 +75,7 @@ func BenchmarkDispatch_Assign(b *testing.B) {
 func truncateAllBench(b *testing.B) {
 	b.Helper()
 	_, err := pool.Exec(context.Background(), `
-		TRUNCATE idempotency_keys, delivery_transitions, deliveries, couriers
+		TRUNCATE idempotency_keys, delivery_transitions, tracking_positions, delivery_tracking_state, deliveries, couriers
 	`)
 	if err != nil {
 		b.Fatalf("truncate: %v", err)

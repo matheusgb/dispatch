@@ -72,6 +72,14 @@ type statusRecorder struct {
 	status int
 }
 
+// Unwrap permite que http.NewResponseController atravesse este wrapper e
+// alcance o http.Flusher/http.ResponseController real por baixo (Go 1.20+).
+// Sem isso, empilhar statusRecorder em cima de statusRecorder (metrics e
+// log, nesta ordem) esconderia o Flusher do handler de SSE.
+func (r *statusRecorder) Unwrap() http.ResponseWriter {
+	return r.ResponseWriter
+}
+
 func (r *statusRecorder) WriteHeader(status int) {
 	r.status = status
 	r.ResponseWriter.WriteHeader(status)

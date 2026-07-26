@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: delivery-api
+    static_configs:
+      - targets: ["delivery-api:8080"]

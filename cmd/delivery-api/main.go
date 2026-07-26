@@ -13,11 +13,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/matheusgb/dispatch/internal/courier"
 	"github.com/matheusgb/dispatch/internal/delivery"
 	"github.com/matheusgb/dispatch/internal/dispatch"
+	"github.com/matheusgb/dispatch/internal/notification"
+	"github.com/matheusgb/dispatch/internal/platform/auth"
 	"github.com/matheusgb/dispatch/internal/platform/db"
 	"github.com/matheusgb/dispatch/internal/platform/httpapi"
+	"github.com/matheusgb/dispatch/internal/platform/sse"
+	"github.com/matheusgb/dispatch/internal/tracking"
 )
 
 func main() {
@@ -31,6 +37,24 @@ func main() {
 	addr := os.Getenv("HTTP_ADDR")
 	if addr == "" {
 		addr = ":8080"
+	}
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "localhost:6379"
+	}
+	jwtSecret := os.Getenv("DISPATCH_JWT_SECRET")
+	if jwtSecret == "" {
+		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido")
+		os.Exit(1)
+	}
+	adminSecret := os.Getenv("DISPATCH_ADMIN_SECRET")
+	if adminSecret == "" {
+		logger.Error("configuração inválida: DISPATCH_ADMIN_SECRET não definido")
+		os.Exit(1)
+	}
+	notificationProviderURL := os.Getenv("NOTIFICATION_PROVIDER_URL")
+	if notificationProviderURL == "" {
+		notificationProviderURL = "http://localhost:8090"
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -49,7 +73,17 @@ func main() {
 	couriers := courier.NewRepository(pool)
 	dispatchSvc := dispatch.NewService(pool, dispatch.SystemClock{})
 
-	handler := httpapi.NewServer(deliveries, couriers, dispatchSvc, logger)
+	rdb := redis.NewClient(&redis.Options{Addr: redisAddr, DialTimeout: 500 * time.Millisecond, MaxRetries: 1})
+	defer rdb.Close()
+	trackingRepo := tracking.NewRepository(pool)
+	trackingCache := tracking.NewCache(trackingRepo, rdb, 5*time.Minute, logger)
+
+	handler := httpapi.NewServer(httpapi.Deps{
+		Deliveries: deliveries, Couriers: couriers, Dispatch: dispatchSvc,
+		TrackingRepo: trackingRepo, TrackingCache: trackingCache, Broker: sse.NewBroker(),
+		Issuer: auth.NewIssuer(jwtSecret, time.Hour), AdminSecret: adminSecret,
+		Notifier: notification.NewClient(notificationProviderURL, logger), Logger: logger,
+	})
 
 	srv := &http.Server{
 		Addr:              addr,

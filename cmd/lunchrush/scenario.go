@@ -27,12 +27,15 @@ type orderResult struct {
 	DuplicateChecked bool          `json:"duplicate_checked"`
 	DuplicateOK      bool          `json:"duplicate_ok"`
 	AssignRetries    int           `json:"assign_retries,omitempty"`
+	PositionsSent    int           `json:"positions_sent,omitempty"`
+	PositionsCurrent int           `json:"positions_current,omitempty"`
 	Duration         time.Duration `json:"duration_ns"`
 	Err              string        `json:"error,omitempty"`
 }
 
 type scenario struct {
 	client         *client
+	token          string
 	couriers       []string
 	courierMu      sync.Mutex
 	courierCursor  int
@@ -87,7 +90,7 @@ func (s *scenario) runOrder(ctx context.Context, index int) orderResult {
 	case roll < s.declineRate+s.expireRate:
 		res.Outcome, err = s.runExpire(ctx, d.ID)
 	default:
-		res.Outcome, res.AssignRetries, err = s.runCompleted(ctx, d.ID)
+		res.Outcome, res.AssignRetries, res.PositionsSent, res.PositionsCurrent, err = s.runCompleted(ctx, d.ID, rng)
 	}
 	if err != nil {
 		res.Err = err.Error()
@@ -128,9 +131,9 @@ func (s *scenario) runExpire(ctx context.Context, id string) (outcome, error) {
 	return "", errors.New("oferta não expirou dentro do prazo esperado")
 }
 
-func (s *scenario) runCompleted(ctx context.Context, id string) (outcome, int, error) {
+func (s *scenario) runCompleted(ctx context.Context, id string, rng *rand.Rand) (outcome, int, int, int, error) {
 	if _, err := s.client.offer(ctx, id, s.offerTTL); err != nil {
-		return "", 0, err
+		return "", 0, 0, 0, err
 	}
 
 	retries := 0
@@ -139,15 +142,51 @@ func (s *scenario) runCompleted(ctx context.Context, id string) (outcome, int, e
 		courierID := s.nextCourier()
 		_, assignErr = s.client.assign(ctx, id, courierID)
 		if assignErr == nil {
+			sent, current, err := s.sendPositions(ctx, id, rng)
+			if err != nil {
+				return "", retries, sent, current, err
+			}
 			if _, err := s.client.pickUp(ctx, id); err != nil {
-				return "", retries, err
+				return "", retries, sent, current, err
 			}
 			if _, err := s.client.deliver(ctx, id); err != nil {
-				return "", retries, err
+				return "", retries, sent, current, err
 			}
-			return outcomeCompleted, retries, nil
+			return outcomeCompleted, retries, sent, current, nil
 		}
 		retries++
 	}
-	return "", retries, fmt.Errorf("nenhum entregador do pool ficou livre: %w", assignErr)
+	return "", retries, 0, 0, fmt.Errorf("nenhum entregador do pool ficou livre: %w", assignErr)
+}
+
+// sendPositions simula o entregador se deslocando: um pequeno trajeto de
+// pontos crescentes em epoch/sequence, sempre monotônico, verificando ao
+// final que a leitura via GET reflete o último ponto enviado. Isso é o
+// LunchRush conhecendo o domínio: k6 não saberia dizer se a projeção
+// avançou de verdade.
+func (s *scenario) sendPositions(ctx context.Context, id string, rng *rand.Rand) (sent, current int, err error) {
+	epoch := 1
+	baseLat, baseLon := -23.55+rng.Float64()*0.05, -46.63+rng.Float64()*0.05
+	const steps = 3
+	for i := 1; i <= steps; i++ {
+		lat := baseLat + float64(i)*0.001
+		lon := baseLon + float64(i)*0.001
+		isCurrent, err := s.client.recordPosition(ctx, s.token, id, epoch, i, lat, lon)
+		if err != nil {
+			return sent, current, err
+		}
+		sent++
+		if isCurrent {
+			current++
+		}
+	}
+
+	status, err := s.client.currentPosition(ctx, s.token, id)
+	if err != nil {
+		return sent, current, err
+	}
+	if status != 200 {
+		return sent, current, fmt.Errorf("consultar posição atual: status %d", status)
+	}
+	return sent, current, nil
 }

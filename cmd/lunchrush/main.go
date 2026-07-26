@@ -29,10 +29,19 @@ func main() {
 	offerTTL := flag.Int("offer-ttl-seconds", 30, "prazo da oferta para o caminho de aceite")
 	expireOfferTTL := flag.Int("expire-offer-ttl-seconds", 2, "prazo curto usado só no caminho de expiração")
 	out := flag.String("out", "lunchrush-report", "prefixo dos arquivos de relatório (.json e .md)")
+	adminSecret := flag.String("admin-secret", os.Getenv("DISPATCH_ADMIN_SECRET"), "segredo administrativo para emitir o token de tracking")
 	flag.Parse()
 
 	ctx := context.Background()
 	c := newClient(*baseURL)
+
+	if *adminSecret == "" {
+		log.Fatal("admin-secret é obrigatório (flag ou DISPATCH_ADMIN_SECRET): necessário para o token de tracking")
+	}
+	token, err := c.issueToken(ctx, *adminSecret, "lunchrush")
+	if err != nil {
+		log.Fatalf("emitir token de tracking: %v", err)
+	}
 
 	log.Printf("cadastrando %d entregadores", *courierCount)
 	couriers := make([]string, *courierCount)
@@ -49,6 +58,7 @@ func main() {
 
 	sc := &scenario{
 		client:         c,
+		token:          token,
 		couriers:       couriers,
 		declineRate:    *declineRate,
 		expireRate:     *expireRate,

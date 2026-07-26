@@ -1,0 +1,89 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: loadtest/k6/tracking-smoke.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 5 max VUs, 40s max duration (incl. graceful stop):
+              * default: 5 looping VUs for 10s (gracefulStop: 30s)
+
+
+running (01.0s), 5/5 VUs, 20 complete and 0 interrupted iterations
+default   [  10% ] 5 VUs  01.0s/10s
+
+running (02.0s), 5/5 VUs, 45 complete and 0 interrupted iterations
+default   [  20% ] 5 VUs  02.0s/10s
+
+running (03.0s), 5/5 VUs, 70 complete and 0 interrupted iterations
+default   [  30% ] 5 VUs  03.0s/10s
+
+running (04.0s), 5/5 VUs, 95 complete and 0 interrupted iterations
+default   [  40% ] 5 VUs  04.0s/10s
+
+running (05.0s), 5/5 VUs, 120 complete and 0 interrupted iterations
+default   [  50% ] 5 VUs  05.0s/10s
+
+running (06.0s), 5/5 VUs, 145 complete and 0 interrupted iterations
+default   [  60% ] 5 VUs  06.0s/10s
+
+running (07.0s), 5/5 VUs, 165 complete and 0 interrupted iterations
+default   [  70% ] 5 VUs  07.0s/10s
+
+running (08.0s), 5/5 VUs, 190 complete and 0 interrupted iterations
+default   [  80% ] 5 VUs  08.0s/10s
+
+running (09.0s), 5/5 VUs, 215 complete and 0 interrupted iterations
+default   [  90% ] 5 VUs  09.0s/10s
+
+running (10.0s), 5/5 VUs, 240 complete and 0 interrupted iterations
+default   [ 100% ] 5 VUs  10s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<500' p(95)=3.77ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 1225    121.280063/s
+    checks_succeeded...: 100.00% 1225 out of 1225
+    checks_failed......: 0.00%   0 out of 1225
+
+    ✓ criar entrega: 201
+    ✓ emitir token: 201
+    ✓ registrar posição: 202
+    ✓ consultar posição: 200
+    ✓ sequence corresponde
+
+    HTTP
+    http_req_duration..............: avg=1.35ms  min=161.09µs med=1.11ms   max=4.48ms   p(90)=3.37ms   p(95)=3.77ms  
+      { expected_response:true }...: avg=1.35ms  min=161.09µs med=1.11ms   max=4.48ms   p(90)=3.37ms   p(95)=3.77ms  
+    http_req_failed................: 0.00%  0 out of 980
+    http_reqs......................: 980    97.02405/s
+
+    EXECUTION
+    iteration_duration.............: avg=206.1ms min=203.95ms med=206.16ms max=207.84ms p(90)=207.21ms p(95)=207.52ms
+    iterations.....................: 245    24.256013/s
+    vus............................: 5      min=5        max=5
+    vus_max........................: 5      min=5        max=5
+
+    NETWORK
+    data_received..................: 267 kB 26 kB/s
+    data_sent......................: 275 kB 27 kB/s
+
+
+
+
+running (10.1s), 0/5 VUs, 245 complete and 0 interrupted iterations
+default ✓ [ 100% ] 5 VUs  10s

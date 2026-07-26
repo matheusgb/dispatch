@@ -1,0 +1,74 @@
+{
+  "title": "dispatch — RED e negócio",
+  "uid": "dispatch-red",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "title": "Rate (req/s por rota)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (route) (rate(dispatch_http_requests_total[1m]))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "title": "Errors (5xx e 4xx por rota)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (route, status) (rate(dispatch_http_requests_total{status=~\"4..|5..\"}[1m]))",
+          "legendFormat": "{{route}} {{status}}"
+        }
+      ]
+    },
+    {
+      "title": "Duration p95 por rota",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (route, le) (rate(dispatch_http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "title": "Entregas por resultado",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "rate(dispatch_deliveries_created_total[1m])", "legendFormat": "criadas" },
+        { "expr": "rate(dispatch_deliveries_assigned_total[1m])", "legendFormat": "atribuídas" },
+        { "expr": "rate(dispatch_deliveries_completed_total[1m])", "legendFormat": "concluídas" },
+        { "expr": "rate(dispatch_assignment_conflicts_total[1m])", "legendFormat": "conflitos de atribuição" }
+      ]
+    },
+    {
+      "title": "Ingestão de GPS",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "rate(dispatch_positions_ingested_total[1m])", "legendFormat": "posições aceitas no log" },
+        { "expr": "rate(dispatch_positions_current_total[1m])", "legendFormat": "posições que avançaram a projeção" }
+      ]
+    },
+    {
+      "title": "Notificações por resultado",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum by (kind, outcome) (rate(dispatch_notifications_total[1m]))",
+          "legendFormat": "{{kind}} {{outcome}}"
+        }
+      ]
+    }
+  ]
+}

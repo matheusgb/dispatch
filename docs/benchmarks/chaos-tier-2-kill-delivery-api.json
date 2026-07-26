@@ -1,0 +1,888 @@
+{
+  "seed": 9001,
+  "orders": 80,
+  "couriers": 12,
+  "completed": 7,
+  "declined": 5,
+  "expired": 0,
+  "errors": 68,
+  "duplicates_checked": 13,
+  "duplicates_ok": 13,
+  "total_assign_retries": 444,
+  "positions_sent": 33,
+  "positions_current": 33,
+  "duration_ns": 2297006745,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "ebaa6724-8383-4398-a2e1-88bae41ec7b7",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 17784195
+    },
+    {
+      "index": 1,
+      "delivery_id": "d3aba7d7-27ec-474e-bd9c-15c646ddcbf2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 16409126
+    },
+    {
+      "index": 2,
+      "delivery_id": "54f3f270-49bd-49dd-8916-e9a72cdd5d6f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2011949432,
+      "error": "Get \"http://localhost:8083/deliveries/54f3f270-49bd-49dd-8916-e9a72cdd5d6f\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 3,
+      "delivery_id": "20866446-9ab4-4387-84d6-5975e9e11a80",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18453794
+    },
+    {
+      "index": 4,
+      "delivery_id": "47b49a47-a05b-42d3-9f32-f4b251b65c83",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 17663353
+    },
+    {
+      "index": 5,
+      "delivery_id": "09573406-4772-4ee7-bcaf-dc03c32fc4e2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 18425835
+    },
+    {
+      "index": 6,
+      "delivery_id": "a1beda31-c47a-49cf-994e-d2a80729660d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 19008417
+    },
+    {
+      "index": 7,
+      "delivery_id": "252ef7cb-8820-441d-a386-e9f4765b96e5",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7910656
+    },
+    {
+      "index": 8,
+      "delivery_id": "508cc638-f620-4685-9537-245c1a6be2b5",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 16082290
+    },
+    {
+      "index": 9,
+      "delivery_id": "6fec9049-4bd4-4e41-af38-4d4ce23a4b44",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12655379,
+      "error": "consultar posição atual: status 429"
+    },
+    {
+      "index": 10,
+      "delivery_id": "d60fc356-8b1d-402b-b4b6-07cee6b72550",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 11836865,
+      "error": "consultar posição atual: status 429"
+    },
+    {
+      "index": 11,
+      "delivery_id": "c2bbefa3-7f78-4254-b5a4-b623cb821b5c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 11300978,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 12,
+      "delivery_id": "73580773-ce96-445d-8d80-8e7e75827c93",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2010374108,
+      "error": "Get \"http://localhost:8083/deliveries/73580773-ce96-445d-8d80-8e7e75827c93\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 13,
+      "delivery_id": "64c70869-8da4-4e4d-8924-0efeb8938bb0",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 11027417,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 14,
+      "delivery_id": "21f8141a-3aea-49c0-9c57-f95cd4def879",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 10035604,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "384354e9-a8c3-4ffa-96b7-cccec4d08d43",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6533596,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 16,
+      "delivery_id": "1175a476-e2b0-4961-8a29-9f7068b71142",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7047835,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 17,
+      "delivery_id": "7b6e2bed-8d84-47c1-bb2c-ed6bbc7c96a1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2011067529,
+      "error": "Get \"http://localhost:8083/deliveries/7b6e2bed-8d84-47c1-bb2c-ed6bbc7c96a1\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 18,
+      "delivery_id": "1788ef00-ede2-49c7-8081-a2b787041357",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6309408,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 19,
+      "delivery_id": "9f683fb0-ac93-47ef-b37b-85a53869be21",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6621173,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 20,
+      "delivery_id": "6f47d1a9-d506-4850-afde-8841dbd54edd",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6579195,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 21,
+      "delivery_id": "c4c75c3a-0c7a-4c3a-b3ff-e126d3c90d0c",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6022231,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 22,
+      "delivery_id": "7a85913f-b2ed-42ef-80fa-d63189335c62",
+      "outcome": "declined",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 6891839
+    },
+    {
+      "index": 23,
+      "delivery_id": "f67d60b0-f243-4663-b775-b765edc6d067",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5927222,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 24,
+      "delivery_id": "eada216d-999c-49e7-82b5-f09599e91f23",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 13577222,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 25,
+      "delivery_id": "cf901271-d9d0-4859-bade-43e82cafd72e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 14156115,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 26,
+      "delivery_id": "09ac2d3a-fd9e-4f37-81b1-3a31ff240eb6",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 13852351,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 27,
+      "delivery_id": "ee6a8c4f-4dbd-4cb4-bf3d-52e8c1b28750",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11942136,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 28,
+      "delivery_id": "1f5b29f5-41d3-40b9-845f-1d392c2c9187",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 13011085,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 29,
+      "delivery_id": "22b012be-5eb8-4344-9f78-b8d7f4396422",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 13544079,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 30,
+      "delivery_id": "95d84458-5f44-41bb-86f3-be17ed7e0529",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2009297929,
+      "error": "Get \"http://localhost:8083/deliveries/95d84458-5f44-41bb-86f3-be17ed7e0529\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 31,
+      "delivery_id": "704a802e-1e51-4fef-af11-f59206bf087b",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12904804,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 32,
+      "delivery_id": "15983c51-0dc8-49e4-bd0e-b3addf9bbfc8",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 5044669
+    },
+    {
+      "index": 33,
+      "delivery_id": "93aacb97-015e-4b26-80b9-a5d6f03bd225",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 13463574,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 34,
+      "delivery_id": "26c286cf-770c-487b-856e-d66f489011c8",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12374905,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 35,
+      "delivery_id": "5ef1706e-26b8-4294-a586-1a006796e3ed",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12256378,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 36,
+      "delivery_id": "29930fb0-f796-4523-81e2-802e9358b741",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12224449,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 37,
+      "delivery_id": "ebe8cc33-7dc1-45e6-b148-26fb02e288a1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11657416,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 38,
+      "delivery_id": "4c1d604c-1879-40f7-8dda-a8ce782fd741",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12110580,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 39,
+      "delivery_id": "c859057b-51a4-43d7-b2e1-425b2afa984f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12490622,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 40,
+      "delivery_id": "0c163ee1-9e5e-4c29-b057-a803b58eaf72",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 2010371082,
+      "error": "Get \"http://localhost:8083/deliveries/0c163ee1-9e5e-4c29-b057-a803b58eaf72\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 41,
+      "delivery_id": "325d0e04-0a88-4a97-974b-e8c8459f8170",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12103605,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 42,
+      "delivery_id": "9edb4d24-ba41-4a53-96ba-aac32be3bffd",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11048908,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 43,
+      "delivery_id": "d86b1c79-a8ec-43d6-84b7-8f9927b4c135",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11526656,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 44,
+      "delivery_id": "b47b0be0-603e-409c-aa64-e653c0f99eb3",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11320358,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 45,
+      "delivery_id": "3b4f443d-4be5-4f40-94d0-c1bdd341a8e1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2010048063,
+      "error": "Get \"http://localhost:8083/deliveries/3b4f443d-4be5-4f40-94d0-c1bdd341a8e1\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 46,
+      "delivery_id": "8932bc7b-63fb-4100-bcde-a602c4cc48c0",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11926598,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 47,
+      "delivery_id": "79ff6692-4b98-44f6-91af-e8cb392af47a",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12641294,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 48,
+      "delivery_id": "b1c1b311-ae18-4285-8e37-176cffef4a97",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11712536,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 49,
+      "delivery_id": "93c5ac36-cd97-4961-8ae5-bdd4a1e77e76",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11880471,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 50,
+      "delivery_id": "a9f9df9b-b8d0-4f34-bab3-cdbc5db3e1f6",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 4907753
+    },
+    {
+      "index": 51,
+      "delivery_id": "df5759f4-4a1e-4f92-b2e6-0969216df975",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12065745,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 52,
+      "delivery_id": "2a2b43ec-d42f-4117-b259-c6e40566a845",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12770099,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 53,
+      "delivery_id": "39fba00c-5f09-459e-bcd5-e0d098c50098",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11914436,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 54,
+      "delivery_id": "dee5535f-1fb7-4e22-bbe5-c69f41c1af74",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11451107,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 55,
+      "delivery_id": "77dea57e-13a5-4aad-9a87-b1b52e670bab",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2010133047,
+      "error": "Get \"http://localhost:8083/deliveries/77dea57e-13a5-4aad-9a87-b1b52e670bab\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 56,
+      "delivery_id": "2e32e223-320a-40b1-b930-d1e1d0f6b5b4",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12427549,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 57,
+      "delivery_id": "25c0fd7d-b4a5-4976-b2b8-27c6f4677228",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11550324,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 58,
+      "delivery_id": "e5cec5c3-b53f-42b9-95ed-1367955bafda",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12261946,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 59,
+      "delivery_id": "a5ff8ae3-0758-42a5-8d2f-a3726f9aaf82",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11658598,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 60,
+      "delivery_id": "651bc47d-d005-4b3f-8746-f7410a461416",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 4404126
+    },
+    {
+      "index": 61,
+      "delivery_id": "4e978017-0fc8-45a5-8919-32b136388122",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11446014,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 62,
+      "delivery_id": "ac10cc8e-d73b-4cbc-8800-1170fabf9743",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11298505,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 63,
+      "delivery_id": "da84b598-366a-4e7c-a21f-48afc925b97d",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 12013729,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 64,
+      "delivery_id": "5531f31f-dd1b-46a3-9d71-d880ba7bc89d",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11444640,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 65,
+      "delivery_id": "376708e4-fd11-4692-9776-0ea4c71ab351",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 12,
+      "duration_ns": 11986729,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 66,
+      "delivery_id": "5f7c1ab2-ed20-4f14-94a5-c59b11496e67",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 11315301,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 67,
+      "delivery_id": "823e76bc-678b-4c29-bb80-d030785116d5",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 12,
+      "duration_ns": 12266757,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 68,
+      "delivery_id": "8814bd0e-92a0-4066-bc0a-2d4ebc45a07b",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2010074134,
+      "error": "Get \"http://localhost:8083/deliveries/8814bd0e-92a0-4066-bc0a-2d4ebc45a07b\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 69,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 205345,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 70,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 152174,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 71,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 66261,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 72,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 104561,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 73,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 127759,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 74,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 119663,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 75,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 133185,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 76,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 107954,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 77,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 70017,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 78,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 93902,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 79,
+      "delivery_id": "",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 70759,
+      "error": "Post \"http://localhost:8083/deliveries\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    }
+  ],
+  "failure_samples": [
+    {
+      "index": 2,
+      "delivery_id": "54f3f270-49bd-49dd-8916-e9a72cdd5d6f",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2011949432,
+      "error": "Get \"http://localhost:8083/deliveries/54f3f270-49bd-49dd-8916-e9a72cdd5d6f\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 9,
+      "delivery_id": "6fec9049-4bd4-4e41-af38-4d4ce23a4b44",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 12655379,
+      "error": "consultar posição atual: status 429"
+    },
+    {
+      "index": 10,
+      "delivery_id": "d60fc356-8b1d-402b-b4b6-07cee6b72550",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 3,
+      "positions_current": 3,
+      "duration_ns": 11836865,
+      "error": "consultar posição atual: status 429"
+    },
+    {
+      "index": 11,
+      "delivery_id": "c2bbefa3-7f78-4254-b5a4-b623cb821b5c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 11300978,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 12,
+      "delivery_id": "73580773-ce96-445d-8d80-8e7e75827c93",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2010374108,
+      "error": "Get \"http://localhost:8083/deliveries/73580773-ce96-445d-8d80-8e7e75827c93\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    },
+    {
+      "index": 13,
+      "delivery_id": "64c70869-8da4-4e4d-8924-0efeb8938bb0",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 11027417,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 14,
+      "delivery_id": "21f8141a-3aea-49c0-9c57-f95cd4def879",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "positions_sent": 2,
+      "positions_current": 2,
+      "duration_ns": 10035604,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "384354e9-a8c3-4ffa-96b7-cccec4d08d43",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 6533596,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 16,
+      "delivery_id": "1175a476-e2b0-4961-8a29-9f7068b71142",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 7047835,
+      "error": "registrar posição: status 429: {\"error\":\"limite de requisições excedido\"}\n"
+    },
+    {
+      "index": 17,
+      "delivery_id": "7b6e2bed-8d84-47c1-bb2c-ed6bbc7c96a1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 2011067529,
+      "error": "Get \"http://localhost:8083/deliveries/7b6e2bed-8d84-47c1-bb2c-ed6bbc7c96a1\": dial tcp 127.0.0.1:8083: connect: connection refused"
+    }
+  ]
+}

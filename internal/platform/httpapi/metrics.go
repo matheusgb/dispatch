@@ -41,12 +41,21 @@ var (
 		Name: "dispatch_deliveries_completed_total",
 		Help: "Total de entregas concluídas (picked_up -> delivered).",
 	})
+	positionsIngestedTotal = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "dispatch_positions_ingested_total",
+		Help: "Total de posições de GPS aceitas no log append-only.",
+	})
+	positionsCurrentTotal = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "dispatch_positions_current_total",
+		Help: "Total de posições que avançaram a projeção de última posição.",
+	})
 )
 
 func init() {
 	prometheus.MustRegister(
 		requestsTotal, requestDuration,
 		deliveriesCreatedTotal, deliveriesAssignedTotal, assignmentConflictsTotal, deliveriesCompletedTotal,
+		positionsIngestedTotal, positionsCurrentTotal,
 	)
 }
 

@@ -54,8 +54,8 @@ func (r *Repository) Create(ctx context.Context, req CreateRequest) (resp Create
 	result, replayed, err := idempotency.Run(ctx, tx, key, payloadHash, idempotencyTTL, func(ctx context.Context) (idempotency.Result, error) {
 		id := uuid.NewString()
 		if _, err := tx.Exec(ctx, `
-			INSERT INTO deliveries (id, state) VALUES ($1, $2)
-		`, id, Created); err != nil {
+			INSERT INTO deliveries (id, state, created_by_caller) VALUES ($1, $2, $3)
+		`, id, Created, req.Caller); err != nil {
 			return idempotency.Result{}, err
 		}
 		body, err := json.Marshal(CreateResponse{ID: id, State: Created})
@@ -91,4 +91,21 @@ func (r *Repository) Get(ctx context.Context, id string) (Delivery, error) {
 		return Delivery{}, err
 	}
 	return d, nil
+}
+
+// Owner devolve o caller que criou a entrega, usado pela autorização por
+// recurso: só quem criou a entrega pode consultar o tracking dela.
+func (r *Repository) Owner(ctx context.Context, id string) (string, error) {
+	var owner *string
+	err := r.pool.QueryRow(ctx, `SELECT created_by_caller FROM deliveries WHERE id = $1`, id).Scan(&owner)
+	if err == pgx.ErrNoRows {
+		return "", ErrNotFound
+	}
+	if err != nil {
+		return "", err
+	}
+	if owner == nil {
+		return "", nil
+	}
+	return *owner, nil
 }

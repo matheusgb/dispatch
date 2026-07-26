@@ -180,6 +180,56 @@ func (c *client) registerCourier(ctx context.Context, name string) (string, erro
 	return v.ID, nil
 }
 
+func (c *client) issueToken(ctx context.Context, adminSecret, caller string) (string, error) {
+	status, body, err := c.do(ctx, http.MethodPost, "/auth/tokens", map[string]string{
+		"X-Admin-Secret": adminSecret,
+	}, map[string]string{"caller": caller})
+	if err != nil {
+		return "", err
+	}
+	if status != http.StatusCreated {
+		return "", fmt.Errorf("emitir token: status %d: %s", status, body)
+	}
+	var v struct {
+		Token string `json:"token"`
+	}
+	if err := json.Unmarshal(body, &v); err != nil {
+		return "", err
+	}
+	return v.Token, nil
+}
+
+func (c *client) recordPosition(ctx context.Context, token, id string, epoch, sequence int, lat, lon float64) (bool, error) {
+	status, body, err := c.do(ctx, http.MethodPost, "/deliveries/"+id+"/positions", map[string]string{
+		"Authorization": "Bearer " + token,
+	}, map[string]any{
+		"tracking_session_epoch": epoch,
+		"sequence":               sequence,
+		"latitude":               lat,
+		"longitude":              lon,
+	})
+	if err != nil {
+		return false, err
+	}
+	if status != http.StatusAccepted {
+		return false, fmt.Errorf("registrar posição: status %d: %s", status, body)
+	}
+	var v struct {
+		Current bool `json:"current"`
+	}
+	if err := json.Unmarshal(body, &v); err != nil {
+		return false, err
+	}
+	return v.Current, nil
+}
+
+func (c *client) currentPosition(ctx context.Context, token, id string) (int, error) {
+	status, _, err := c.do(ctx, http.MethodGet, "/deliveries/"+id+"/position", map[string]string{
+		"Authorization": "Bearer " + token,
+	}, nil)
+	return status, err
+}
+
 func (c *client) setAvailability(ctx context.Context, id string, available bool) error {
 	status, body, err := c.do(ctx, http.MethodPost, "/couriers/"+id+"/availability", nil, map[string]bool{"available": available})
 	if err != nil {

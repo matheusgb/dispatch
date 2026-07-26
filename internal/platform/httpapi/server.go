@@ -15,37 +15,88 @@ import (
 	"github.com/matheusgb/dispatch/internal/courier"
 	"github.com/matheusgb/dispatch/internal/delivery"
 	"github.com/matheusgb/dispatch/internal/dispatch"
+	"github.com/matheusgb/dispatch/internal/notification"
+	"github.com/matheusgb/dispatch/internal/platform/auth"
 	"github.com/matheusgb/dispatch/internal/platform/idempotency"
+	"github.com/matheusgb/dispatch/internal/platform/ratelimit"
+	"github.com/matheusgb/dispatch/internal/platform/sse"
+	"github.com/matheusgb/dispatch/internal/tracking"
 )
 
 const requestTimeout = 5 * time.Second
 
 type Server struct {
-	deliveries *delivery.Repository
-	couriers   *courier.Repository
-	dispatch   *dispatch.Service
-	logger     *slog.Logger
+	deliveries    *delivery.Repository
+	couriers      *courier.Repository
+	dispatch      *dispatch.Service
+	trackingRepo  *tracking.Repository
+	trackingCache *tracking.Cache
+	broker        *sse.Broker
+	issuer        *auth.Issuer
+	adminSecret   string
+	notifier      *notification.Client
+	logger        *slog.Logger
 }
 
-func NewServer(deliveries *delivery.Repository, couriers *courier.Repository, dispatchSvc *dispatch.Service, logger *slog.Logger) http.Handler {
-	s := &Server{deliveries: deliveries, couriers: couriers, dispatch: dispatchSvc, logger: logger}
+// Deps agrupa as dependências do tier 2 que não existiam no tier 1: o
+// tracking (repositório + cache), o broker de SSE e a emissão de tokens.
+// Nenhuma delas é opcional a partir daqui, mas manter um struct só para
+// isso evita uma lista de parâmetros posicionais cada vez maior em
+// NewServer.
+type Deps struct {
+	Deliveries    *delivery.Repository
+	Couriers      *courier.Repository
+	Dispatch      *dispatch.Service
+	TrackingRepo  *tracking.Repository
+	TrackingCache *tracking.Cache
+	Broker        *sse.Broker
+	Issuer        *auth.Issuer
+	AdminSecret   string
+	Notifier      *notification.Client
+	Logger        *slog.Logger
+}
+
+func NewServer(d Deps) http.Handler {
+	s := &Server{
+		deliveries: d.Deliveries, couriers: d.Couriers, dispatch: d.Dispatch,
+		trackingRepo: d.TrackingRepo, trackingCache: d.TrackingCache, broker: d.Broker,
+		issuer: d.Issuer, adminSecret: d.AdminSecret, notifier: d.Notifier, logger: d.Logger,
+	}
+	limiter := ratelimit.NewPerCaller(20, 40)
+	// timed é para tudo que fala com o banco e deve ter um deadline curto.
+	timed := func(h http.HandlerFunc) http.Handler {
+		return withTimeout(requestTimeout)(h)
+	}
+	// authed é para o tracking: exige token e aplica rate limit por caller,
+	// além do deadline padrão.
+	authed := func(h http.HandlerFunc) http.Handler {
+		return chain(timed(h), s.issuer.Middleware, limiter.Middleware)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", s.handleHealthz)
 	mux.HandleFunc("GET /readyz", s.handleReadyz)
 	mux.Handle("GET /metrics", promhttp.Handler())
-	mux.HandleFunc("POST /deliveries", s.handleCreateDelivery)
-	mux.HandleFunc("GET /deliveries/{id}", s.handleGetDelivery)
-	mux.HandleFunc("POST /deliveries/{id}/ready", s.handleMarkReady)
-	mux.HandleFunc("POST /deliveries/{id}/offer", s.handleOfferDelivery)
-	mux.HandleFunc("POST /deliveries/{id}/assign", s.handleAssignDelivery)
-	mux.HandleFunc("POST /deliveries/{id}/decline", s.handleDeclineDelivery)
-	mux.HandleFunc("POST /deliveries/{id}/pickup", s.handlePickUpDelivery)
-	mux.HandleFunc("POST /deliveries/{id}/deliver", s.handleDeliverDelivery)
-	mux.HandleFunc("POST /couriers", s.handleRegisterCourier)
-	mux.HandleFunc("POST /couriers/{id}/availability", s.handleSetAvailability)
+	mux.Handle("POST /deliveries", timed(s.handleCreateDelivery))
+	mux.Handle("GET /deliveries/{id}", timed(s.handleGetDelivery))
+	mux.Handle("POST /deliveries/{id}/ready", timed(s.handleMarkReady))
+	mux.Handle("POST /deliveries/{id}/offer", timed(s.handleOfferDelivery))
+	mux.Handle("POST /deliveries/{id}/assign", timed(s.handleAssignDelivery))
+	mux.Handle("POST /deliveries/{id}/decline", timed(s.handleDeclineDelivery))
+	mux.Handle("POST /deliveries/{id}/pickup", timed(s.handlePickUpDelivery))
+	mux.Handle("POST /deliveries/{id}/deliver", timed(s.handleDeliverDelivery))
+	mux.Handle("POST /couriers", timed(s.handleRegisterCourier))
+	mux.Handle("POST /couriers/{id}/availability", timed(s.handleSetAvailability))
 
-	return chain(mux, requestID, withTimeout(requestTimeout), metricsMiddleware, logRequests(logger))
+	mux.HandleFunc("POST /auth/tokens", s.handleIssueToken)
+	mux.Handle("POST /deliveries/{id}/positions", authed(s.handleRecordPosition))
+	mux.Handle("GET /deliveries/{id}/position", authed(s.handleCurrentPosition))
+	mux.Handle("GET /deliveries/{id}/positions", authed(s.handlePositionHistory))
+	// /stream fica de fora de authed: é de longa duração e não pode herdar
+	// o deadline curto de withTimeout. Usa auth e rate limit isoladamente.
+	mux.Handle("GET /deliveries/{id}/stream", chain(s.issuer.Middleware(http.HandlerFunc(s.handleStream)), limiter.Middleware))
+
+	return chain(mux, requestID, metricsMiddleware, logRequests(d.Logger))
 }
 
 func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
@@ -155,6 +206,7 @@ func (s *Server) handleAssignDelivery(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err == nil:
 		deliveriesAssignedTotal.Inc()
+		s.notifier.Notify(r.Context(), notification.Event{DeliveryID: id, Kind: "assigned"})
 		w.WriteHeader(http.StatusNoContent)
 	case errors.Is(err, dispatch.ErrNotOffered), errors.Is(err, dispatch.ErrCourierAlreadyActive):
 		assignmentConflictsTotal.Inc()
@@ -196,6 +248,7 @@ func (s *Server) handleDeliverDelivery(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case err == nil:
 		deliveriesCompletedTotal.Inc()
+		s.notifier.Notify(r.Context(), notification.Event{DeliveryID: id, Kind: "delivered"})
 		w.WriteHeader(http.StatusNoContent)
 	case errors.Is(err, dispatch.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
