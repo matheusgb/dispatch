@@ -1,0 +1,212 @@
+# Tier 6: segundo "provedor de nuvem" simulado localmente (`cloud-b`).
+#
+# Não existe um segundo provedor real aqui (ver docs/adr/0021 e
+# docs/limitacoes-simulacao-local.md, seção Tier 6, para a justificativa
+# completa). `cloud-b` é um SEGUNDO stack `docker compose` inteiramente
+# independente do stack principal (`docker-compose.yml`, chamado `cloud-a`
+# neste tier): rede Docker própria, Postgres/Redis/Redpanda próprios,
+# prefixo de projeto próprio (`cloudb`, via `name:` abaixo), portas
+# diferentes das já ocupadas por `cloud-a`.
+#
+# O que este arquivo prova de propósito: os serviços de aplicação
+# (delivery-api, dispatch-worker, tracking-ingest, tracking-projector,
+# notification-worker, dependency-simulator) NÃO têm `build:` aqui. Eles
+# referenciam por nome:tag exatamente as imagens que `docker compose
+# --profile app build` já produziu para `cloud-a` (nome de imagem default
+# do Compose: "dispatch-<serviço>", porque o diretório do projeto se
+# chama "dispatch"). É o MESMO artefato OCI, mesmo digest, rodando num
+# ambiente diferente — não uma imagem parecida rebuildada.
+#
+# Uso (depois de `docker compose --profile app build` no stack principal):
+#   docker compose -f docker-compose.cloud-b.yml --profile app up -d
+#
+# Faixa de portas nova (cloud-a já usa 5432/6379/9092/19092/8083-8085/
+# 8092/9090/3000/4566):
+#   postgres            15432
+#   redis                16379
+#   redpanda (interno)   19093 -> 9092 no container
+#   redpanda (externo)   29093 -> 19092 no container
+#   delivery-api          18083
+#   tracking-ingest       18084
+#   tracking-projector    18085
+#   dependency-simulator  18092
+#   localstack (opcional) 14566
+name: cloudb
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: dispatch
+      POSTGRES_PASSWORD: dispatch
+      POSTGRES_DB: dispatch
+    ports:
+      - "15432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dispatch"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "16379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=512M
+      - --reserve-memory=0M
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:29093
+    ports:
+      - "19093:9092"
+      - "29093:19092"
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "info"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  redpanda-topics:
+    profiles: ["app"]
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.1
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        rpk topic create -X brokers=redpanda:9092 -p 3
+        dispatch.delivery-events dispatch.delivery-events.dlq
+        dispatch.tracking-positions dispatch.tracking-positions.dlq || true
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
+  migrate:
+    profiles: ["app"]
+    image: dispatch-migrate
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+    command: ["up"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  dependency-simulator:
+    profiles: ["app"]
+    image: dispatch-dependency-simulator
+    environment:
+      HTTP_ADDR: ":8090"
+      FAILURE_RATE: "0.1"
+      LATENCY_MS: "20"
+    ports:
+      - "18092:8090"
+
+  delivery-api:
+    profiles: ["app"]
+    image: dispatch-delivery-api
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      HTTP_ADDR: ":8080"
+      DISPATCH_JWT_SECRET: compose-dev-secret
+      DISPATCH_ADMIN_SECRET: compose-dev-admin-secret
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "18083:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  dispatch-worker:
+    profiles: ["app"]
+    image: dispatch-dispatch-worker
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      KAFKA_BROKERS: redpanda:9092
+      OFFER_TTL_SECONDS: "120"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  tracking-ingest:
+    profiles: ["app"]
+    image: dispatch-tracking-ingest
+    environment:
+      HTTP_ADDR: ":8080"
+      DISPATCH_JWT_SECRET: compose-dev-secret
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "18084:8080"
+    depends_on:
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  tracking-projector:
+    profiles: ["app"]
+    image: dispatch-tracking-projector
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      REDIS_ADDR: redis:6379
+      HTTP_ADDR: ":8080"
+      DISPATCH_JWT_SECRET: compose-dev-secret
+      KAFKA_BROKERS: redpanda:9092
+    ports:
+      - "18085:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  notification-worker:
+    profiles: ["app"]
+    image: dispatch-notification-worker
+    environment:
+      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      KAFKA_BROKERS: redpanda:9092
+      NOTIFICATION_PROVIDER_URL: http://dependency-simulator:8090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redpanda-topics:
+        condition: service_completed_successfully
+
+  localstack:
+    profiles: ["aws-lab"]
+    image: localstack/localstack:3.8.1
+    environment:
+      SERVICES: s3,secretsmanager,kms,sts,iam,dynamodb
+      DEFAULT_REGION: us-east-1
+      PERSISTENCE: "0"
+    ports:
+      - "14566:4566"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

@@ -1,0 +1,246 @@
+=== 1. seed 30 pares em cloud-a (2026-07-26T23:08:22Z) ===
+{
+  "at": "2026-07-26T23:08:22.809250032Z",
+  "pairs": [
+    {
+      "delivery_id": "3bade672-f804-4bc6-b9e0-85355a652280",
+      "courier_id": "a9cdec57-6dad-4acf-86dd-e6d2bae2173d"
+    },
+    {
+      "delivery_id": "887c4944-9da4-4b68-ac7a-89d610d86124",
+      "courier_id": "9ed8df76-a2bc-4e38-9944-0b2a612d10e5"
+    },
+    {
+      "delivery_id": "c3e18708-1855-4667-9f58-513c94512983",
+      "courier_id": "36929cf7-5821-466c-b6b4-2b0798139a1e"
+    },
+    {
+      "delivery_id": "6d833033-9ae4-4372-9b55-ce32aa05da8c",
+      "courier_id": "c52ab265-25a8-4cdc-99bd-ebe987e67c81"
+    },
+    {
+      "delivery_id": "b570415e-4cd1-4c22-b18e-903415be5459",
+      "courier_id": "3cc99d98-9d6f-4cf2-87c3-bce38841a067"
+    },
+    {
+      "delivery_id": "bf7387b4-ac2a-4e3a-946d-34a331ceeaea",
+      "courier_id": "aedf870c-647f-434c-a660-36d7f670fbc3"
+    },
+    {
+      "delivery_id": "61740b31-d81b-4406-8109-668b7364b378",
+      "courier_id": "00204cba-1085-4335-a52c-063d17759269"
+    },
+    {
+      "delivery_id": "ebdd919e-0d5c-40d6-84ed-b4df8dfaeb4d",
+      "courier_id": "2fe7f157-579d-499c-87ee-2241cdf20f03"
+    },
+    {
+      "delivery_id": "3f0f7970-4623-423b-9730-0e3f3631de93",
+      "courier_id": "6b857544-0018-478c-929a-163ea57f1577"
+    },
+    {
+      "delivery_id": "8972cfd1-07d0-4119-8e3e-2c589bd97ce9",
+      "courier_id": "7eaedd65-61ee-4263-bed4-dc57bebd9ed5"
+    },
+    {
+      "delivery_id": "3b98c03c-73bf-4f39-84f6-3147988946cb",
+      "courier_id": "512a68da-e555-4e60-9c58-ab75326aa176"
+    },
+    {
+      "delivery_id": "7f2e018a-15d0-4830-90be-a7dc67dbea2f",
+      "courier_id": "71d670f4-158b-4cd0-a25e-557f6f8cb33f"
+    },
+    {
+      "delivery_id": "5e89ff99-7555-436a-ad10-597caef2217c",
+      "courier_id": "a7ba9f96-3c5b-4973-8f9d-1ae04c825007"
+    },
+    {
+      "delivery_id": "7cba3cb0-930b-472c-9612-da7c0098a7cf",
+      "courier_id": "5c4d00de-1804-4606-9170-f624b07964bb"
+    },
+    {
+      "delivery_id": "a75af13f-9470-41dc-92a7-fa72a8e0e7ef",
+      "courier_id": "ec2c8d83-a06c-4811-8188-5a509ce90d52"
+    },
+    {
+      "delivery_id": "e81eee70-154c-473c-b118-10b42af66e7a",
+      "courier_id": "d82552cc-7c48-4f64-9fa2-0b74e10c32b6"
+    },
+    {
+      "delivery_id": "0a06b4b4-1c08-4dee-b75e-9a017841ccaf",
+      "courier_id": "c8919ca6-bce4-4d06-9398-4ac37fbafa35"
+    },
+    {
+      "delivery_id": "91190980-1121-4734-be88-8a8043532969",
+      "courier_id": "f199f129-edf5-41c5-91c6-fef825a1850a"
+    },
+    {
+      "delivery_id": "bd1e3905-f831-475e-89fd-be6df65ab67e",
+      "courier_id": "a807050c-d715-420b-a15a-1f0dd73c2523"
+    },
+    {
+      "delivery_id": "1ad6ee35-6af8-4baa-bb7a-e53152b36342",
+      "courier_id": "edce209e-139a-4146-af37-7156fd61343a"
+    },
+    {
+      "delivery_id": "30e18f1e-242b-4967-978d-a8de5effbc37",
+      "courier_id": "d39401b6-ca3f-4704-a0f1-56303615268c"
+    },
+    {
+      "delivery_id": "f553918f-9be2-4c5c-8b8c-0b55122470f5",
+      "courier_id": "443e87d8-d718-476b-a776-5516112f3fee"
+    },
+    {
+      "delivery_id": "eea36ed3-d0fa-4fcb-aaa3-3a0445acabb5",
+      "courier_id": "feb6185f-fad4-44bf-a312-83bc1c38eb2a"
+    },
+    {
+      "delivery_id": "3a41f484-3690-4626-aa04-04e286512814",
+      "courier_id": "d480c566-4f4f-4269-a4f5-8cba3f7be840"
+    },
+    {
+      "delivery_id": "21a16b0c-c8a1-4d1b-ac02-78b56cf15478",
+      "courier_id": "beaee309-8887-4b10-9228-7701990ce710"
+    },
+    {
+      "delivery_id": "08e8a3d6-4311-4a25-8358-68dcf3f0ef8a",
+      "courier_id": "357a360d-890a-441b-a305-eef38f622e52"
+    },
+    {
+      "delivery_id": "9f7f611c-0716-4f63-9641-c90b28721916",
+      "courier_id": "3a860a45-d09f-470f-bb6a-5f3bf83bf7b6"
+    },
+    {
+      "delivery_id": "e1be7b86-6ca7-4881-bb3b-0a1e8e6f5098",
+      "courier_id": "244378a1-791c-43b4-a6d3-9ab5cefed56f"
+    },
+    {
+      "delivery_id": "8463f160-03d1-4a17-aff1-e5fea2b9abfd",
+      "courier_id": "09362b08-cb63-4cff-a5c0-5b210f6286db"
+    },
+    {
+      "delivery_id": "cac9d34c-6c95-4a23-be8f-43245d94d9a0",
+      "courier_id": "d64bcddf-2132-4252-bb9b-5cc5f5deaa44"
+    }
+  ],
+  "seeded": 30
+}
+(30 pares criados)
+
+=== 2. promote inicial: cloud-a assume o shard ===
+{
+  "at": "2026-07-26T23:08:23.023939953Z",
+  "elapsed_ms": 5,
+  "epoch": 1,
+  "lease_until": "2026-07-26T20:08:31.018425169-03:00",
+  "ok": true,
+  "owner_region": "cloud-a",
+  "shard_id": "tier6-crosscloud"
+}
+EPOCH_A=1
+
+=== 3. cloud-a escreve 10 assignments (epoch=1, region=cloud-a) ===
+{
+  "at": "2026-07-26T23:08:23.251155405Z",
+  "attempts": 10,
+  "elapsed_ms": 26,
+  "epoch": 1,
+  "other_errors": 0,
+  "region": "cloud-a",
+  "shard_id": "tier6-crosscloud",
+  "stale_rejections": 0,
+  "successes": 10
+}
+
+=== 4. ponto de backup T0: pg_dump de cloud-a (2026-07-26T23:08:23Z) ===
+-rw-r--r-- 1 ubuntu ubuntu 31870 Jul 26 20:08 /tmp/cloudb_failover_t0.dump
+
+=== 5. cloud-a continua recebendo escrita depois do backup: mais 5 assignments (epoch=1, region=cloud-a) ===
+{
+  "at": "2026-07-26T23:08:23.714907879Z",
+  "attempts": 5,
+  "elapsed_ms": 13,
+  "epoch": 1,
+  "other_errors": 0,
+  "region": "cloud-a",
+  "shard_id": "tier6-crosscloud",
+  "stale_rejections": 0,
+  "successes": 5
+}
+
+=== 6. ground truth em cloud-a antes da interrupção ===
+ active_assignments_shard 
+--------------------------
+                       15
+(1 row)
+
+T_OUTAGE=1785107303.831736537 (2026-07-26T23:08:23Z)
+
+=== 7. interrompe a célula ativa de cloud-a (para delivery-api e dispatch-worker) ===
+ Container dispatch-dispatch-worker-1  Stopping
+ Container dispatch-delivery-api-1  Stopping
+ Container dispatch-delivery-api-1  Stopped
+ Container dispatch-dispatch-worker-1  Stopped
+
+=== 8. restaura o backup T0 em cloud-b (banco separado, próprio provedor) ===
+ active_assignments_restaurados 
+--------------------------------
+                             10
+(1 row)
+
+
+=== 9. promove cloud-b como nova autoridade do shard (fencing do tier 5, mesmo código) ===
+{
+  "at": "2026-07-26T23:08:35.366612613Z",
+  "elapsed_ms": 5,
+  "epoch": 2,
+  "lease_until": "2026-07-26T20:09:35.361390827-03:00",
+  "ok": true,
+  "owner_region": "cloud-b",
+  "shard_id": "tier6-crosscloud"
+}
+EPOCH_B=2
+T_PROMOTED=1785107315.372137640 (2026-07-26T23:08:35Z)
+RTO medido (T_PROMOTED - T_OUTAGE) = 11.540401103s
+
+=== 10. writer antigo de cloud-a (epoch=1, region=cloud-a) tenta escrever em cloud-b: deve ser rejeitado 100% ===
+{
+  "at": "2026-07-26T23:08:35.5926421Z",
+  "attempts": 10,
+  "elapsed_ms": 7,
+  "epoch": 1,
+  "other_errors": 0,
+  "region": "cloud-a",
+  "shard_id": "tier6-crosscloud",
+  "stale_rejections": 10,
+  "successes": 0
+}
+
+=== 11. writer novo de cloud-b (epoch=2, region=cloud-b) escreve com sucesso ===
+{
+  "at": "2026-07-26T23:08:35.803670491Z",
+  "attempts": 5,
+  "elapsed_ms": 12,
+  "epoch": 2,
+  "other_errors": 0,
+  "region": "cloud-b",
+  "shard_id": "tier6-crosscloud",
+  "stale_rejections": 0,
+  "successes": 5
+}
+
+=== 12. reconciliação: contagem final de active_assignments do shard em cada lado ===
+cloud-a (antes da interrupção, congelado desde o passo 6):
+ count 
+-------
+    15
+(1 row)
+
+cloud-b (pós-restore + pós-promoção + writes novos):
+ count 
+-------
+    15
+(1 row)
+
+
+RPO: janela entre o backup (T_DUMP_START) e a interrupção (T_OUTAGE) = .575302178s; os 5 assignments do passo 5 caíram nessa janela e não estão em cloud-b pós-restore (10 restaurados vs 15 confirmados em cloud-a antes da queda) = gap medido de 5 assignments (33% do que tinha sido confirmado).
