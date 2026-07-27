@@ -1,0 +1,33 @@
+<svg width="2172" height="724" viewBox="0 0 2172 724" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; font-weight: 900; }
+    </style>
+  </defs>
+
+  <rect width="2172" height="724" fill="#14161c"/>
+
+  <!-- word LUNCH-RUSH, left aligned -->
+  <text x="60" y="330" class="title" font-size="150" fill="#f5efe0" letter-spacing="-2">LUNCH-RUSH</text>
+
+  <!-- single route: one entregador saindo de um monolito, chegando a duas células -->
+  <line x1="60" y1="470" x2="620" y2="470" stroke="#2b5fe8" stroke-width="6"/>
+  <circle cx="60" cy="470" r="16" fill="#2b5fe8"/>
+
+  <!-- fork into two cells (tier 5/6: arquitetura celular, dois provedores) -->
+  <line x1="620" y1="470" x2="1120" y2="330" stroke="#2b5fe8" stroke-width="6"/>
+  <line x1="620" y1="470" x2="1120" y2="610" stroke="#2b5fe8" stroke-width="6"/>
+
+  <!-- cell A: owner atual, epoch válido -->
+  <circle cx="1120" cy="330" r="18" fill="#2b5fe8"/>
+  <text x="1160" y="322" font-family="Helvetica Neue, Arial, sans-serif" font-size="26" fill="#f5efe0">cell A · epoch atual</text>
+
+  <!-- cell B: writer antigo, fencing rejeita -->
+  <circle cx="1120" cy="610" r="18" fill="none" stroke="#e2720c" stroke-width="6"/>
+  <text x="1160" y="602" font-family="Helvetica Neue, Arial, sans-serif" font-size="26" fill="#e2720c">cell B · writer antigo, rejeitado</text>
+
+  <!-- tick marks along the main route: tiers 1-4 -->
+  <circle cx="230" cy="470" r="10" fill="#f5efe0"/>
+  <circle cx="380" cy="470" r="10" fill="#f5efe0"/>
+  <circle cx="500" cy="470" r="10" fill="#f5efe0"/>
+</svg>
