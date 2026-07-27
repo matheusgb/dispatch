@@ -29,10 +29,15 @@ Log do consumidor (`dispatch-worker`, `tracking-projector` ou
   original, depois de corrigida:
 
   ```bash
-  docker exec dispatch-redpanda rpk topic consume dispatch.delivery-events.dlq -n 1 -o :N \
+  docker exec dispatch-redpanda rpk topic consume dispatch.delivery-events.dlq -n 1 -o N \
     | jq -r .value \
     | docker exec -i dispatch-redpanda rpk topic produce dispatch.delivery-events
   ```
+
+  (`N` é o offset, um inteiro puro — `rpk topic consume --help` mostra as
+  formas aceitas por `-o`; confirmado rodando o comando de verdade nesta
+  sessão.) Automatizado em `scripts/dlq-replay.sh`, amarrado a
+  `make replay TOPIC=dispatch.delivery-events.dlq DLQ_ID=<offset>`.
 
   Isso é uma ferramenta manual de replay, não automática: uma mensagem que
   foi parar na DLQ já indica uma falha que merece revisão humana antes de

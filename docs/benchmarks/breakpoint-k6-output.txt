@@ -1,0 +1,45 @@
+breakpoint   [  99% ] 0964/0967 VUs  1m19.0s/1m20s  11793.29 iters/s
+
+running (1m21.9s), 1166/1174 VUs, 402683 complete and 0 interrupted iterations
+breakpoint   [ 100% ] 1166/1174 VUs  1m20.0s/1m20s  11993.28 iters/s
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<2000' p(95)=26.61ms
+
+    http_req_failed
+    ✓ 'rate<0.05' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 404127  4927.732621/s
+    checks_succeeded...: 100.00% 404127 out of 404127
+    checks_failed......: 0.00%   0 out of 404127
+
+    ✓ criar entrega: 201
+
+    HTTP
+    http_req_duration..............: avg=5.34ms  min=939.8µs med=2.4ms   max=993.49ms p(90)=11.84ms p(95)=26.61ms
+      { expected_response:true }...: avg=5.34ms  min=939.8µs med=2.4ms   max=993.49ms p(90)=11.84ms p(95)=26.61ms
+    http_req_failed................: 0.00%  0 out of 404127
+    http_reqs......................: 404127 4927.732621/s
+
+    EXECUTION
+    dropped_iterations.............: 2020   24.63092/s
+    iteration_duration.............: avg=55.59ms min=51.05ms med=52.64ms max=174.7ms  p(90)=62.17ms p(95)=76.97ms
+    iterations.....................: 404127 4927.732621/s
+    vus............................: 1160   min=29          max=1160
+    vus_max........................: 1174   min=600         max=1174
+
+    NETWORK
+    data_received..................: 93 MB  1.1 MB/s
+    data_sent......................: 72 MB  880 kB/s
+
+
+
+
+running (1m22.0s), 0000/1181 VUs, 404127 complete and 0 interrupted iterations
+breakpoint ✓ [ 100% ] 0000/1181 VUs  1m20s  11998.32 iters/s
