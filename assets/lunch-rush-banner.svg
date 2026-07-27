@@ -2,32 +2,33 @@
   <defs>
     <style>
       .title { font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; font-weight: 900; }
+      .label { font-family: "Helvetica Neue", Arial, sans-serif; }
     </style>
   </defs>
 
-  <rect width="2172" height="724" fill="#14161c"/>
+  <rect width="2172" height="724" fill="#181310"/>
 
-  <!-- word LUNCH-RUSH, left aligned -->
-  <text x="60" y="330" class="title" font-size="150" fill="#f5efe0" letter-spacing="-2">LUNCH-RUSH</text>
+  <!-- word LUNCH-RUSH, top row, clear of the diagram below -->
+  <text x="60" y="260" class="title" font-size="150" fill="#fbead2" letter-spacing="-2">LUNCH-RUSH</text>
 
-  <!-- single route: one entregador saindo de um monolito, chegando a duas células -->
-  <line x1="60" y1="470" x2="620" y2="470" stroke="#2b5fe8" stroke-width="6"/>
-  <circle cx="60" cy="470" r="16" fill="#2b5fe8"/>
-
-  <!-- fork into two cells (tier 5/6: arquitetura celular, dois provedores) -->
-  <line x1="620" y1="470" x2="1120" y2="330" stroke="#2b5fe8" stroke-width="6"/>
-  <line x1="620" y1="470" x2="1120" y2="610" stroke="#2b5fe8" stroke-width="6"/>
-
-  <!-- cell A: owner atual, epoch válido -->
-  <circle cx="1120" cy="330" r="18" fill="#2b5fe8"/>
-  <text x="1160" y="322" font-family="Helvetica Neue, Arial, sans-serif" font-size="26" fill="#f5efe0">cell A · epoch atual</text>
-
-  <!-- cell B: writer antigo, fencing rejeita -->
-  <circle cx="1120" cy="610" r="18" fill="none" stroke="#e2720c" stroke-width="6"/>
-  <text x="1160" y="602" font-family="Helvetica Neue, Arial, sans-serif" font-size="26" fill="#e2720c">cell B · writer antigo, rejeitado</text>
+  <!-- route: um entregador saindo de um monolito, chegando a duas células -->
+  <line x1="60" y1="480" x2="620" y2="480" stroke="#f2a93c" stroke-width="6"/>
+  <circle cx="60" cy="480" r="16" fill="#f2a93c"/>
 
   <!-- tick marks along the main route: tiers 1-4 -->
-  <circle cx="230" cy="470" r="10" fill="#f5efe0"/>
-  <circle cx="380" cy="470" r="10" fill="#f5efe0"/>
-  <circle cx="500" cy="470" r="10" fill="#f5efe0"/>
+  <circle cx="230" cy="480" r="10" fill="#fbead2"/>
+  <circle cx="380" cy="480" r="10" fill="#fbead2"/>
+  <circle cx="500" cy="480" r="10" fill="#fbead2"/>
+
+  <!-- fork into two cells (tier 5/6: arquitetura celular, dois provedores) -->
+  <line x1="620" y1="480" x2="1120" y2="400" stroke="#f2a93c" stroke-width="6"/>
+  <line x1="620" y1="480" x2="1120" y2="620" stroke="#f2a93c" stroke-width="6"/>
+
+  <!-- cell A: owner atual, epoch válido -->
+  <circle cx="1120" cy="400" r="18" fill="#f2a93c"/>
+  <text x="1160" y="392" class="label" font-size="28" fill="#fbead2">cell A · epoch atual</text>
+
+  <!-- cell B: writer antigo, fencing rejeita -->
+  <circle cx="1120" cy="620" r="18" fill="none" stroke="#e8432c" stroke-width="6"/>
+  <text x="1160" y="628" class="label" font-size="28" fill="#e8432c">cell B · writer antigo, rejeitado</text>
 </svg>
