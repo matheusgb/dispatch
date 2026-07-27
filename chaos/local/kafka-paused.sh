@@ -25,8 +25,8 @@ set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:8083}"
 COMPOSE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-REDPANDA_CONTAINER="${REDPANDA_CONTAINER:-dispatch-redpanda-1}"
-DATABASE_URL="${DATABASE_URL:-postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable}"
+REDPANDA_CONTAINER="${REDPANDA_CONTAINER:-lunchrush-redpanda-1}"
+DATABASE_URL="${DATABASE_URL:-postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable}"
 
 log() { echo "[chaos/kafka-paused] $*"; }
 
@@ -46,7 +46,7 @@ create_delivery() {
 }
 
 pending_outbox_count() {
-  docker exec dispatch-postgres-1 psql -U dispatch -d dispatch -tAc \
+  docker exec lunchrush-postgres-1 psql -U lunchrush -d lunchrush -tAc \
     "select count(*) from outbox_events where published_at is null"
 }
 

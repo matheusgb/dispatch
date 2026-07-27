@@ -29,12 +29,12 @@
   ingestão de GPS e leitura da posição atual, 5 VUs (um caller cada), 10s,
   **0% de falha**, p95 3,78ms. Evidência em `k6-tracking-tier-2.txt` e
   `.json`.
-- **LunchRush golden path** (`lunchrush-tier-2-golden.md`): 30 ordens,
+- **LoadGen golden path** (`loadgen-tier-2-golden.md`): 30 ordens,
   concorrência 1, ciclo completo com GPS, **0 erros**, 72 posições
   enviadas e todas avançaram a projeção.
-- **LunchRush sob identidade compartilhada** (
-  `lunchrush-tier-2-rate-limit-compartilhado.md`): 100 ordens, concorrência
-  5, todas usando o mesmo caller `lunchrush` para GPS. 69 erros, quase
+- **LoadGen sob identidade compartilhada** (
+  `loadgen-tier-2-rate-limit-compartilhado.md`): 100 ordens, concorrência
+  5, todas usando o mesmo caller `loadgen` para GPS. 69 erros, quase
   todos `429`: achado real documentado em `tier-2-what-breaks-next.md`, não
   um bug do rate limit.
 
@@ -46,9 +46,9 @@ PostgreSQL via Toxiproxy sem nenhuma requisição falhando (só mais lentas).
 
 ## Observabilidade
 
-Dashboard `dispatch — RED e negócio` provisionado no Grafana
+Dashboard `lunchrush — RED e negócio` provisionado no Grafana
 (`observability/grafana/provisioning`), com rate/errors/duration por rota e
 métricas de negócio (entregas por resultado, ingestão de GPS, notificações
-por resultado). Confirmado com tráfego real do LunchRush: métrica
-`dispatch_deliveries_completed_total` no Prometheus bateu com a contagem do
-relatório do LunchRush (83 em ambos).
+por resultado). Confirmado com tráfego real do LoadGen: métrica
+`lunchrush_deliveries_completed_total` no Prometheus bateu com a contagem do
+relatório do LoadGen (83 em ambos).

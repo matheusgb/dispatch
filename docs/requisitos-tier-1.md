@@ -15,16 +15,16 @@ Construir um núcleo correto e mensurável em Go antes de distribuir o sistema.
 
 ```text
 created
-  -> ready_for_dispatch
+  -> ready_for_lunchrush
   -> offered
   -> assigned
   -> picked_up
   -> delivered
 
-offered -> declined -> ready_for_dispatch
-offered -> expired -> ready_for_dispatch
+offered -> declined -> ready_for_lunchrush
+offered -> expired -> ready_for_lunchrush
 
-created / ready_for_dispatch / offered / assigned -> canceled
+created / ready_for_lunchrush / offered / assigned -> canceled
 ```
 
 ## Capacidades funcionais
@@ -62,7 +62,7 @@ diferente é rejeitada como conflito.
    efeito interno de negócio (ledger de idempotência).
 
 As invariantes 7, 9, 10, 11 e 12 dependem de recursos que só existem a partir
-dos tiers 2, 3 e 5. Ver `dispatch.md` na raiz de `labs` para a tabela completa
+dos tiers 2, 3 e 5. Ver `lunch-rush.md` na raiz de `labs` para a tabela completa
 de aplicabilidade por tier.
 
 ## Correção concorrente

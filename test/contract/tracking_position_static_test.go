@@ -1,16 +1,16 @@
 // Sem build tag: este teste não precisa de Postgres nem de Kafka, roda em
-// qualquer `go test ./...`. dispatch.tracking-positions não passa pela
+// qualquer `go test ./...`. lunchrush.tracking-positions não passa pela
 // outbox (docs/adr/0007-tracking-nao-usa-outbox.md), é publicado direto
 // pelo handler HTTP de cmd/tracking-ingest, que é package main e não
 // exporta o tipo do payload — não dá para chamá-lo em processo como os
-// outros contract tests deste pacote fazem com internal/dispatch e
+// outros contract tests deste pacote fazem com internal/lunchrush e
 // internal/fencing. Em vez de subir tracking-ingest inteiro com um broker
 // Kafka real só para isto, este teste faz uma checagem estática: extrai as
 // tags `json:"..."` do struct publicado em
 // cmd/tracking-ingest/main.go (o literal anônimo dentro de
 // handlePositions que vira o payload Kafka) e confere que batem
 // exatamente com os `properties` de PositionPayload em
-// contracts/asyncapi/dispatch-events.yaml. Pega o mesmo tipo de drift (um
+// contracts/asyncapi/lunchrush-events.yaml. Pega o mesmo tipo de drift (um
 // campo renomeado só de um dos dois lados) sem exigir infraestrutura viva.
 package contract
 
@@ -43,7 +43,7 @@ func TestContract_TrackingPositionWireFormatMatchesAsyncAPI(t *testing.T) {
 
 	matches := jsonTagRE.FindAllStringSubmatch(block, -1)
 	if len(matches) == 0 {
-		t.Fatalf("nenhuma tag json encontrada no literal publicado — cmd/tracking-ingest/main.go pode ter mudado de forma; atualize este teste e contracts/asyncapi/dispatch-events.yaml juntos")
+		t.Fatalf("nenhuma tag json encontrada no literal publicado — cmd/tracking-ingest/main.go pode ter mudado de forma; atualize este teste e contracts/asyncapi/lunchrush-events.yaml juntos")
 	}
 	var wireFields []string
 	for _, m := range matches {
@@ -51,7 +51,7 @@ func TestContract_TrackingPositionWireFormatMatchesAsyncAPI(t *testing.T) {
 	}
 	sort.Strings(wireFields)
 
-	raw, err := os.ReadFile(filepath.Join(root, "contracts/asyncapi/dispatch-events.yaml"))
+	raw, err := os.ReadFile(filepath.Join(root, "contracts/asyncapi/lunchrush-events.yaml"))
 	if err != nil {
 		t.Fatalf("ler AsyncAPI: %v", err)
 	}

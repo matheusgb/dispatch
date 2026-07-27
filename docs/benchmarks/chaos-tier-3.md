@@ -1,6 +1,6 @@
 # Chaos local do tier 3
 
-## 1. Poison pill em `dispatch.delivery-events`
+## 1. Poison pill em `lunchrush.delivery-events`
 
 **Hipótese:** uma mensagem que o consumidor não consegue decodificar vai
 para a DLQ e não bloqueia a partição.
@@ -8,11 +8,11 @@ para a DLQ e não bloqueia a partição.
 **Injeção:**
 
 ```bash
-echo '{"not":"a valid envelope"' | docker exec -i dispatch-redpanda-1 rpk topic produce dispatch.delivery-events --key poison-1
+echo '{"not":"a valid envelope"' | docker exec -i lunchrush-redpanda-1 rpk topic produce lunchrush.delivery-events --key poison-1
 ```
 
-**Observação:** a mensagem apareceu em `dispatch.delivery-events.dlq`
-íntegra (mesmo payload malformado, para diagnóstico). O `dispatch-worker`
+**Observação:** a mensagem apareceu em `lunchrush.delivery-events.dlq`
+íntegra (mesmo payload malformado, para diagnóstico). O `lunchrush-worker`
 continuou respondendo `/healthz` durante e depois, e processou mensagens
 publicadas em seguida sem atraso.
 
@@ -24,17 +24,17 @@ mensagem malformada (runbook `docs/runbooks/dlq-replay.md`).
 **Hipótese:** escalar um consumer group além do número de partições do
 tópico não aumenta throughput; a réplica extra fica ociosa.
 
-**Injeção:** `kubectl -n dispatch scale deployment/dispatch-worker --replicas=4`
+**Injeção:** `kubectl -n lunchrush scale deployment/lunchrush-worker --replicas=4`
 com o cluster já rodando 2 réplicas e o docker compose com mais uma
 instância do mesmo serviço competindo pelo mesmo grupo.
 
-**Observação:** `rpk group describe dispatch-worker` mostrou 5 membros no
-grupo, só 3 atribuídos a uma partição (`dispatch.delivery-events` tem 3
+**Observação:** `rpk group describe lunchrush-worker` mostrou 5 membros no
+grupo, só 3 atribuídos a uma partição (`lunchrush.delivery-events` tem 3
 partições). As outras 2 réplicas do `kind` ficaram sem trabalho.
 Evidência completa em `consumer-replicas-limitadas-evidencia.txt` e
 ADR 0010.
 
-**Recuperação:** `kubectl -n dispatch scale deployment/dispatch-worker --replicas=2`.
+**Recuperação:** `kubectl -n lunchrush scale deployment/lunchrush-worker --replicas=2`.
 
 ## 3. DNS cruzado entre `kind` e a infra do docker compose
 

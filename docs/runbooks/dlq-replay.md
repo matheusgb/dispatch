@@ -2,7 +2,7 @@
 
 ## Sintoma
 
-Log do consumidor (`dispatch-worker`, `tracking-projector` ou
+Log do consumidor (`lunchrush-worker`, `tracking-projector` ou
 `notification-worker`) com `"msg":"mensagem foi para a DLQ"`, incluindo
 `topic`, `partition` e `offset`.
 
@@ -11,7 +11,7 @@ Log do consumidor (`dispatch-worker`, `tracking-projector` ou
 1. Ler a mensagem na DLQ para entender por que ela não foi decodificada:
 
    ```bash
-   docker exec dispatch-redpanda rpk topic consume dispatch.delivery-events.dlq -n 1
+   docker exec lunchrush-redpanda rpk topic consume lunchrush.delivery-events.dlq -n 1
    ```
 
 2. Causas conhecidas: JSON malformado (produtor com bug, ou mensagem de
@@ -29,15 +29,15 @@ Log do consumidor (`dispatch-worker`, `tracking-projector` ou
   original, depois de corrigida:
 
   ```bash
-  docker exec dispatch-redpanda rpk topic consume dispatch.delivery-events.dlq -n 1 -o N \
+  docker exec lunchrush-redpanda rpk topic consume lunchrush.delivery-events.dlq -n 1 -o N \
     | jq -r .value \
-    | docker exec -i dispatch-redpanda rpk topic produce dispatch.delivery-events
+    | docker exec -i lunchrush-redpanda rpk topic produce lunchrush.delivery-events
   ```
 
   (`N` é o offset, um inteiro puro — `rpk topic consume --help` mostra as
   formas aceitas por `-o`; confirmado rodando o comando de verdade nesta
   sessão.) Automatizado em `scripts/dlq-replay.sh`, amarrado a
-  `make replay TOPIC=dispatch.delivery-events.dlq DLQ_ID=<offset>`.
+  `make replay TOPIC=lunchrush.delivery-events.dlq DLQ_ID=<offset>`.
 
   Isso é uma ferramenta manual de replay, não automática: uma mensagem que
   foi parar na DLQ já indica uma falha que merece revisão humana antes de

@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: dispatch-config
-  namespace: dispatch
+  name: lunchrush-config
+  namespace: lunchrush
 data:
   KAFKA_BROKERS: "redpanda-external:9092"
-  DATABASE_URL: "postgres://dispatch:dispatch@postgres-external:5432/dispatch?sslmode=disable"
+  DATABASE_URL: "postgres://lunchrush:lunchrush@postgres-external:5432/lunchrush?sslmode=disable"
   REDIS_ADDR: "redis-external:6379"
   NOTIFICATION_PROVIDER_URL: "http://dependency-simulator-external:8092"
   OFFER_TTL_SECONDS: "120"

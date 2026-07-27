@@ -1,5 +1,5 @@
-=== rpk group describe dispatch-worker (lag artificial gerado) ===
-GROUP        dispatch-worker
+=== rpk group describe lunchrush-worker (lag artificial gerado) ===
+GROUP        lunchrush-worker
 COORDINATOR  0
 STATE        Stable
 BALANCER     range
@@ -7,20 +7,20 @@ MEMBERS      3
 TOTAL-LAG    0
 
 TOPIC                     PARTITION  CURRENT-OFFSET  LOG-START-OFFSET  LOG-END-OFFSET  LAG   MEMBER-ID                                                                                                              CLIENT-ID                                                                         HOST
-dispatch.delivery-events  0          149             0                 149             0     dispatch-worker@dispatch-worker-5478675b7b-bwnmn (github.com/segmentio/kafka-go)-9b46386e-faa2-4bcf-a17c-8683a8241adc  dispatch-worker@dispatch-worker-5478675b7b-bwnmn (github.com/segmentio/kafka-go)  172.22.0.1
-dispatch.delivery-events  1          138             0                 138             0     dispatch-worker@dispatch-worker-5478675b7b-h656s (github.com/segmentio/kafka-go)-1ed8ec5a-c6c0-490d-94c2-36d957a1be98  dispatch-worker@dispatch-worker-5478675b7b-h656s (github.com/segmentio/kafka-go)  172.22.0.1
-dispatch.delivery-events  2          129             0                 129             0     dispatch-worker@dispatch-worker-5478675b7b-rt7mq (github.com/segmentio/kafka-go)-9ae3d781-0e54-424e-af1c-511cd77f1298  dispatch-worker@dispatch-worker-5478675b7b-rt7mq (github.com/segmentio/kafka-go)  172.22.0.1
+lunchrush.delivery-events  0          149             0                 149             0     lunchrush-worker@lunchrush-worker-5478675b7b-bwnmn (github.com/segmentio/kafka-go)-9b46386e-faa2-4bcf-a17c-8683a8241adc  lunchrush-worker@lunchrush-worker-5478675b7b-bwnmn (github.com/segmentio/kafka-go)  172.22.0.1
+lunchrush.delivery-events  1          138             0                 138             0     lunchrush-worker@lunchrush-worker-5478675b7b-h656s (github.com/segmentio/kafka-go)-1ed8ec5a-c6c0-490d-94c2-36d957a1be98  lunchrush-worker@lunchrush-worker-5478675b7b-h656s (github.com/segmentio/kafka-go)  172.22.0.1
+lunchrush.delivery-events  2          129             0                 129             0     lunchrush-worker@lunchrush-worker-5478675b7b-rt7mq (github.com/segmentio/kafka-go)-9ae3d781-0e54-424e-af1c-511cd77f1298  lunchrush-worker@lunchrush-worker-5478675b7b-rt7mq (github.com/segmentio/kafka-go)  172.22.0.1
 
-=== kubectl get scaledobject dispatch-worker ===
+=== kubectl get scaledobject lunchrush-worker ===
 NAME              SCALETARGETKIND      SCALETARGETNAME   MIN   MAX   READY   ACTIVE   FALLBACK   PAUSED   TRIGGERS   AUTHENTICATIONS   AGE
-dispatch-worker   apps/v1.Deployment   dispatch-worker   0     6     True    False    False      False    kafka                        3m26s
+lunchrush-worker   apps/v1.Deployment   lunchrush-worker   0     6     True    False    False      False    kafka                        3m26s
 
-=== kubectl describe scaledobject dispatch-worker ===
-Name:         dispatch-worker
-Namespace:    dispatch
+=== kubectl describe scaledobject lunchrush-worker ===
+Name:         lunchrush-worker
+Namespace:    lunchrush
 Labels:       app.kubernetes.io/managed-by=Helm
-              scaledobject.keda.sh/name=dispatch-worker
-Annotations:  meta.helm.sh/release-name: dispatch
+              scaledobject.keda.sh/name=lunchrush-worker
+Annotations:  meta.helm.sh/release-name: lunchrush
               meta.helm.sh/release-namespace: default
 API Version:  keda.sh/v1alpha1
 Kind:         ScaledObject
@@ -37,14 +37,14 @@ Spec:
   Min Replica Count:  0
   Polling Interval:   5
   Scale Target Ref:
-    Name:  dispatch-worker
+    Name:  lunchrush-worker
   Triggers:
     Metadata:
       Allow Idle Consumers:  false
-      Bootstrap Servers:     redpanda.dispatch.svc.cluster.local:9092
-      Consumer Group:        dispatch-worker
+      Bootstrap Servers:     redpanda.lunchrush.svc.cluster.local:9092
+      Consumer Group:        lunchrush-worker
       Lag Threshold:         5
-      Topic:                 dispatch.delivery-events
+      Topic:                 lunchrush.delivery-events
     Type:                    kafka
 Status:
   Authentications Types:  
@@ -64,8 +64,8 @@ Status:
     Status:   False
     Type:     Paused
   External Metric Names:
-    s0-kafka-dispatch-delivery-events
-  Hpa Name:                keda-hpa-dispatch-worker
+    s0-kafka-lunchrush-delivery-events
+  Hpa Name:                keda-hpa-lunchrush-worker
   Last Active Time:        2026-07-26T21:21:27Z
   Original Replica Count:  2
   Scale Target GVKR:
@@ -75,7 +75,7 @@ Status:
     Version:          v1
   Scale Target Kind:  apps/v1.Deployment
   Triggers Activity:
-    s0-kafka-dispatch-delivery-events:
+    s0-kafka-lunchrush-delivery-events:
       Is Active:   false
   Triggers Types:  kafka
 Events:
@@ -91,20 +91,20 @@ Events:
   Warning  KEDAScalerFailed            3m6s                   keda-operator  error describing topics: dial tcp: lookup redpanda on 10.96.0.10:53: server misbehaving
   Normal   KEDAScalersStarted          2m56s (x2 over 3m1s)   keda-operator  Scaler kafka is built
   Warning  KEDAScalerFailed            2m56s (x2 over 3m1s)   keda-operator  error describing topics: dial tcp: lookup redpanda on 10.96.0.10:53: server misbehaving
-  Normal   KEDAScaleTargetDeactivated  2m14s                  keda-operator  Deactivated apps/v1.Deployment dispatch/dispatch-worker from 2 to 0
-  Normal   KEDAScaleTargetDeactivated  2m9s                   keda-operator  Deactivated apps/v1.Deployment dispatch/dispatch-worker from 2 to 0
-  Normal   KEDAScaleTargetActivated    62s                    keda-operator  Scaled apps/v1.Deployment dispatch/dispatch-worker from 0 to 1, triggered by s0-kafka-dispatch-delivery-events
+  Normal   KEDAScaleTargetDeactivated  2m14s                  keda-operator  Deactivated apps/v1.Deployment lunchrush/lunchrush-worker from 2 to 0
+  Normal   KEDAScaleTargetDeactivated  2m9s                   keda-operator  Deactivated apps/v1.Deployment lunchrush/lunchrush-worker from 2 to 0
+  Normal   KEDAScaleTargetActivated    62s                    keda-operator  Scaled apps/v1.Deployment lunchrush/lunchrush-worker from 0 to 1, triggered by s0-kafka-lunchrush-delivery-events
 
-=== kubectl get hpa keda-hpa-dispatch-worker ===
+=== kubectl get hpa keda-hpa-lunchrush-worker ===
 NAME                       REFERENCE                    TARGETS     MINPODS   MAXPODS   REPLICAS   AGE
-keda-hpa-dispatch-worker   Deployment/dispatch-worker   0/5 (avg)   1         6         3          3m12s
+keda-hpa-lunchrush-worker   Deployment/lunchrush-worker   0/5 (avg)   1         6         3          3m12s
 
-=== kubectl get deploy dispatch-worker (escalou de 0 para 3) ===
+=== kubectl get deploy lunchrush-worker (escalou de 0 para 3) ===
 NAME              READY   UP-TO-DATE   AVAILABLE   AGE
-dispatch-worker   3/3     3            3           12m
+lunchrush-worker   3/3     3            3           12m
 
-=== kubectl get pods -l app=dispatch-worker ===
+=== kubectl get pods -l app=lunchrush-worker ===
 NAME                               READY   STATUS    RESTARTS   AGE
-dispatch-worker-5478675b7b-bwnmn   1/1     Running   0          52s
-dispatch-worker-5478675b7b-h656s   1/1     Running   0          52s
-dispatch-worker-5478675b7b-rt7mq   1/1     Running   0          62s
+lunchrush-worker-5478675b7b-bwnmn   1/1     Running   0          52s
+lunchrush-worker-5478675b7b-h656s   1/1     Running   0          52s
+lunchrush-worker-5478675b7b-rt7mq   1/1     Running   0          62s

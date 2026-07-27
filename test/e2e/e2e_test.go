@@ -9,8 +9,8 @@
 // por rede Docker, exatamente como em produção.
 //
 // O cliente HTTP fino abaixo espelha de propósito o estilo de
-// cmd/lunchrush/client.go (mesmos nomes de campo JSON, mesma forma de
-// chamada); não importa aquele pacote porque cmd/lunchrush é package main
+// cmd/loadgen/client.go (mesmos nomes de campo JSON, mesma forma de
+// chamada); não importa aquele pacote porque cmd/loadgen é package main
 // e não exporta nada, e duplicar um cliente de ~80 linhas é mais barato e
 // mais claro que promover um pacote inteiro só para isto.
 package e2e

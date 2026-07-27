@@ -1,12 +1,12 @@
 // Package fencing implementa a autoridade de ownership do tier 5: um
-// dispatch shard só aceita escrita do writer que tem o epoch vigente,
+// lunchrush shard só aceita escrita do writer que tem o epoch vigente,
 // dentro da lease vigente. É a mesma família de proteção que
-// internal/dispatch já usa desde o tier 1 (UPDATE condicional + unique
+// internal/lunchrush já usa desde o tier 1 (UPDATE condicional + unique
 // constraint), estendida com epoch e lease para o caso multi-célula, onde
 // mais de um writer (região/célula) pode achar que é dono ao mesmo tempo.
 //
 // O protocolo implementado aqui é o mesmo especificado formalmente em
-// docs/tla/DispatchFencing.tla: Promote incrementa o epoch só depois da
+// docs/tla/LunchRushFencing.tla: Promote incrementa o epoch só depois da
 // lease expirar (LeaseExpire -> Promote no modelo), CreateAssignment exige
 // o epoch vigente na mesma transação do INSERT (Assign no modelo, com a
 // guarda "e = epoch" que o mutation test provou ser necessária), e Finish
@@ -24,15 +24,15 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/matheusgb/dispatch/internal/platform/outbox"
-	"github.com/matheusgb/dispatch/internal/platform/topics"
+	"github.com/matheusgb/lunch-rush/internal/platform/outbox"
+	"github.com/matheusgb/lunch-rush/internal/platform/topics"
 )
 
 var (
 	// ErrStaleFence indica que o epoch/owner_region enviado pelo writer não
 	// bate com o que a autoridade tem agora: outro writer já promoveu, ou a
 	// lease deste writer já não é a vigente. É a rejeição do fencing token
-	// antigo que docs/tla/DispatchFencing.tla prova ser necessária.
+	// antigo que docs/tla/LunchRushFencing.tla prova ser necessária.
 	ErrStaleFence = errors.New("fencing: epoch ou owner_region desatualizado")
 	// ErrLeaseNotExpired indica que Promote foi chamado com a lease atual
 	// ainda válida: só é seguro promover depois que a lease anterior
@@ -52,7 +52,7 @@ var (
 
 const uniqueViolation = "23505"
 
-// Clock é a mesma abstração de internal/dispatch: testes e o LunchRush
+// Clock é a mesma abstração de internal/lunchrush: testes e o LoadGen
 // controlam o tempo sem esperar o relógio real.
 type Clock interface {
 	Now() time.Time
@@ -71,7 +71,7 @@ func NewService(pool *pgxpool.Pool, clock Clock) *Service {
 	return &Service{pool: pool, clock: clock}
 }
 
-// Fence é o estado observável de um dispatch shard, devolvido depois de
+// Fence é o estado observável de um lunchrush shard, devolvido depois de
 // Promote/RenewLease para o writer saber qual epoch usar nos comandos
 // seguintes.
 type Fence struct {
@@ -85,7 +85,7 @@ type Fence struct {
 // funciona se não existir fence para o shard ainda (primeira eleição) ou
 // se a lease atual já expirou: nunca promove por cima de uma lease válida,
 // o que impediria dois donos simultâneos (a mesma regra que
-// docs/tla/DispatchFencing.tla chama de LeaseExpire -> Promote).
+// docs/tla/LunchRushFencing.tla chama de LeaseExpire -> Promote).
 func (s *Service) Promote(ctx context.Context, shardID, ownerRegion string, leaseDuration time.Duration) (Fence, error) {
 	now := s.clock.Now()
 	leaseUntil := now.Add(leaseDuration)
@@ -98,7 +98,7 @@ func (s *Service) Promote(ctx context.Context, shardID, ownerRegion string, leas
 	defer tx.Rollback(ctx)
 
 	tag, err := tx.Exec(ctx, `
-		UPDATE dispatch_fences
+		UPDATE lunchrush_fences
 		SET epoch = epoch + 1, owner_region = $1, lease_until = $2, last_write_token = $3
 		WHERE shard_id = $4 AND lease_until < $5
 	`, ownerRegion, leaseUntil, token, shardID, now)
@@ -110,7 +110,7 @@ func (s *Service) Promote(ctx context.Context, shardID, ownerRegion string, leas
 		// existir com lease válida, o INSERT falha por PK duplicada e o
 		// erro correto (lease ainda válida) é devolvido.
 		_, err := tx.Exec(ctx, `
-			INSERT INTO dispatch_fences (shard_id, epoch, owner_region, lease_until, last_write_token)
+			INSERT INTO lunchrush_fences (shard_id, epoch, owner_region, lease_until, last_write_token)
 			VALUES ($1, 1, $2, $3, $4)
 		`, shardID, ownerRegion, leaseUntil, token)
 		if err != nil {
@@ -123,7 +123,7 @@ func (s *Service) Promote(ctx context.Context, shardID, ownerRegion string, leas
 	}
 
 	var epoch int64
-	if err := tx.QueryRow(ctx, `SELECT epoch FROM dispatch_fences WHERE shard_id = $1`, shardID).Scan(&epoch); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT epoch FROM lunchrush_fences WHERE shard_id = $1`, shardID).Scan(&epoch); err != nil {
 		return Fence{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {
@@ -153,7 +153,7 @@ func (s *Service) CreateAssignment(ctx context.Context, shardID, ownerRegion str
 	// lease_until > now()" do roadmap, mapeado para FenceWrite/Assign na
 	// especificação TLA+.
 	tag, err := tx.Exec(ctx, `
-		UPDATE dispatch_fences
+		UPDATE lunchrush_fences
 		SET last_write_token = $1
 		WHERE shard_id = $2 AND epoch = $3 AND owner_region = $4 AND lease_until > $5
 	`, token, shardID, epoch, ownerRegion, now)
@@ -184,7 +184,7 @@ func (s *Service) CreateAssignment(ctx context.Context, shardID, ownerRegion str
 
 	// 3. Evento de outbox na mesma transação: o assignment e o evento
 	// comitam juntos, ou nenhum dos dois (mesmo padrão de
-	// internal/dispatch desde o tier 1).
+	// internal/lunchrush desde o tier 1).
 	if _, err := outbox.Enqueue(ctx, tx, deliveryID, topics.DeliveryEvents, topics.KindAssignmentConfirmed, map[string]string{
 		"delivery_id":   deliveryID,
 		"courier_id":    courierID,
@@ -242,7 +242,7 @@ func (s *Service) CurrentFence(ctx context.Context, shardID string) (Fence, erro
 	var f Fence
 	f.ShardID = shardID
 	err := s.pool.QueryRow(ctx, `
-		SELECT epoch, owner_region, lease_until FROM dispatch_fences WHERE shard_id = $1
+		SELECT epoch, owner_region, lease_until FROM lunchrush_fences WHERE shard_id = $1
 	`, shardID).Scan(&f.Epoch, &f.OwnerRegion, &f.LeaseUntil)
 	return f, err
 }

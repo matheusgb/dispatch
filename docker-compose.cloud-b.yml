@@ -9,12 +9,12 @@
 # diferentes das já ocupadas por `cloud-a`.
 #
 # O que este arquivo prova de propósito: os serviços de aplicação
-# (delivery-api, dispatch-worker, tracking-ingest, tracking-projector,
+# (delivery-api, lunchrush-worker, tracking-ingest, tracking-projector,
 # notification-worker, dependency-simulator) NÃO têm `build:` aqui. Eles
 # referenciam por nome:tag exatamente as imagens que `docker compose
 # --profile app build` já produziu para `cloud-a` (nome de imagem default
-# do Compose: "dispatch-<serviço>", porque o diretório do projeto se
-# chama "dispatch"). É o MESMO artefato OCI, mesmo digest, rodando num
+# do Compose: "lunchrush-<serviço>", porque o diretório do projeto se
+# chama "lunchrush"). É o MESMO artefato OCI, mesmo digest, rodando num
 # ambiente diferente — não uma imagem parecida rebuildada.
 #
 # Uso (depois de `docker compose --profile app build` no stack principal):
@@ -37,13 +37,13 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: dispatch
-      POSTGRES_PASSWORD: dispatch
-      POSTGRES_DB: dispatch
+      POSTGRES_USER: lunchrush
+      POSTGRES_PASSWORD: lunchrush
+      POSTGRES_DB: lunchrush
     ports:
       - "15432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dispatch"]
+      test: ["CMD-SHELL", "pg_isready -U lunchrush"]
       interval: 2s
       timeout: 2s
       retries: 15
@@ -87,17 +87,17 @@ services:
     command:
       - >
         rpk topic create -X brokers=redpanda:9092 -p 3
-        dispatch.delivery-events dispatch.delivery-events.dlq
-        dispatch.tracking-positions dispatch.tracking-positions.dlq || true
+        lunchrush.delivery-events lunchrush.delivery-events.dlq
+        lunchrush.tracking-positions lunchrush.tracking-positions.dlq || true
     depends_on:
       redpanda:
         condition: service_healthy
 
   migrate:
     profiles: ["app"]
-    image: dispatch-migrate
+    image: lunchrush-migrate
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush?sslmode=disable
     command: ["up"]
     depends_on:
       postgres:
@@ -105,7 +105,7 @@ services:
 
   dependency-simulator:
     profiles: ["app"]
-    image: dispatch-dependency-simulator
+    image: lunchrush-dependency-simulator
     environment:
       HTTP_ADDR: ":8090"
       FAILURE_RATE: "0.1"
@@ -115,12 +115,12 @@ services:
 
   delivery-api:
     profiles: ["app"]
-    image: dispatch-delivery-api
+    image: lunchrush-delivery-api
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush?sslmode=disable
       HTTP_ADDR: ":8080"
-      DISPATCH_JWT_SECRET: compose-dev-secret
-      DISPATCH_ADMIN_SECRET: compose-dev-admin-secret
+      LUNCHRUSH_JWT_SECRET: compose-dev-secret
+      LUNCHRUSH_ADMIN_SECRET: compose-dev-admin-secret
       KAFKA_BROKERS: redpanda:9092
     ports:
       - "18083:8080"
@@ -132,11 +132,11 @@ services:
       redpanda-topics:
         condition: service_completed_successfully
 
-  dispatch-worker:
+  lunchrush-worker:
     profiles: ["app"]
-    image: dispatch-dispatch-worker
+    image: lunchrush-lunchrush-worker
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush?sslmode=disable
       KAFKA_BROKERS: redpanda:9092
       OFFER_TTL_SECONDS: "120"
     depends_on:
@@ -149,10 +149,10 @@ services:
 
   tracking-ingest:
     profiles: ["app"]
-    image: dispatch-tracking-ingest
+    image: lunchrush-tracking-ingest
     environment:
       HTTP_ADDR: ":8080"
-      DISPATCH_JWT_SECRET: compose-dev-secret
+      LUNCHRUSH_JWT_SECRET: compose-dev-secret
       KAFKA_BROKERS: redpanda:9092
     ports:
       - "18084:8080"
@@ -162,12 +162,12 @@ services:
 
   tracking-projector:
     profiles: ["app"]
-    image: dispatch-tracking-projector
+    image: lunchrush-tracking-projector
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush?sslmode=disable
       REDIS_ADDR: redis:6379
       HTTP_ADDR: ":8080"
-      DISPATCH_JWT_SECRET: compose-dev-secret
+      LUNCHRUSH_JWT_SECRET: compose-dev-secret
       KAFKA_BROKERS: redpanda:9092
     ports:
       - "18085:8080"
@@ -181,9 +181,9 @@ services:
 
   notification-worker:
     profiles: ["app"]
-    image: dispatch-notification-worker
+    image: lunchrush-notification-worker
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush?sslmode=disable
       KAFKA_BROKERS: redpanda:9092
       NOTIFICATION_PROVIDER_URL: http://dependency-simulator:8090
     depends_on:

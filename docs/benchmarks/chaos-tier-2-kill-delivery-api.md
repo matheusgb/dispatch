@@ -1,4 +1,4 @@
-# Relatório LunchRush
+# Relatório LoadGen
 
 - seed: 9001
 - ordens simuladas: 80

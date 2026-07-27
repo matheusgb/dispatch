@@ -43,7 +43,7 @@ o estado completo da entrega (incluindo `courier_id`) para qualquer
 requisição, autenticada ou não. Isso é uma divergência real de postura
 entre os dois serviços: tracking exige dono, lifecycle não exige nada.
 Registrado aqui como pendência conhecida, não coberto neste passe (mudar
-isso afeta o fluxo de dispatch-worker e testes de integração existentes, é
+isso afeta o fluxo de lunchrush-worker e testes de integração existentes, é
 mudança de comportamento, não fechamento de lacuna de documentação).
 
 ## 2. Entregador envia posição para entrega que não lhe pertence (Spoofing / Tampering)
@@ -61,7 +61,7 @@ Nota de modelo de dados: o sistema hoje amarra autorização de tracking ao
 conceito de "dono" (`created_by_caller`, quem criou a entrega), não ao
 `courier_id` atribuído. Corrigir esta ameaça de verdade exige decidir
 _qual identidade_ deve autorizar o envio de posição (o dono? o courier
-atribuído, comparado contra `internal/dispatch`?) antes de implementar,
+atribuído, comparado contra `internal/lunchrush`?) antes de implementar,
 porque hoje o JWT `sub` não carrega papel nem é comparado a `courier_id` em
 lugar nenhum do código.
 
@@ -156,7 +156,7 @@ não afirmado como coberto.
 ## 7. Credencial exposta em log, trace ou imagem (Information disclosure)
 
 **Mitigado no que foi auditado.** Toda mensagem de log que toca segredo
-(`DISPATCH_JWT_SECRET`, `DISPATCH_ADMIN_SECRET`, o segredo resolvido via
+(`LUNCHRUSH_JWT_SECRET`, `LUNCHRUSH_ADMIN_SECRET`, o segredo resolvido via
 `internal/platform/secrets/secretsmanager.go` `ResolveJWTSecret`) loga
 apenas o **nome** da variável/segredo (`"secret", secretName`), nunca o
 valor. Não foi encontrado nenhum ponto em `internal/` ou `cmd/` que logue
@@ -184,12 +184,12 @@ posição após N dias), que este laboratório não implementa.
 ## 9. Serviço comprometido acessando recurso desnecessário (Elevation of privilege)
 
 **Parcialmente mitigado por design, não por controle de acesso em tempo de
-execução.** Cada `cmd/` (delivery-api, dispatch-worker, tracking-ingest,
+execução.** Cada `cmd/` (delivery-api, lunchrush-worker, tracking-ingest,
 tracking-projector, notification-worker) roda como processo/container
 separado com sua própria credencial de banco (`DATABASE_URL`) e grupo de
 consumidor Kafka próprio — isolamento por processo, não por permissão de
 banco (não há usuário Postgres distinto por serviço com `GRANT` restrito
-por tabela; todos usam o mesmo usuário `dispatch` no `docker-compose.yml`
+por tabela; todos usam o mesmo usuário `lunchrush` no `docker-compose.yml`
 local). Em produção real isso pediria usuários de banco por serviço com
 menor privilégio; não implementado neste laboratório, documentado aqui
 como gap consciente e proporcional ao escopo (custo de manter N usuários
@@ -202,7 +202,7 @@ documenta SBOM real (`syft` v1.49.0, SPDX JSON) e scan de vulnerabilidade
 real (`grype` v0.116.0, nenhuma vulnerabilidade encontrada nas 5 imagens
 na execução registrada) para as imagens do `docker compose`, e assinatura
 real com `cosign` v2.4.1 (chave local, não keyless) para
-`dispatch-delivery-api`, verificada com `cosign verify` contra um registry
+`lunchrush-delivery-api`, verificada com `cosign verify` contra um registry
 OCI local efêmero. As outras 4 imagens têm SBOM/scan mas não foram
 assinadas (pendência menor documentada no próprio ADR). Nesta sessão,
 `.github/workflows/supply-chain.yaml` automatiza SBOM e scan em CI

@@ -4,7 +4,7 @@
 
 O tier 6 pede que o failover entre `cloud-a` e `cloud-b` reuse a mesma
 autoridade de fencing do tier 5 (`internal/fencing`, epoch + lease,
-`dispatch_fences`/`active_assignments`/`assignment_history`), promovendo
+`lunchrush_fences`/`active_assignments`/`assignment_history`), promovendo
 entre provedores da mesma forma que promove entre células. O tier 5 (ADR
 0018) já documentou a limitação central dessa autoridade: ela roda em um
 único Postgres local, single-node, sem réplica geográfica. A pergunta que
@@ -26,7 +26,7 @@ protocolo, orquestradas por uma ferramenta de operador nova,
    do tier 4, `docs/runbooks/backup-e-recuperacao-distribuida.md`);
 3. `cloud-a` continua recebendo escrita depois de T0 (simula produção
    continuando entre o backup e a queda);
-4. interrupção real: `docker compose stop delivery-api dispatch-worker`
+4. interrupção real: `docker compose stop delivery-api lunchrush-worker`
    em `cloud-a` (os processos que escreviam pelo `cloud-a` ficam
    indisponíveis de verdade, não é só uma flag);
 5. o dump T0 é restaurado no Postgres de `cloud-b` (`pg_restore`), banco

@@ -1,4 +1,4 @@
-// Comando tracking-projector consome dispatch.tracking-positions,
+// Comando tracking-projector consome lunchrush.tracking-positions,
 // atualiza PostgreSQL e Redis (internal/tracking), e serve a leitura:
 // última posição, histórico e SSE. Também faz o papel do realtime-gateway
 // do roadmap: não há evidência ainda de que separar os dois compense a
@@ -18,13 +18,13 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/db"
-	"github.com/matheusgb/dispatch/internal/platform/kafka"
-	"github.com/matheusgb/dispatch/internal/platform/sse"
-	"github.com/matheusgb/dispatch/internal/platform/topics"
-	"github.com/matheusgb/dispatch/internal/tracking"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/db"
+	"github.com/matheusgb/lunch-rush/internal/platform/kafka"
+	"github.com/matheusgb/lunch-rush/internal/platform/sse"
+	"github.com/matheusgb/lunch-rush/internal/platform/topics"
+	"github.com/matheusgb/lunch-rush/internal/tracking"
 
 	kafkago "github.com/segmentio/kafka-go"
 )
@@ -40,9 +40,9 @@ func main() {
 		os.Exit(1)
 	}
 	redisAddr := envOr("REDIS_ADDR", "localhost:6379")
-	jwtSecret := os.Getenv("DISPATCH_JWT_SECRET")
+	jwtSecret := os.Getenv("LUNCHRUSH_JWT_SECRET")
 	if jwtSecret == "" {
-		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido")
+		logger.Error("configuração inválida: LUNCHRUSH_JWT_SECRET não definido")
 		os.Exit(1)
 	}
 	brokers := strings.Split(envOr("KAFKA_BROKERS", "localhost:19092"), ",")

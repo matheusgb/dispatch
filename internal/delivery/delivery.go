@@ -31,7 +31,7 @@ func (d *Delivery) Apply(to State, now time.Time) error {
 	}
 	d.History = append(d.History, TransitionRecord{From: d.State, To: to, At: now})
 	d.State = to
-	if to == ReadyForDispatch {
+	if to == ReadyForLunchRush {
 		d.CourierID = nil
 	}
 	return nil

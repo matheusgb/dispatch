@@ -2,7 +2,7 @@
 // no laboratório) na inicialização do serviço, com fallback documentado
 // para variável de ambiente quando o Secrets Manager não está configurado
 // ou não responde. O fallback existe porque o tier 3 já funciona só com
-// DISPATCH_JWT_SECRET em env var, e o tier 4 não pode quebrar esse modo de
+// LUNCHRUSH_JWT_SECRET em env var, e o tier 4 não pode quebrar esse modo de
 // operação: LocalStack é um profile opcional (aws-lab), não uma dependência
 // obrigatória do compose padrão.
 package secrets
@@ -23,7 +23,7 @@ import (
 func ResolveJWTSecret(ctx context.Context, endpoint, region, secretName, envFallback string, logger *slog.Logger) string {
 	if endpoint == "" {
 		if logger != nil {
-			logger.Info("secrets manager não configurado, usando DISPATCH_JWT_SECRET diretamente")
+			logger.Info("secrets manager não configurado, usando LUNCHRUSH_JWT_SECRET diretamente")
 		}
 		return envFallback
 	}

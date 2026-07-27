@@ -14,7 +14,7 @@ leitura de tracking, usando postgres"` ou `"...para atualizar cache..."`.
    /deliveries/{id}/position` deve continuar respondendo `200` com o valor
    certo, só mais lento. Se estiver respondendo erro, o problema não é
    isolado ao Redis: parar aqui e investigar o PostgreSQL.
-3. Checar a métrica `dispatch_positions_current_total` continua subindo:
+3. Checar a métrica `lunchrush_positions_current_total` continua subindo:
    se sim, a ingestão de GPS continua funcionando (ela nunca depende do
    Redis para persistir).
 
@@ -29,7 +29,7 @@ o Redis, não o dado nele:
 2. Não é preciso "aquecer" o cache manualmente: a primeira leitura de cada
    entrega depois da religação já popula o Redis via cache-aside.
 3. Confirmar que a latência das rotas de tracking volta ao normal
-   (dashboard "dispatch — RED e negócio" no Grafana, painel "Duration p95
+   (dashboard "lunchrush — RED e negócio" no Grafana, painel "Duration p95
    por rota").
 
 ## O que este runbook não cobre

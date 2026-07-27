@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: dispatch delivery-api
+  title: lunchrush delivery-api
   version: tier-6.0.0
   description: >
     Lifecycle de entrega, cadastro de entregador, atribuição e emissão de
@@ -61,8 +61,8 @@ paths:
   /deliveries/{id}/ready:
     post:
       summary: >
-        move created -> ready_for_dispatch. Em operação normal é o
-        dispatch-worker quem aciona, reagindo a delivery.created; exposto
+        move created -> ready_for_lunchrush. Em operação normal é o
+        lunchrush-worker quem aciona, reagindo a delivery.created; exposto
         também para override manual e testes.
       parameters:
         - name: id
@@ -74,7 +74,7 @@ paths:
         "409": { description: entrega não estava em created }
   /deliveries/{id}/offer:
     post:
-      summary: move ready_for_dispatch -> offered com prazo de expiração
+      summary: move ready_for_lunchrush -> offered com prazo de expiração
       parameters:
         - name: id
           in: path
@@ -108,7 +108,7 @@ paths:
             entrega ativa
   /deliveries/{id}/decline:
     post:
-      summary: recusa a oferta e recicla para ready_for_dispatch
+      summary: recusa a oferta e recicla para ready_for_lunchrush
       parameters:
         - name: id
           in: path
@@ -218,7 +218,7 @@ components:
           type: string
           enum:
             - created
-            - ready_for_dispatch
+            - ready_for_lunchrush
             - offered
             - assigned
             - picked_up

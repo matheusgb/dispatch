@@ -1,7 +1,7 @@
 // Soak test: carga baixa e constante sustentada por uma duração longa,
 // procurando degradação lenta (memory leak, conexão vazando, cache
 // crescendo sem TTL) que um teste curto não pega. Complementa
-// docs/benchmarks/tier-5-soak/ (que usou o LunchRush para uma corrida
+// docs/benchmarks/tier-5-soak/ (que usou o LoadGen para uma corrida
 // longa orientada a jornada completa incluindo tracking); este script
 // cobre o mesmo tipo de cenário só com o delivery-api via k6, mais barato
 // de rodar quando o objetivo é só "isso aguenta N minutos sem degradar".

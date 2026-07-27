@@ -16,7 +16,7 @@ docker compose --profile app --profile observability up -d --build
 
 **O que você vai ver:** onze containers, incluindo `redpanda` (saudável
 depois de alguns segundos), `redpanda-topics` (roda e sai, cria os
-tópicos), e os cinco serviços: `delivery-api`, `dispatch-worker`,
+tópicos), e os cinco serviços: `delivery-api`, `lunchrush-worker`,
 `tracking-ingest`, `tracking-projector`, `notification-worker`.
 
 **O que roda por baixo:** cinco `Dockerfile` novos em
@@ -47,10 +47,10 @@ chamada sua, chega em `offered` sozinha em alguns segundos.
 [cmd/delivery-api](../../cmd/delivery-api) grava o evento
 `delivery.created` na mesma transação da criação
 (`internal/platform/outbox`). Um relay publica esse evento no Kafka a cada
-1 segundo. [cmd/dispatch-worker](../../cmd/dispatch-worker) consome
-`dispatch.delivery-events`, vê `delivery.created`, chama
-`MarkReadyForDispatch`, que grava outro evento
-(`delivery.ready_for_dispatch`); o mesmo worker consome esse evento e
+1 segundo. [cmd/lunchrush-worker](../../cmd/lunchrush-worker) consome
+`lunchrush.delivery-events`, vê `delivery.created`, chama
+`MarkReadyForLunchRush`, que grava outro evento
+(`delivery.ready_for_lunchrush`); o mesmo worker consome esse evento e
 chama `Offer`. Dois hops pelo relay, cada um até 1s, mais o processamento:
 por isso uma entrega isolada leva uns 3-4 segundos até `offered` (ver ADR
 0009).
@@ -111,14 +111,14 @@ PostgreSQL e Redis, e é quem responde a leitura.
 ## Passo 5: poison pill
 
 ```bash
-echo '{"not":"a valid envelope"' | docker exec -i dispatch-redpanda-1 rpk topic produce dispatch.delivery-events --key poison-1
+echo '{"not":"a valid envelope"' | docker exec -i lunchrush-redpanda-1 rpk topic produce lunchrush.delivery-events --key poison-1
 sleep 2
-docker exec dispatch-redpanda-1 rpk topic consume dispatch.delivery-events.dlq -n 1
-docker compose ps dispatch-worker
+docker exec lunchrush-redpanda-1 rpk topic consume lunchrush.delivery-events.dlq -n 1
+docker compose ps lunchrush-worker
 ```
 
 **O que você vai ver:** a mensagem malformada aparece na DLQ, e o
-`dispatch-worker` continua `Up` normalmente. Ver
+`lunchrush-worker` continua `Up` normalmente. Ver
 `docs/runbooks/dlq-replay.md`.
 
 ---
@@ -142,7 +142,7 @@ Docker do `kind` (para alcançar a infra do compose) e aplica
 Repita os passos 2 a 4 com `kubectl port-forward`:
 
 ```bash
-kubectl --context kind-dispatch -n dispatch port-forward svc/delivery-api 18080:80 &
+kubectl --context kind-lunchrush -n lunchrush port-forward svc/delivery-api 18080:80 &
 ```
 
 ---
@@ -150,17 +150,17 @@ kubectl --context kind-dispatch -n dispatch port-forward svc/delivery-api 18080:
 ## Passo 7: réplicas de consumer além das partições
 
 ```bash
-kubectl --context kind-dispatch -n dispatch scale deployment/dispatch-worker --replicas=4
+kubectl --context kind-lunchrush -n lunchrush scale deployment/lunchrush-worker --replicas=4
 sleep 10
-docker exec dispatch-redpanda-1 rpk group describe dispatch-worker
+docker exec lunchrush-redpanda-1 rpk group describe lunchrush-worker
 ```
 
 **O que você vai ver:** o grupo com mais membros do que partições
-(`dispatch.delivery-events` tem 3), mas só 3 atribuídos a uma partição na
+(`lunchrush.delivery-events` tem 3), mas só 3 atribuídos a uma partição na
 tabela. Os demais existem e não processam nada. Ver ADR 0010.
 
 ```bash
-kubectl --context kind-dispatch -n dispatch scale deployment/dispatch-worker --replicas=2
+kubectl --context kind-lunchrush -n lunchrush scale deployment/lunchrush-worker --replicas=2
 ```
 
 ---
@@ -168,7 +168,7 @@ kubectl --context kind-dispatch -n dispatch scale deployment/dispatch-worker --r
 ## Passo 8: desligar
 
 ```bash
-kind delete cluster --name dispatch
+kind delete cluster --name lunchrush
 docker compose --profile app --profile observability down
 ```
 

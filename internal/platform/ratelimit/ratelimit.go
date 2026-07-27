@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/time/rate"
 
-	"github.com/matheusgb/dispatch/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
 )
 
 type PerCaller struct {

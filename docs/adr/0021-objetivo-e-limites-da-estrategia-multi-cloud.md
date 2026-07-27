@@ -38,7 +38,7 @@ recuperação diante de indisponibilidade prolongada de um provedor real,
 requisito de residência regional, comparação de custo e capacidade entre
 provedores reais) **não** são o que este laboratório prova. Citá-los como
 prova seria exatamente o "multi-cloud apenas nominal" que a tabela de
-riscos do `dispatch.md` already lista como risco a evitar.
+riscos do `lunch-rush.md` already lista como risco a evitar.
 
 ### Por que não é o mesmo experimento do tier 5
 
@@ -53,10 +53,10 @@ sem ser uma cloud real — ver ADR 0023 para o detalhe do failover.
 ## Evidência real
 
 - `docker-compose.cloud-b.yml`, serviços sem `build:`, todos usando
-  `image: dispatch-<serviço>` — o mesmo nome de imagem que
+  `image: lunchrush-<serviço>` — o mesmo nome de imagem que
   `docker compose --profile app build` já produziu para `cloud-a`;
 - confirmado por `docker inspect --format '{{.Image}}'` que o container
-  `dispatch-delivery-api-1` (cloud-a) e `cloudb-delivery-api-1` (cloud-b)
+  `lunchrush-delivery-api-1` (cloud-a) e `cloudb-delivery-api-1` (cloud-b)
   rodam exatamente o mesmo digest
   (`sha256:e3c37da8c260f47e852ffc5734cf1bdf9537a1ff6282b86b476eb096addcfa43`
   nesta execução), sem rebuild entre os dois;

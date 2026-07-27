@@ -26,14 +26,14 @@ compartilhado, sem servidor de identidade separado.
 
 ## Consequências
 
-- o segredo compartilhado (`DISPATCH_JWT_SECRET`) precisa ser gerenciado
+- o segredo compartilhado (`LUNCHRUSH_JWT_SECRET`) precisa ser gerenciado
   como qualquer outro segredo de produção nos tiers seguintes: fora do
   código, com rotação. No tier 2 local ele é só uma variável de ambiente;
 - não existe fluxo de login nem revogação de token antes da expiração: um
   token comprometido continua válido até o TTL (1 hora) esgotar. Isso é
   uma limitação aceitável no tier 2 e fica documentada, não escondida;
-- emitir um token exige o segredo administrativo, então o LunchRush e o k6
-  precisam dele para testar tracking (`DISPATCH_ADMIN_SECRET`). Isso é
+- emitir um token exige o segredo administrativo, então o LoadGen e o k6
+  precisam dele para testar tracking (`LUNCHRUSH_ADMIN_SECRET`). Isso é
   intencional: simula a fronteira entre "quem pode emitir identidade" e
   "quem usa a identidade emitida".
 

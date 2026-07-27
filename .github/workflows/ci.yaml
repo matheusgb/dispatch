@@ -49,7 +49,7 @@ jobs:
       matrix:
         service:
           - delivery-api
-          - dispatch-worker
+          - lunchrush-worker
           - tracking-ingest
           - tracking-projector
           - notification-worker
@@ -65,4 +65,4 @@ jobs:
           context: .
           file: deploy/compose/Dockerfile.${{ matrix.service }}
           push: false
-          tags: dispatch-${{ matrix.service }}:ci
+          tags: lunchrush-${{ matrix.service }}:ci

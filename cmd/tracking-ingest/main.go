@@ -18,19 +18,19 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/kafka"
-	"github.com/matheusgb/dispatch/internal/platform/ratelimit"
-	"github.com/matheusgb/dispatch/internal/platform/topics"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/kafka"
+	"github.com/matheusgb/lunch-rush/internal/platform/ratelimit"
+	"github.com/matheusgb/lunch-rush/internal/platform/topics"
 )
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	addr := envOr("HTTP_ADDR", ":8080")
-	jwtSecret := os.Getenv("DISPATCH_JWT_SECRET")
+	jwtSecret := os.Getenv("LUNCHRUSH_JWT_SECRET")
 	if jwtSecret == "" {
-		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido")
+		logger.Error("configuração inválida: LUNCHRUSH_JWT_SECRET não definido")
 		os.Exit(1)
 	}
 	brokers := strings.Split(envOr("KAFKA_BROKERS", "localhost:19092"), ",")

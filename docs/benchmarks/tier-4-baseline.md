@@ -1,8 +1,8 @@
 # Baseline do tier 4
 
 **Medido** em 2026-07-26, ambiente `local`: LocalStack 3.8.1 (S3,
-Secrets Manager, KMS), cluster `kind` v1.31.0 chamado `dispatch`, chart
-Helm `deploy/helm/dispatch`, KEDA 2.20, Prometheus v3.0.1 com regras de
+Secrets Manager, KMS), cluster `kind` v1.31.0 chamado `lunchrush`, chart
+Helm `deploy/helm/lunchrush`, KEDA 2.20, Prometheus v3.0.1 com regras de
 SLO carregadas, infra compartilhada (PostgreSQL, Redis, Redpanda
 v24.3.1) via `docker compose`.
 
@@ -15,16 +15,16 @@ v24.3.1) via `docker compose`.
 - `go test -race ./...` e `go test -tags=integration -race ./test/integration/...`
   passando (25,6s a suíte de integração), incluindo os testes herdados
   do tier 3 (outbox, inbox, disputa concorrente, cache do tracking).
-- `helm lint deploy/helm/dispatch`: 0 charts com falha.
+- `helm lint deploy/helm/lunchrush`: 0 charts com falha.
 - `terraform plan` no ambiente `aws-lab`: "No changes" depois de um
   `apply` limpo (bucket S3, segredo no Secrets Manager, chave KMS).
 
 ## Infraestrutura provisionada (Terraform contra LocalStack)
 
-- `aws s3 ls` → `dispatch-delivery-receipts` (versionamento `Enabled`,
+- `aws s3 ls` → `lunchrush-delivery-receipts` (versionamento `Enabled`,
   SSE-S3, bloqueio de acesso público);
-- `aws secretsmanager list-secrets` → `dispatch/jwt-secret`, cifrado por
-  uma chave KMS criada junto (`alias/dispatch-aws-lab-jwt`);
+- `aws secretsmanager list-secrets` → `lunchrush/jwt-secret`, cifrado por
+  uma chave KMS criada junto (`alias/lunchrush-aws-lab-jwt`);
 - `delivery-api` consumindo os dois em runtime: JWT resolvido do Secrets
   Manager na inicialização, comprovante de cada entrega concluída subido
   para o bucket (best-effort, não bloqueia o efeito de negócio).
@@ -32,7 +32,7 @@ v24.3.1) via `docker compose`.
 
 ## Deploy (Helm no lugar de Kustomize)
 
-- cinco `Deployment` (`delivery-api`, `dispatch-worker`,
+- cinco `Deployment` (`delivery-api`, `lunchrush-worker`,
   `tracking-ingest`, `tracking-projector`, `notification-worker`) via
   `helm upgrade --install`, todos `Running` e `1/1`;
 - dois `HorizontalPodAutoscaler` (CPU), dois `PodDisruptionBudget`, cinco
@@ -43,8 +43,8 @@ v24.3.1) via `docker compose`.
 
 ## KEDA (autoscaling por lag de consumer group)
 
-- `dispatch-worker` escalado de **0 para 3 réplicas** por lag artificial
-  de 40 mensagens no tópico `dispatch.delivery-events` (limiar
+- `lunchrush-worker` escalado de **0 para 3 réplicas** por lag artificial
+  de 40 mensagens no tópico `lunchrush.delivery-events` (limiar
   configurado: 5), em menos de 1 minuto (`pollingInterval: 5s`);
 - depois do consumo do lag, `TOTAL-LAG` voltou a 0 e o
   `cooldownPeriod` (30s) leva o `Deployment` de volta a 0 réplicas sem

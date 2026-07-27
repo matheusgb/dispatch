@@ -37,7 +37,7 @@
 #   1. docker compose up -d postgres
 #   2. ajuste DELIVERY_API_DATABASE_URL para apontar para a porta do proxy
 #      (15432 por padrão neste script) antes de subir o delivery-api local
-#      (`DATABASE_URL=postgres://dispatch:dispatch@localhost:15432/dispatch?sslmode=disable go run ./cmd/delivery-api`)
+#      (`DATABASE_URL=postgres://lunchrush:lunchrush@localhost:15432/lunchrush?sslmode=disable go run ./cmd/delivery-api`)
 #   3. rode este script
 set -euo pipefail
 
@@ -46,7 +46,7 @@ TOXIPROXY_API="${TOXIPROXY_API:-http://localhost:8474}"
 PROXY_LISTEN="${PROXY_LISTEN:-0.0.0.0:15432}"
 POSTGRES_UPSTREAM="${POSTGRES_UPSTREAM:-postgres:5432}"
 BASE_URL="${BASE_URL:-http://localhost:8083}"
-NETWORK="${NETWORK:-dispatch_default}"
+NETWORK="${NETWORK:-lunchrush_default}"
 REQUESTS="${REQUESTS:-10}"
 
 log() { echo "[chaos/postgres-latency-toxiproxy] $*"; }

@@ -2,7 +2,7 @@
 
 Ver ADR correspondente em `docs/adr/0019-tla-real-e-mutation-test.md`.
 
-`DispatchFencing_no_epoch_guard.tla` é uma cópia de `../DispatchFencing.tla`
+`LunchRushFencing_no_epoch_guard.tla` é uma cópia de `../LunchRushFencing.tla`
 com uma única mudança deliberada: a ação `Assign` perde a guarda `e = epoch`
 (o fencing token deixa de precisar bater com o epoch vigente da autoridade,
 mesmo mantendo a checagem `owner = w`). O diff exato:
@@ -17,7 +17,7 @@ mesmo mantendo a checagem `owner = w`). O diff exato:
 
 ```text
 $ java -jar ../tools/tla2tools.jar -workers 4 \
-    -config DispatchFencing_no_epoch_guard.cfg DispatchFencing_no_epoch_guard.tla
+    -config LunchRushFencing_no_epoch_guard.cfg LunchRushFencing_no_epoch_guard.tla
 
 Error: Invariant Safety is violated.
 State 1: epoch=1, owner=w1, leaseValid=TRUE, knownTokens={<<w1,1>>}
@@ -42,13 +42,13 @@ formado com o epoch antigo (por exemplo, enfileirado antes do restart, ou
 reenviado por um retry que não observou a mudança de epoch) ainda é aceito
 porque a única coisa que a autoridade checava era "o writer que está
 pedindo é o dono atual" — verdade, mas insuficiente. Isso confirma por que
-o desenho do roadmap (`docs/tla/DispatchFencing.tla`, seção "Implementação
-de referência" do `dispatch.md`) exige checar epoch **e** owner_region na
+o desenho do roadmap (`docs/tla/LunchRushFencing.tla`, seção "Implementação
+de referência" do `lunch-rush.md`) exige checar epoch **e** owner_region na
 mesma condição do `UPDATE`, não um substituto do outro.
 
 ## Modelo corrigido
 
-`../DispatchFencing.tla` (a guarda completa) roda sem violação no mesmo
+`../LunchRushFencing.tla` (a guarda completa) roda sem violação no mesmo
 espaço de estados (`../tlc-output-correct.txt`, 1086 estados distintos,
 `Model checking completed. No error has been found.`). Nenhuma outra
 mudança foi feita entre os dois arquivos além da guarda removida: mesmo

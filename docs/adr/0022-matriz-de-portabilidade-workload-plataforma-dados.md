@@ -33,7 +33,7 @@ Três classes de estado exigem tratamento diferente na coluna "dados"
 - **Kafka (tracking e eventos)**: portável por protocolo (tópicos, chaves,
   schema), não testado neste tier com replicação real entre os dois
   Redpanda (cada stack tem o seu, populado independentemente pela mesma
-  carga k6/LunchRush, não por replicação cross-stack). Isso é uma lacuna
+  carga k6/LoadGen, não por replicação cross-stack). Isso é uma lacuna
   real, registrada em `docs/benchmarks/tier-6-what-breaks-next.md`.
 - **Ledger de assignment (fencing)**: não é "dado que se copia e pronto":
   é a autoridade viva do protocolo. A prova aqui não é cópia de dados, é

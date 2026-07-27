@@ -12,9 +12,9 @@ import (
 	"github.com/google/uuid"
 	kafkago "github.com/segmentio/kafka-go"
 
-	"github.com/matheusgb/dispatch/internal/platform/inbox"
-	"github.com/matheusgb/dispatch/internal/platform/kafka"
-	"github.com/matheusgb/dispatch/internal/platform/outbox"
+	"github.com/matheusgb/lunch-rush/internal/platform/inbox"
+	"github.com/matheusgb/lunch-rush/internal/platform/kafka"
+	"github.com/matheusgb/lunch-rush/internal/platform/outbox"
 )
 
 func kafkaBrokers() []string {
@@ -23,7 +23,7 @@ func kafkaBrokers() []string {
 	}
 	// 19092 é o listener "external" do Redpanda do docker compose,
 	// anunciado como localhost:19092 especificamente para processos
-	// rodando no host (testes, LunchRush via `go run`, k6). O listener
+	// rodando no host (testes, LoadGen via `go run`, k6). O listener
 	// "internal" (9092) é anunciado como "redpanda:9092" e só resolve de
 	// dentro da rede do compose; ver docker-compose.yml e ADR 0011.
 	return []string{"localhost:19092"}
@@ -41,7 +41,7 @@ func truncateOutbox(t *testing.T) {
 func TestOutbox_RelayPublishesAndMarks(t *testing.T) {
 	truncateOutbox(t)
 	ctx := context.Background()
-	topic := "dispatch.delivery-events"
+	topic := "lunchrush.delivery-events"
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {
@@ -124,7 +124,7 @@ func (d directPublisher) Publish(ctx context.Context, topic, key string, value [
 func TestOutbox_CrashBeforeMarkRepublishesButInboxDedupsEffect(t *testing.T) {
 	truncateOutbox(t)
 	ctx := context.Background()
-	topic := "dispatch.delivery-events"
+	topic := "lunchrush.delivery-events"
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {

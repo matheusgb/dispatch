@@ -3,7 +3,7 @@
 ## Contexto
 
 O roadmap pede GitOps como próximo passo natural depois de ter um chart
-Helm versionado (`deploy/helm/dispatch/`, ADR 0013): hoje o deploy é
+Helm versionado (`deploy/helm/lunchrush/`, ADR 0013): hoje o deploy é
 imperativo (`scripts/helm-deploy.sh` roda `helm upgrade --install` na mão
 ou via CI). Uma rodada anterior documentou ArgoCD como "fora de alcance
 por tempo/memória", mas nunca tentou de verdade instalar um ArgoCD real
@@ -18,16 +18,16 @@ projeto normalmente sobe o chart (mais simples para um laboratório solo,
 sem servidor de CI hospedado rodando `argocd app sync` de verdade). ArgoCD
 fica documentado e provado como evidência de como a mesma infraestrutura
 (o chart já existente, sem duplicar nada) se comportaria sob GitOps: uma
-`Application` (`deploy/argocd/dispatch-application.yaml`) aponta para
-`deploy/helm/dispatch` no repositório público
-`github.com/matheusgb/dispatch`, com `syncPolicy.automated.selfHeal: true`.
+`Application` (`deploy/argocd/lunchrush-application.yaml`) aponta para
+`deploy/helm/lunchrush` no repositório público
+`github.com/matheusgb/lunch-rush`, com `syncPolicy.automated.selfHeal: true`.
 
 ## Evidência real
 
 Ver `docs/runbooks/gitops-argocd.md` para o passo a passo completo e os
 outputs de CLI. Resumo:
 
-- Cluster `kind` chamado `dispatch` (mesmo usado por `scripts/kind-deploy.sh`
+- Cluster `kind` chamado `lunchrush` (mesmo usado por `scripts/kind-deploy.sh`
   e `scripts/helm-deploy.sh`, sem tocar no cluster `edge-lab` do
   laboratório irmão).
 - ArgoCD instalado via manifests oficiais
@@ -36,7 +36,7 @@ outputs de CLI. Resumo:
   limite de 262144 bytes da anotação `kubectl.kubernetes.io/last-applied-configuration`
   usada por `kubectl apply` client-side).
 - `Application` sincronizou de verdade contra o repositório GitHub público
-  (`repoURL: https://github.com/matheusgb/dispatch.git`, sem token: repo
+  (`repoURL: https://github.com/matheusgb/lunch-rush.git`, sem token: repo
   público, sem credencial nenhuma configurada no ArgoCD), `status.sync.status: Synced`,
   revisão igual ao commit real do `master` no momento do sync.
 - **Achado real, não hipotético:** o `argocd-cm` padrão do ArgoCD exclui o
@@ -54,7 +54,7 @@ outputs de CLI. Resumo:
   `Endpoints` pelo `EndpointSliceMirroring controller` do Kubernetes,
   então continua funcionando) e remover `Endpoints` da lista. Depois da
   correção e de um `argocd.argoproj.io/refresh=hard`, os 10 pods do
-  chart (`delivery-api`, `dispatch-worker`, `notification-worker`,
+  chart (`delivery-api`, `lunchrush-worker`, `notification-worker`,
   `tracking-ingest`, `tracking-projector`, 2 réplicas cada) ficaram
   `1/1 Running` e a `Application` foi para `Synced`/`Healthy`.
 - **Drift real corrigido:** `kubectl scale deployment delivery-api --replicas=7`
@@ -95,7 +95,7 @@ outputs de CLI. Resumo:
   documentado e testado, incluindo a pegadinha real do `resource.exclusions`
   (que não é óbvia e custaria tempo de novo numa sessão futura sem este
   registro);
-- o chart em si não mudou: a mesma fonte de verdade (`deploy/helm/dispatch`)
+- o chart em si não mudou: a mesma fonte de verdade (`deploy/helm/lunchrush`)
   serve tanto `helm upgrade --install` direto quanto ArgoCD.
 
 ## Status

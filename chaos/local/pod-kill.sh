@@ -25,8 +25,8 @@
 # desejado de réplicas) — o script só confirma que voltou a 2/2 Running.
 set -euo pipefail
 
-NAMESPACE="${NAMESPACE:-dispatch}"
-CONTEXT="${CONTEXT:-kind-dispatch}"
+NAMESPACE="${NAMESPACE:-lunchrush}"
+CONTEXT="${CONTEXT:-kind-lunchrush}"
 REQUESTS="${REQUESTS:-100}"
 
 log() { echo "[chaos/pod-kill] $*"; }

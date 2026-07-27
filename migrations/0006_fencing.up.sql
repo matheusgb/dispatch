@@ -1,9 +1,9 @@
 -- Autoridade de ownership do tier 5 (ver docs/adr/0018-fencing-lease-e-epoch.md
--- e docs/tla/DispatchFencing.tla, que especifica formalmente o protocolo
--- implementado aqui). Uma linha por dispatch shard: um shard pequeno,
+-- e docs/tla/LunchRushFencing.tla, que especifica formalmente o protocolo
+-- implementado aqui). Uma linha por lunchrush shard: um shard pequeno,
 -- limitado, de entregas+couriers, não uma célula inteira, para evitar hot
 -- key (o roadmap é explícito sobre isso).
-CREATE TABLE dispatch_fences (
+CREATE TABLE lunchrush_fences (
     shard_id         text PRIMARY KEY,
     epoch            bigint NOT NULL DEFAULT 0,
     owner_region     text NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE active_assignments (
     assignment_id          uuid PRIMARY KEY,
     delivery_id            uuid NOT NULL UNIQUE,
     courier_id             uuid NOT NULL UNIQUE,
-    shard_id               text NOT NULL REFERENCES dispatch_fences(shard_id),
+    shard_id               text NOT NULL REFERENCES lunchrush_fences(shard_id),
     epoch                  bigint NOT NULL,
     courier_session_epoch  bigint NOT NULL,
     created_at             timestamptz NOT NULL DEFAULT now()

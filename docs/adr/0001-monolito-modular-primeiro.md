@@ -10,7 +10,7 @@ carga medida ainda justifica separar serviços, mensageria ou orquestração.
 
 O tier 1 será um único binário Go (`cmd/delivery-api`), com módulos internos
 separados por responsabilidade (`internal/delivery`, `internal/courier`,
-`internal/dispatch`, `internal/platform`) e PostgreSQL como única fonte de
+`internal/lunchrush`, `internal/platform`) e PostgreSQL como única fonte de
 verdade. Nenhum desses módulos é extraído para um serviço próprio neste tier.
 
 ## Alternativas consideradas
@@ -29,7 +29,7 @@ verdade. Nenhum desses módulos é extraído para um serviço próprio neste tie
   livremente dentro do mesmo binário;
 - a extração de um serviço em tier futuro só ocorre com evidência de hot path,
   necessidade de isolamento de escala ou ciclo de deploy diferente (ver tier 3
-  em `dispatch.md`, na raiz de `labs`).
+  em `lunch-rush.md`, na raiz de `labs`).
 
 ## Status
 

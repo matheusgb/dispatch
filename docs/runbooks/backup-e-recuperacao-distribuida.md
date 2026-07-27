@@ -24,14 +24,14 @@ archiving/PITR para reduzir a janela.
 $ date -u
 2026-07-26T22:17:36Z
 
-$ docker exec dispatch-postgres-1 pg_dump -U dispatch -Fc dispatch -f /tmp/dispatch_backup_t0.dump
+$ docker exec lunchrush-postgres-1 pg_dump -U lunchrush -Fc lunchrush -f /tmp/lunchrush_backup_t0.dump
 # 9.162.762 bytes
 
 $ psql ... -c "select count(*) deliveries, count(*) outbox_total, ..."
  deliveries | outbox_total | outbox_pending | outbox_max_id
       16174 |        97361 |          96275 |         98630
 
-$ rpk topic describe dispatch.delivery-events -p   # docs/benchmarks/tier-4-backup-recovery/kafka-hwm-t0.txt
+$ rpk topic describe lunchrush.delivery-events -p   # docs/benchmarks/tier-4-backup-recovery/kafka-hwm-t0.txt
 PARTITION  HIGH-WATERMARK
 0          374
 1          355
@@ -63,15 +63,15 @@ Gap real entre T0 e T1: **435 entregas**, **2.654 outbox events**, **26
 mensagens** efetivamente publicadas no Kafka (as 3 partições foram de
 374/355/384 para 382/366/391).
 
-### 4. Restauração (para um banco separado, `dispatch_restore`, para não
+### 4. Restauração (para um banco separado, `lunchrush_restore`, para não
 destruir o ambiente compartilhado do resto desta sessão — mecanicamente
 idêntico a restaurar por cima do banco original)
 
 ```text
-$ psql -d postgres -c "CREATE DATABASE dispatch_restore OWNER dispatch;"
-$ pg_restore -U dispatch -d dispatch_restore /tmp/dispatch_backup_t0.dump
+$ psql -d postgres -c "CREATE DATABASE lunchrush_restore OWNER lunchrush;"
+$ pg_restore -U lunchrush -d lunchrush_restore /tmp/lunchrush_backup_t0.dump
 
-$ psql -d dispatch_restore -c "select count(*) deliveries_restored, ..."
+$ psql -d lunchrush_restore -c "select count(*) deliveries_restored, ..."
  deliveries_restored | outbox_restored | outbox_max_id_restored
                 16174 |            97361 |                   98630
 ```
@@ -135,8 +135,8 @@ este runbook.
 ### 7. Limpeza
 
 ```text
-$ psql -d postgres -c "DROP DATABASE dispatch_restore;"
-$ docker exec dispatch-postgres-1 rm -f /tmp/dispatch_backup_t0.dump
+$ psql -d postgres -c "DROP DATABASE lunchrush_restore;"
+$ docker exec lunchrush-postgres-1 rm -f /tmp/lunchrush_backup_t0.dump
 ```
 
 O banco de restauração e o dump temporário não ficam no ambiente depois
@@ -153,7 +153,7 @@ do drill; a evidência (contagens, saída do `rpk`) fica neste documento.
 
 ## O que este runbook não fez (limitação honesta)
 
-- não promoveu de fato `dispatch_restore` como novo primário do
+- não promoveu de fato `lunchrush_restore` como novo primário do
   `delivery-api` (evitado para não destruir o ambiente compartilhado do
   resto da sessão); a restauração mecânica (passo 4) e a análise de gap
   (passo 5) já provam a parte que dependia de execução real, e o passo de

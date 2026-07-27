@@ -3,19 +3,19 @@
 ## Contexto
 
 O `outboxRelayLoop` em `cmd/delivery-api` publica eventos pendentes a cada
-1 segundo. O caminho `created -> ready_for_dispatch -> offered` atravessa
-esse relay duas vezes: uma para o `dispatch-worker` reagir a
-`delivery.created` (e produzir `delivery.ready_for_dispatch`), outra para
+1 segundo. O caminho `created -> ready_for_lunchrush -> offered` atravessa
+esse relay duas vezes: uma para o `lunchrush-worker` reagir a
+`delivery.created` (e produzir `delivery.ready_for_lunchrush`), outra para
 reagir a esse evento e produzir `delivery.offered`. Isso foi descoberto
-rodando o LunchRush em modo `-distributed`: uma entrega isolada levou
+rodando o LoadGen em modo `-distributed`: uma entrega isolada levou
 ~3,8s para chegar a `offered`; sob concorrência 8, uma fração passou de
-30s (ver `docs/benchmarks/lunchrush-tier-3-alta-concorrencia.md`).
+30s (ver `docs/benchmarks/loadgen-tier-3-alta-concorrencia.md`).
 
 ## Decisão
 
 Manter o intervalo de 1 segundo neste tier, e documentar a latência
 resultante como uma característica real do desenho, não escondê-la atrás
-de um timeout maior no LunchRush sem explicação. O `LunchRush` no modo
+de um timeout maior no LoadGen sem explicação. O `LoadGen` no modo
 `-distributed` usa um prazo de espera configurável
 (`-ready-wait-seconds`, default 30s) exatamente para tornar essa latência
 visível e mensurável em vez de mascarada.
@@ -36,13 +36,13 @@ visível e mensurável em vez de mascarada.
 
 ## Consequências
 
-- toda automação que dependa do dispatch-worder avançar uma entrega
-  precisa esperar, não assumir imediatismo: testes e LunchRush fazem polling
+- toda automação que dependa do lunchrush-worder avançar uma entrega
+  precisa esperar, não assumir imediatismo: testes e LoadGen fazem polling
   com prazo generoso, nunca uma chamada única seguida de asserção;
 - a latência composta (dois hops de relay) é maior que a latência de um
   hop só. Se um cenário de produto realmente precisar de "oferta imediata
   após criação", a solução correta é o `delivery-api` já criar a entrega
-  em `ready_for_dispatch` quando não houver necessidade de um passo de
+  em `ready_for_lunchrush` quando não houver necessidade de um passo de
   triagem manual, não acelerar o relay.
 
 ## Status

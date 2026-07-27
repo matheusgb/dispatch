@@ -1,7 +1,7 @@
 //go:build integration
 
 // Package contract valida que o que o código realmente produz/expõe bate
-// com o que está documentado em contracts/asyncapi/dispatch-events.yaml e
+// com o que está documentado em contracts/asyncapi/lunchrush-events.yaml e
 // api/openapi/openapi.yaml. Ao contrário de test/integration/ (comportamento
 // interno) e test/invariant/ (propriedade de domínio), aqui a asserção é
 // sempre "documentação == realidade".
@@ -27,7 +27,7 @@ var pool *pgxpool.Pool
 func TestMain(m *testing.M) {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable"
+		dsn = "postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable"
 	}
 
 	ctx := context.Background()
@@ -45,7 +45,7 @@ func truncateAll(t *testing.T) {
 	t.Helper()
 	_, err := pool.Exec(context.Background(), `
 		TRUNCATE idempotency_keys, delivery_transitions, tracking_positions, delivery_tracking_state,
-			active_assignments, assignment_history, dispatch_fences, deliveries, couriers, outbox_events
+			active_assignments, assignment_history, lunchrush_fences, deliveries, couriers, outbox_events
 	`)
 	if err != nil {
 		t.Fatalf("truncate: %v", err)

@@ -252,7 +252,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 13577222,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 25,
@@ -262,7 +262,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 14156115,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 26,
@@ -272,7 +272,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 13852351,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 27,
@@ -282,7 +282,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11942136,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 28,
@@ -292,7 +292,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 13011085,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 29,
@@ -302,7 +302,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 13544079,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 30,
@@ -321,7 +321,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12904804,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 32,
@@ -339,7 +339,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 13463574,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 34,
@@ -349,7 +349,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12374905,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 35,
@@ -359,7 +359,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12256378,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 36,
@@ -369,7 +369,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12224449,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 37,
@@ -379,7 +379,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11657416,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 38,
@@ -389,7 +389,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12110580,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 39,
@@ -399,7 +399,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12490622,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 40,
@@ -418,7 +418,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12103605,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 42,
@@ -428,7 +428,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11048908,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 43,
@@ -438,7 +438,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11526656,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 44,
@@ -448,7 +448,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11320358,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 45,
@@ -467,7 +467,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11926598,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 47,
@@ -477,7 +477,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12641294,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 48,
@@ -487,7 +487,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11712536,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 49,
@@ -497,7 +497,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11880471,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 50,
@@ -515,7 +515,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12065745,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 52,
@@ -525,7 +525,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12770099,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 53,
@@ -535,7 +535,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11914436,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 54,
@@ -545,7 +545,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11451107,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 55,
@@ -564,7 +564,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12427549,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 57,
@@ -574,7 +574,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11550324,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 58,
@@ -584,7 +584,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12261946,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 59,
@@ -594,7 +594,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11658598,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 60,
@@ -612,7 +612,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11446014,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 62,
@@ -622,7 +622,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11298505,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 63,
@@ -632,7 +632,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 12013729,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 64,
@@ -642,7 +642,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11444640,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 65,
@@ -652,7 +652,7 @@
       "duplicate_ok": true,
       "assign_retries": 12,
       "duration_ns": 11986729,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 66,
@@ -662,7 +662,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 11315301,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 67,
@@ -672,7 +672,7 @@
       "duplicate_ok": false,
       "assign_retries": 12,
       "duration_ns": 12266757,
-      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"dispatch: entregador já possui entrega ativa\"}\n"
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
     },
     {
       "index": 68,

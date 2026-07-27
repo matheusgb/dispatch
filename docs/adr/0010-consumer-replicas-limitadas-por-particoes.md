@@ -3,12 +3,12 @@
 ## Contexto
 
 O roadmap do tier 3 pede explicitamente "teste que demonstra que réplicas
-úteis de consumer são limitadas pelas partições". `dispatch.delivery-events`
-e `dispatch.tracking-positions` têm 3 partições cada (ADR 0006).
+úteis de consumer são limitadas pelas partições". `lunchrush.delivery-events`
+e `lunchrush.tracking-positions` têm 3 partições cada (ADR 0006).
 
 ## Decisão
 
-`dispatch-worker`, `tracking-projector` e `notification-worker` rodam com
+`lunchrush-worker`, `tracking-projector` e `notification-worker` rodam com
 `replicas: 2` por padrão nos manifests do tier 3 (dentro do limite de 3
 partições, com folga para uma quarta réplica em teste). Nenhum HPA foi
 configurado para esses três Deployments: escalar um consumer group além do
@@ -19,14 +19,14 @@ têm HPA por CPU normalmente.
 ## Evidência
 
 ```bash
-kubectl --context kind-dispatch -n dispatch scale deployment/dispatch-worker --replicas=4
-docker exec dispatch-redpanda-1 rpk group describe dispatch-worker
+kubectl --context kind-lunchrush -n lunchrush scale deployment/lunchrush-worker --replicas=4
+docker exec lunchrush-redpanda-1 rpk group describe lunchrush-worker
 ```
 
-**Medido** em 2026-07-26: com o `dispatch-worker` do `kind` escalado para 4
+**Medido** em 2026-07-26: com o `lunchrush-worker` do `kind` escalado para 4
 réplicas, o grupo mostrou **5 membros** (as 4 réplicas do `kind` mais uma
 instância do mesmo serviço ainda rodando no docker compose, todas no mesmo
-grupo `dispatch-worker` porque falam com o mesmo broker) e, mesmo assim,
+grupo `lunchrush-worker` porque falam com o mesmo broker) e, mesmo assim,
 só **3 aparecem na tabela de atribuição**, uma por partição. As outras duas
 existem, consomem CPU e memória, mas nunca processam uma mensagem enquanto
 as três atribuídas estiverem saudáveis. Evidência completa em
@@ -34,7 +34,7 @@ as três atribuídas estiverem saudáveis. Evidência completa em
 
 ## Consequências
 
-- escalar `dispatch-worker` além de 3 réplicas é desperdício de recurso
+- escalar `lunchrush-worker` além de 3 réplicas é desperdício de recurso
   neste desenho. Se o throughput de consumo precisar aumentar, a alavanca
   correta é aumentar o número de partições (uma migração, ver ADR 0006), não
   o número de réplicas;

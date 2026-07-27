@@ -1,7 +1,7 @@
 variable "secret_name" {
   description = "Nome do segredo no Secrets Manager."
   type        = string
-  default     = "dispatch/jwt-secret"
+  default     = "lunchrush/jwt-secret"
 }
 
 variable "jwt_secret_value" {

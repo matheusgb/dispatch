@@ -3,7 +3,7 @@
 ## Contexto
 
 `deploy/kubernetes/base/` (Kustomize, tier 3) tinha cinco manifests quase
-idênticos: `delivery-api.yaml`, `dispatch-worker.yaml`,
+idênticos: `delivery-api.yaml`, `lunchrush-worker.yaml`,
 `tracking-ingest.yaml`, `tracking-projector.yaml` e
 `notification-worker.yaml`. A diferença entre eles era pequena (porta,
 recursos, se tem `readinessProbe`, se tem `PodDisruptionBudget`, se tem
@@ -14,7 +14,7 @@ ADR decide como.
 
 ## Decisão
 
-Um único chart em `deploy/helm/dispatch/`, com um template
+Um único chart em `deploy/helm/lunchrush/`, com um template
 (`templates/workloads.yaml`) que itera sobre `values.yaml:workloads` (um
 mapa por serviço) e gera `Deployment` + `Service` + opcionalmente
 `PodDisruptionBudget`, `HorizontalPodAutoscaler` e `ScaledObject` do KEDA
@@ -53,26 +53,26 @@ emitido por último.
 
 ## Evidência
 
-Deploy real no cluster kind `dispatch` (nome escolhido para não colidir
+Deploy real no cluster kind `lunchrush` (nome escolhido para não colidir
 com o cluster `edge-lab` do outro laboratório no mesmo host):
 
 ```text
-$ helm lint deploy/helm/dispatch
-==> Linting deploy/helm/dispatch
+$ helm lint deploy/helm/lunchrush
+==> Linting deploy/helm/lunchrush
 1 chart(s) linted, 0 chart(s) failed
 
-$ helm upgrade --install dispatch deploy/helm/dispatch --kube-context kind-dispatch \
+$ helm upgrade --install lunchrush deploy/helm/lunchrush --kube-context kind-lunchrush \
     --set externalInfra.hostGatewayIP=172.19.0.1
 STATUS: deployed
 
-$ kubectl --context kind-dispatch -n dispatch get deploy
+$ kubectl --context kind-lunchrush -n lunchrush get deploy
 delivery-api          2/2
-dispatch-worker       2/2
+lunchrush-worker       2/2
 notification-worker   2/2
 tracking-ingest       2/2
 tracking-projector    2/2
 
-$ kubectl --context kind-dispatch -n dispatch get hpa
+$ kubectl --context kind-lunchrush -n lunchrush get hpa
 delivery-api      Deployment/delivery-api      cpu: <unknown>/70%   2   6
 tracking-ingest   Deployment/tracking-ingest   cpu: <unknown>/70%   2   8
 ```
@@ -112,7 +112,7 @@ já fazia corretamente antes desta migração.
 
 - `deploy/kubernetes/` fica congelado como veio do tier 3, não recebe mais
   mudanças; qualquer novo workload ou ajuste de manifest a partir daqui
-  entra em `deploy/helm/dispatch/values.yaml`;
+  entra em `deploy/helm/lunchrush/values.yaml`;
 - o bug de documentos YAML sem separador é uma lição geral sobre `range`
   em templates Helm: todo laço que gera múltiplos documentos precisa de
   `---` explícito no início de cada iteração, não só entre blocos

@@ -7,7 +7,7 @@ testar, não um fato medido.
    `MaxConns`: sob carga real e concorrente (diferente do benchmark
    sequencial), o pool cresce até o padrão da biblioteca ou até o
    PostgreSQL rejeitar novas conexões. O próximo experimento é fixar
-   `MaxConns`, medir saturação do pool sob carga concorrente real (LunchRush
+   `MaxConns`, medir saturação do pool sob carga concorrente real (LoadGen
    ou k6) e expor isso como métrica, não só como log.
 2. **Loop de expiração por polling fixo de 5 s.** `expireOffersLoop` varre
    todas as entregas em `offered` a cada 5 segundos com um `SELECT` sem
@@ -20,7 +20,7 @@ testar, não um fato medido.
    escrita: isso só se justifica com o experimento do tier 2 ou 3, não antes.
 4. **Nenhuma carga real ainda mediu o throughput sob concorrência.** Os
    números da baseline são de um benchmark sequencial de processo único.
-   Falta o LunchRush e o k6 do backlog do tier 1 para produzir p50/p95/p99
+   Falta o LoadGen e o k6 do backlog do tier 1 para produzir p50/p95/p99
    sob concorrência real, incluindo os cenários com falha injetada (matar o
    processo entre commit e resposta, saturar o pool deliberadamente).
 5. **`ExpireOverdueOffers` não é atômico entre a leitura e a reciclagem.**

@@ -10,17 +10,17 @@ checker de verdade, não só escrever a especificação como texto.
 
 ## Decisão
 
-Especificação em `docs/tla/DispatchFencing.tla` (constantes: `Writers`,
+Especificação em `docs/tla/LunchRushFencing.tla` (constantes: `Writers`,
 `Deliveries`, `Couriers`, `MaxEpoch`), TLC real (`tla2tools.jar` 2.19,
 baixado localmente, `docs/tla/tools/`, fora do controle de versão por ser
 um binário de terceiros de 2,2MB — ver `.gitignore`), executado com
-`java -jar tla2tools.jar -workers 4 -config DispatchFencing.cfg
-DispatchFencing.tla`.
+`java -jar tla2tools.jar -workers 4 -config LunchRushFencing.cfg
+LunchRushFencing.tla`.
 
 ### O que o modelo representa
 
 - **epoch e lease por shard** (`epoch`, `owner`, `leaseValid`): o mesmo
-  desenho de `dispatch_fences` do roadmap (`shard_id`, `epoch`,
+  desenho de `lunchrush_fences` do roadmap (`shard_id`, `epoch`,
   `owner_region`, `lease_until`);
 - **`knownTokens`**: o conjunto de pares `<<writer, epoch>>` que cada
   writer já teve alguma vez. Cresce a cada `Promote`, mas tokens antigos
@@ -52,7 +52,7 @@ DispatchFencing.tla`.
 ### Evidência real
 
 ```text
-$ java -jar tools/tla2tools.jar -workers 4 -config DispatchFencing.cfg DispatchFencing.tla
+$ java -jar tools/tla2tools.jar -workers 4 -config LunchRushFencing.cfg LunchRushFencing.tla
 ...
 Model checking completed. No error has been found.
 4009 states generated, 1086 distinct states found, 0 states left on queue.
@@ -62,7 +62,7 @@ Saída completa em `docs/tla/tlc-output-correct.txt`.
 
 ### Mutation test
 
-`docs/tla/mutation/DispatchFencing_no_epoch_guard.tla` é uma cópia exata
+`docs/tla/mutation/LunchRushFencing_no_epoch_guard.tla` é uma cópia exata
 do módulo com uma única linha removida: a guarda `e = epoch` de `Assign`.
 Rodado com o mesmo `.cfg`, o TLC encontra um contraexemplo real em 4
 passos: um writer perde a lease, se auto-promove (mesmo owner, epoch
@@ -118,7 +118,7 @@ antiga em trânsito.
   couriers, `MaxEpoch = 4`, 1086 estados) para caber nesta máquina
   compartilhada em segundos; não prova nada sobre 3+ shards, cardinalidade
   maior de couriers/entregas, ou tempos reais de lease — isso é papel do
-  simulador determinístico (ADR do LunchRush estendido) e do benchmark de
+  simulador determinístico (ADR do LoadGen estendido) e do benchmark de
   código (`internal/fencing`).
 
 ## Status

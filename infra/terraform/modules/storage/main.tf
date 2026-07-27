@@ -9,8 +9,8 @@ resource "aws_s3_bucket" "receipts" {
   bucket = var.bucket_name
 
   tags = {
-    Owner       = "dispatch"
-    Project     = "dispatch"
+    Owner       = "lunchrush"
+    Project     = "lunchrush"
     Environment = var.environment
   }
 }

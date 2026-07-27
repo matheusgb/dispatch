@@ -1,7 +1,7 @@
 # Chaos do tier 4
 
 Quatro cenários, todos executados de verdade contra o cluster `kind`
-"dispatch" (deploy via Helm, ver `docs/adr/0013-helm-em-vez-de-kustomize.md`)
+"lunchrush" (deploy via Helm, ver `docs/adr/0013-helm-em-vez-de-kustomize.md`)
 e a infra do `docker compose`, não descritos em texto sem rodar. Formato:
 hipótese, estado estável, injeção, observação, condição de parada,
 recuperação, aprendizado. Evidência bruta de cada um em
@@ -82,7 +82,7 @@ atrasar sem bloquear a escrita).
 
 **Estado estável:** três `POST /deliveries` seguidos respondendo `201`.
 
-**Injeção:** `docker pause dispatch-redpanda-1` (processo congelado, não
+**Injeção:** `docker pause lunchrush-redpanda-1` (processo congelado, não
 apenas parado, para simular indisponibilidade sem o `TCP RST` imediato
 de um `stop`).
 
@@ -95,7 +95,7 @@ fora da pausa) acumulados sem publicar.
 acúmulo de pendências no outbox é o comportamento esperado, não uma
 falha).
 
-**Recuperação:** `docker unpause dispatch-redpanda-1`; em menos de 5s a
+**Recuperação:** `docker unpause lunchrush-redpanda-1`; em menos de 5s a
 contagem de `outbox_events` pendentes caiu para 0 (o relay publicou tudo
 que tinha acumulado).
 

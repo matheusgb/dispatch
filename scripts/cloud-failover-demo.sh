@@ -20,8 +20,8 @@
 # infraestrutura adicional).
 set -euo pipefail
 
-CLOUD_A_DB="${CLOUD_A_DB:-postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable}"
-CLOUD_B_DB="${CLOUD_B_DB:-postgres://dispatch:dispatch@localhost:15432/dispatch?sslmode=disable}"
+CLOUD_A_DB="${CLOUD_A_DB:-postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable}"
+CLOUD_B_DB="${CLOUD_B_DB:-postgres://lunchrush:lunchrush@localhost:15432/lunchrush?sslmode=disable}"
 SHARD_ID="${SHARD_ID:-shard-cloud-failover-demo}"
 SEED_N="${SEED_N:-10}"
 
@@ -43,7 +43,7 @@ go_run_cloudfailover assign -db "$CLOUD_A_DB" -shard "$SHARD_ID" -region cloud-a
 log "4. backup lógico de cloud-a (pg_dump, só as tabelas do domínio)"
 DUMP_FILE=$(mktemp)
 pg_dump "$CLOUD_A_DB" \
-  -t deliveries -t couriers -t dispatch_fences -t active_assignments -t assignment_history \
+  -t deliveries -t couriers -t lunchrush_fences -t active_assignments -t assignment_history \
   --data-only --column-inserts >"$DUMP_FILE"
 log "backup em $DUMP_FILE ($(wc -l <"$DUMP_FILE") linhas)"
 

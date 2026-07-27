@@ -16,7 +16,7 @@ cloud-b delivery-api antes: 201
 Going to remove cloudb-delivery-api-1
  Container cloudb-delivery-api-1  Removing
  Container cloudb-delivery-api-1  Removed
-Error response from daemon: conflict: unable to remove repository reference "dispatch-delivery-api" (must force) - container daa98009d3ee is using its referenced image e3c37da8c260
+Error response from daemon: conflict: unable to remove repository reference "lunchrush-delivery-api" (must force) - container daa98009d3ee is using its referenced image e3c37da8c260
 
 === Passo 3: tenta recriar delivery-api em cloud-b (deve falhar: imagem não existe mais) ===
  Container cloudb-redpanda-1  Running
@@ -74,8 +74,8 @@ cloud-a delivery-api durante o incidente: 201
 cloud-b delivery-api depois da recuperação: 201
 
 === Achado real (não esperado): a primeira tentativa de remover a imagem falhou ===
-O Docker recusou 'docker rmi dispatch-delivery-api' porque o container de
-cloud-a (dispatch-delivery-api-1) ainda estava rodando e referenciando essa
+O Docker recusou 'docker rmi lunchrush-delivery-api' porque o container de
+cloud-a (lunchrush-delivery-api-1) ainda estava rodando e referenciando essa
 imagem: 'conflict: unable to remove repository reference... must force'.
 cloud-b recriou seu container normalmente porque a imagem nunca chegou a
 sumir do daemon. Isso já é evidência real por si: o Docker local protege a
@@ -84,11 +84,11 @@ referencia, então a falha correlacionada só aparece quando as DUAS clouds
 não têm mais nenhum container rodando a imagem ao mesmo tempo.
 
 === Repetindo com força (derruba cloud-a também, para liberar a referência) ===
- Container dispatch-delivery-api-1  Stopping
- Container dispatch-delivery-api-1  Stopped
-Untagged: dispatch-delivery-api:latest
+ Container lunchrush-delivery-api-1  Stopping
+ Container lunchrush-delivery-api-1  Stopped
+Untagged: lunchrush-delivery-api:latest
 REPOSITORY              TAG       IMAGE ID       CREATED       SIZE
-dispatch-delivery-api   kind      ed3f5d3b340b   2 hours ago   27.8MB
+lunchrush-delivery-api   kind      ed3f5d3b340b   2 hours ago   27.8MB
 
 === Agora tenta recriar em cloud-b: deve falhar de verdade ===
  Container cloudb-delivery-api-1  Stopping
@@ -97,8 +97,8 @@ Going to remove cloudb-delivery-api-1
  Container cloudb-delivery-api-1  Removing
  Container cloudb-delivery-api-1  Removed
  delivery-api Pulling 
- delivery-api Error pull access denied for dispatch-delivery-api, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
-Error response from daemon: pull access denied for dispatch-delivery-api, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+ delivery-api Error pull access denied for lunchrush-delivery-api, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+Error response from daemon: pull access denied for lunchrush-delivery-api, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
 exit code: 0
 
 === Recuperação real: rebuild em cloud-a restaura os dois lados ===
@@ -107,27 +107,27 @@ exit code: 0
 #17 [delivery-api] resolving provenance for metadata file
 #17 DONE 0.0s
  delivery-api  Built
- Container dispatch-postgres-1  Running
- Container dispatch-redpanda-1  Running
- Container dispatch-redpanda-topics-1  Created
- Container dispatch-migrate-1  Created
- Container dispatch-delivery-api-1  Created
- Container dispatch-redpanda-1  Waiting
- Container dispatch-postgres-1  Waiting
- Container dispatch-redpanda-1  Healthy
- Container dispatch-redpanda-topics-1  Starting
- Container dispatch-postgres-1  Healthy
- Container dispatch-migrate-1  Starting
- Container dispatch-redpanda-topics-1  Started
- Container dispatch-migrate-1  Started
- Container dispatch-postgres-1  Waiting
- Container dispatch-migrate-1  Waiting
- Container dispatch-redpanda-topics-1  Waiting
- Container dispatch-migrate-1  Exited
- Container dispatch-redpanda-topics-1  Exited
- Container dispatch-postgres-1  Healthy
- Container dispatch-delivery-api-1  Starting
- Container dispatch-delivery-api-1  Started
+ Container lunchrush-postgres-1  Running
+ Container lunchrush-redpanda-1  Running
+ Container lunchrush-redpanda-topics-1  Created
+ Container lunchrush-migrate-1  Created
+ Container lunchrush-delivery-api-1  Created
+ Container lunchrush-redpanda-1  Waiting
+ Container lunchrush-postgres-1  Waiting
+ Container lunchrush-redpanda-1  Healthy
+ Container lunchrush-redpanda-topics-1  Starting
+ Container lunchrush-postgres-1  Healthy
+ Container lunchrush-migrate-1  Starting
+ Container lunchrush-redpanda-topics-1  Started
+ Container lunchrush-migrate-1  Started
+ Container lunchrush-postgres-1  Waiting
+ Container lunchrush-migrate-1  Waiting
+ Container lunchrush-redpanda-topics-1  Waiting
+ Container lunchrush-migrate-1  Exited
+ Container lunchrush-redpanda-topics-1  Exited
+ Container lunchrush-postgres-1  Healthy
+ Container lunchrush-delivery-api-1  Starting
+ Container lunchrush-delivery-api-1  Started
  Container cloudb-redpanda-1  Running
  Container cloudb-postgres-1  Running
  Container cloudb-migrate-1  Created
@@ -158,7 +158,7 @@ cloud-b depois da recuperação: 201
 Achado real: quando a imagem compartilhada some do daemon Docker local
 (equivalente a um registry único ficando indisponível, ou a uma imagem
 sendo removida por engano), cloud-b falha ao recriar seu container com
-"pull access denied for dispatch-delivery-api ... requested access to the
+"pull access denied for lunchrush-delivery-api ... requested access to the
 resource is denied" -- o mesmo tipo de erro que apareceria contra um
 registry real fora do ar ou sem a imagem publicada. cloud-a, que já tinha
 o container rodando, não é afetada até precisar recriar o container

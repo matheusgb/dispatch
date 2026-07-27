@@ -6,9 +6,9 @@ O critério de conclusão do tier 4 pedia SBOM, scan de dependências e imagem,
 e assinatura com proveniência. Uma sessão anterior fechou o tier 4 sem esse
 item, por restrição de tempo e memória compartilhada com o `edge-lab`. Este
 ADR fecha a lacuna antes de começar o tier 5, com ferramentas reais rodando
-contra as imagens já buildadas do `docker compose` (`dispatch-delivery-api`,
-`dispatch-dispatch-worker`, `dispatch-tracking-ingest`,
-`dispatch-tracking-projector`, `dispatch-notification-worker`).
+contra as imagens já buildadas do `docker compose` (`lunchrush-delivery-api`,
+`lunchrush-lunchrush-worker`, `lunchrush-tracking-ingest`,
+`lunchrush-tracking-projector`, `lunchrush-notification-worker`).
 
 ## Decisão
 
@@ -31,31 +31,31 @@ contra as imagens já buildadas do `docker compose` (`dispatch-delivery-api`,
 ## O que realmente aconteceu (evidência, não simulação)
 
 ```text
-$ syft dispatch-delivery-api:latest -o spdx-json | wc -c
+$ syft lunchrush-delivery-api:latest -o spdx-json | wc -c
 736742
 # 27 pacotes catalogados (SPDX "packages"), incluindo o próprio módulo
-# github.com/matheusgb/dispatch e as dependências diretas (pgx, kafka-go,
+# github.com/matheusgb/lunch-rush e as dependências diretas (pgx, kafka-go,
 # jwt/v5, prometheus client, etc). Contagem análoga nas outras 4 imagens
 # (21 a 30 pacotes, a diferença reflete o import graph de cada cmd/).
 
-$ grype dispatch-delivery-api:latest
+$ grype lunchrush-delivery-api:latest
 No vulnerabilities found
 # mesmo resultado nas 5 imagens: esperado, são binários Go estáticos sobre
 # alpine mínimo (ver Dockerfile multi-stage de cada cmd/), superfície de
 # pacotes de sistema operacional é pequena.
 
-$ docker tag dispatch-delivery-api:latest localhost:5555/dispatch-delivery-api:latest
-$ docker push localhost:5555/dispatch-delivery-api:latest
+$ docker tag lunchrush-delivery-api:latest localhost:5555/lunchrush-delivery-api:latest
+$ docker push localhost:5555/lunchrush-delivery-api:latest
 latest: digest: sha256:6e6d6da424f66c07ead8273b6f8a2cfca404331ad18e4c36e6d5bd6130613fe3
 
 $ cosign sign --key cosign.key --allow-http-registry --yes \
-    localhost:5555/dispatch-delivery-api:latest
+    localhost:5555/lunchrush-delivery-api:latest
 tlog entry created with index: 2256576409
-Pushing signature to: localhost:5555/dispatch-delivery-api
+Pushing signature to: localhost:5555/lunchrush-delivery-api
 
 $ cosign verify --key cosign.pub --allow-http-registry --insecure-ignore-tlog=true \
-    localhost:5555/dispatch-delivery-api:latest
-Verification for localhost:5555/dispatch-delivery-api:latest --
+    localhost:5555/lunchrush-delivery-api:latest
+Verification for localhost:5555/lunchrush-delivery-api:latest --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
   - The signatures were verified against the specified public key
@@ -93,7 +93,7 @@ verificação, já que a assinatura já havia ido ao log público).
 - as 5 imagens do `docker compose` têm SBOM e scan real capturados neste
   commit; nenhuma vulnerabilidade encontrada nesta execução (não é garantia
   permanente: o banco do Grype muda com o tempo);
-- só `dispatch-delivery-api` foi de fato assinada e verificada (prova de
+- só `lunchrush-delivery-api` foi de fato assinada e verificada (prova de
   conceito do fluxo completo); replicar para as outras 4 é mecânico e fica
   registrado como pendência menor em
   `docs/benchmarks/tier-4-what-breaks-next.md`;

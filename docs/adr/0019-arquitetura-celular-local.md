@@ -8,13 +8,13 @@ sem consultar todas as bases. Rodar 2-3 stacks completos (Postgres + Redis
 + Kafka + 5 serviços cada) nesta máquina compartilhada, já apertada de
 memória mesmo depois de o `edge-lab` ser parado (ver
 `docs/limitacoes-simulacao-local.md`), não é viável sem sacrificar o resto
-do trabalho desta sessão (TLA+, fencing, LunchRush).
+do trabalho desta sessão (TLA+, fencing, LoadGen).
 
 ## Decisão
 
 Duas células lógicas (`cell-a`, `cell-b`), cada uma com seu próprio
 processo `delivery-api`, cada uma com seu próprio banco de dados
-PostgreSQL (`dispatch_cell_a`, `dispatch_cell_b`), **no mesmo container
+PostgreSQL (`lunchrush_cell_a`, `lunchrush_cell_b`), **no mesmo container
 PostgreSQL** que o resto do laboratório já usa. `cmd/cellrouter` é um
 reverse proxy mínimo (Go, `net/http/httputil`) que lê `X-Cell-ID` e
 encaminha para o backend certo, sem consultar nenhum banco — o "diretório
@@ -51,7 +51,7 @@ Kafka (reaproveita os já existentes do `docker compose --profile app`).
 
 - roteamento por `X-Cell-ID` sem consulta a banco: `cmd/cellrouter/main.go`;
 - isolamento de dados: uma entrega criada em `cell-a` tem `count(*) = 0`
-  quando consultada em `dispatch_cell_b`, e vice-versa (query real, não
+  quando consultada em `lunchrush_cell_b`, e vice-versa (query real, não
   descrita, ver benchmark);
 - noisy neighbor: 40 VUs de k6 saturando `cell-a` (3.320 req/s, 31,68% de
   erro proposital) enquanto uma sonda sequencial mede `cell-b` ao mesmo

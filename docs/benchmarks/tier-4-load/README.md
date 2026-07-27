@@ -56,9 +56,9 @@ não são reportados separadamente pelo k6 nesta configuração de cenário
 ## O que isso não prova
 
 Este teste mede o `delivery-api` isolado (criação, oferta manual,
-atribuição direta), não o caminho `dispatch-worker` orientado por
-Kafka usado pelo LunchRush em `--distributed`. Uma tentativa de rodar o
-LunchRush distribuído com 200 ordens/20 de concorrência nesta mesma janela
+atribuição direta), não o caminho `lunchrush-worker` orientado por
+Kafka usado pelo LoadGen em `--distributed`. Uma tentativa de rodar o
+LoadGen distribuído com 200 ordens/20 de concorrência nesta mesma janela
 mostrou o relay do outbox publicando em lotes de ~100 eventos a cada
 ~1min45s sob a carga combinada com o restante do trabalho desta sessão
 (TLC, SBOM, scans rodando em paralelo na mesma máquina) — sinal de

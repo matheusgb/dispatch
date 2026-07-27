@@ -2,13 +2,13 @@
 
 Complementa o runbook de backup/recuperação (tier 4) com o failover
 específico da autoridade de ownership do tier 5 (`internal/fencing`, ADR
-0018). Escopo: failover de um dispatch shard local (PostgreSQL
+0018). Escopo: failover de um lunchrush shard local (PostgreSQL
 single-node), não failover entre regiões AWS reais — ver
 `docs/limitacoes-simulacao-local.md`.
 
 ## Quando executar
 
-- a região/processo dono do shard (`owner_region` em `dispatch_fences`)
+- a região/processo dono do shard (`owner_region` em `lunchrush_fences`)
   parou de responder além do prazo da lease;
 - um game day deliberado (como este drill) para medir RTO real.
 
@@ -17,7 +17,7 @@ single-node), não failover entre regiões AWS reais — ver
 ### 1. Estado antes do failover
 
 ```sql
-select shard_id, epoch, owner_region, lease_until from dispatch_fences;
+select shard_id, epoch, owner_region, lease_until from lunchrush_fences;
 --  shard_id       | epoch | owner_region | lease_until
 --  shard-test-1   |     1 | region-a     | 2026-07-26 22:50:00+00
 ```
@@ -29,7 +29,7 @@ Em produção: o tempo passa e ninguém renova (`FenceWrite`) antes de
 esperar o prazo real:
 
 ```sql
-UPDATE dispatch_fences SET lease_until = now() - interval '1 second'
+UPDATE lunchrush_fences SET lease_until = now() - interval '1 second'
 WHERE shard_id = 'shard-test-1';
 ```
 
@@ -40,7 +40,7 @@ fence, err := svc.Promote(ctx, "shard-test-1", "region-b", time.Hour)
 ```
 
 ```text
-UPDATE dispatch_fences
+UPDATE lunchrush_fences
 SET epoch = epoch + 1, owner_region = 'region-b', lease_until = now() + '1h', last_write_token = ...
 WHERE shard_id = 'shard-test-1' AND lease_until < now()
 ```
@@ -83,7 +83,7 @@ aqui, e nenhum número deste runbook deve ser lido como RTO cross-region.
 
 ## O que este runbook não cobre
 
-- failover coordenado com o LunchRush gerando carga ao mesmo tempo (ver
+- failover coordenado com o LoadGen gerando carga ao mesmo tempo (ver
   item 4 de `docs/benchmarks/tier-5-what-breaks-next.md`);
 - handoff de courier durante o failover (a lógica existe no schema
   `courier_home_cell`/`courier_session_epoch`/`handoff_state`, migration

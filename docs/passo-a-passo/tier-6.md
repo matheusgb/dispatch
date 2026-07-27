@@ -22,7 +22,7 @@ docker compose --profile app up -d
 
 **O que roda por baixo:** o mesmo build multi-stage de sempre
 (`deploy/compose/Dockerfile.*`), produzindo imagens nomeadas
-`dispatch-<serviço>` no daemon Docker local — esse nome é o que
+`lunchrush-<serviço>` no daemon Docker local — esse nome é o que
 `docker-compose.cloud-b.yml` vai reusar no próximo passo, sem rebuild.
 
 ## Passo 2: subir cloud-b apontando para a mesma imagem
@@ -41,7 +41,7 @@ diretiva `build:` nos serviços de app — eles referenciam por nome a
 imagem que o passo 1 já construiu. Confirme:
 
 ```bash
-docker inspect dispatch-delivery-api-1 --format '{{.Image}}'
+docker inspect lunchrush-delivery-api-1 --format '{{.Image}}'
 docker inspect cloudb-delivery-api-1 --format '{{.Image}}'
 ```
 
@@ -53,9 +53,9 @@ docker inspect cloudb-delivery-api-1 --format '{{.Image}}'
 BASE_URL=http://localhost:8083  k6 run loadtest/k6/smoke.js
 BASE_URL=http://localhost:18083 k6 run loadtest/k6/smoke.js
 
-DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable" \
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable" \
   KAFKA_BROKERS="localhost:19092" go test -tags=integration -race -count=1 ./test/integration/...
-DATABASE_URL="postgres://dispatch:dispatch@localhost:15432/dispatch?sslmode=disable" \
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:15432/lunchrush?sslmode=disable" \
   KAFKA_BROKERS="localhost:29093" go test -tags=integration -race -count=1 ./test/integration/...
 ```
 
@@ -78,8 +78,8 @@ cd ../cloud-b && terraform init && terraform apply -auto-approve
 ```
 
 **O que você vai ver:** `Apply complete! Resources: 8 added` nos dois,
-com nomes de bucket/segredo diferentes (`dispatch-cloud-a-receipts` e
-`dispatch-cloud-b-receipts`).
+com nomes de bucket/segredo diferentes (`lunchrush-cloud-a-receipts` e
+`lunchrush-cloud-b-receipts`).
 
 **O que roda por baixo:** dois roots Terraform independentes (`main.tf`,
 `.tfstate` próprios), cada um apontado para o `localstack_endpoint` do seu
@@ -97,24 +97,24 @@ dois.
 ## Passo 5: failover da autoridade de fencing entre cloud-a e cloud-b
 
 ```bash
-DB_A="postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable"
-DB_B="postgres://dispatch:dispatch@localhost:15432/dispatch?sslmode=disable"
+DB_A="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable"
+DB_B="postgres://lunchrush:lunchrush@localhost:15432/lunchrush?sslmode=disable"
 
 go run ./cmd/cloudfailover seed -db "$DB_A" -n 30
 go run ./cmd/cloudfailover promote -db "$DB_A" -shard tier6-crosscloud -region cloud-a -lease 8s
 go run ./cmd/cloudfailover assign -db "$DB_A" -shard tier6-crosscloud -region cloud-a -epoch 1 -attempts 10
 
-docker exec dispatch-postgres-1 pg_dump -U dispatch -Fc dispatch -f /tmp/t0.dump
-docker cp dispatch-postgres-1:/tmp/t0.dump /tmp/t0.dump
+docker exec lunchrush-postgres-1 pg_dump -U lunchrush -Fc lunchrush -f /tmp/t0.dump
+docker cp lunchrush-postgres-1:/tmp/t0.dump /tmp/t0.dump
 
 go run ./cmd/cloudfailover assign -db "$DB_A" -shard tier6-crosscloud -region cloud-a -epoch 1 -attempts 5
 
-docker compose stop delivery-api dispatch-worker
+docker compose stop delivery-api lunchrush-worker
 
 docker cp /tmp/t0.dump cloudb-postgres-1:/tmp/t0.dump
-docker exec cloudb-postgres-1 dropdb -U dispatch dispatch
-docker exec cloudb-postgres-1 createdb -U dispatch -O dispatch dispatch
-docker exec cloudb-postgres-1 pg_restore -U dispatch -d dispatch --no-owner /tmp/t0.dump
+docker exec cloudb-postgres-1 dropdb -U lunchrush lunchrush
+docker exec cloudb-postgres-1 createdb -U lunchrush -O lunchrush lunchrush
+docker exec cloudb-postgres-1 pg_restore -U lunchrush -d lunchrush --no-owner /tmp/t0.dump
 
 go run ./cmd/cloudfailover promote -db "$DB_B" -shard tier6-crosscloud -region cloud-b -lease 60s
 go run ./cmd/cloudfailover assign -db "$DB_B" -shard tier6-crosscloud -region cloud-a -epoch 1 -attempts 10
@@ -140,14 +140,14 @@ RTO/RPO calculados: `docs/benchmarks/tier-6-portability/failover-transcript.txt`
 
 ```bash
 docker compose stop delivery-api
-docker rmi -f dispatch-delivery-api
+docker rmi -f lunchrush-delivery-api
 docker compose -f docker-compose.cloud-b.yml stop delivery-api
 docker compose -f docker-compose.cloud-b.yml rm -f delivery-api
 docker compose -f docker-compose.cloud-b.yml --profile app up -d delivery-api
 ```
 
 **O que você vai ver:** `Error response from daemon: pull access denied
-for dispatch-delivery-api ... requested access to the resource is
+for lunchrush-delivery-api ... requested access to the resource is
 denied`.
 
 **O que roda por baixo:** com a imagem removida do daemon (e nenhum
@@ -173,7 +173,7 @@ parados e removidos, as duas redes Docker desfeitas.
 
 ---
 
-Isso fecha o tier 6 e o roadmap de seis tiers de `dispatch.md`. Ver
+Isso fecha o tier 6 e o roadmap de seis tiers de `lunch-rush.md`. Ver
 `docs/tier-6-matriz-portabilidade.md` para a matriz completa e
 `docs/limitacoes-simulacao-local.md` para o que cada peça deste passo a
 passo não prova.

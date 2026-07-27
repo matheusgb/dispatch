@@ -14,8 +14,8 @@ AGENTS.md
 # Binários de teste deixados por go test -cpuprofile/-memprofile.
 *.test
 
-# Saída ad-hoc do LunchRush e do k6. Evidência curada vai para docs/benchmarks/.
-lunchrush-report.*
+# Saída ad-hoc do LoadGen e do k6. Evidência curada vai para docs/benchmarks/.
+loadgen-report.*
 
 # Terraform: estado e cache de provider são locais deste laboratório contra
 # LocalStack (sem persistência entre `docker compose down`), nunca um

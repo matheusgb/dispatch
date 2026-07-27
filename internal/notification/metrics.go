@@ -6,7 +6,7 @@ import "github.com/prometheus/client_golang/prometheus"
 // error) como labels, nunca delivery_id: a mesma disciplina de cardinalidade
 // do tier 1 continua valendo.
 var notificationsTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-	Name: "dispatch_notifications_total",
+	Name: "lunchrush_notifications_total",
 	Help: "Total de notificações transacionais enviadas ao provedor simulado, por tipo e resultado.",
 }, []string{"kind", "outcome"})
 

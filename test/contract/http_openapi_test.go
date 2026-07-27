@@ -18,11 +18,11 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/httpapi"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/httpapi"
 )
 
 func openAPIPaths(t *testing.T) map[string][]string {
@@ -111,7 +111,7 @@ func TestContract_HTTPLifecycleMatchesDocumentedStatusCodes(t *testing.T) {
 	srv := httpapi.NewServer(httpapi.Deps{
 		Deliveries: delivery.NewRepository(pool),
 		Couriers:   courier.NewRepository(pool),
-		Dispatch:   dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()}),
+		LunchRush:  lunchrush.NewService(pool, lunchrush.FixedClock{At: time.Now()}),
 		Issuer:     auth.NewIssuer("contract-test-secret", time.Hour),
 		Logger:     slog.New(slog.NewTextHandler(os.Stderr, nil)),
 	})

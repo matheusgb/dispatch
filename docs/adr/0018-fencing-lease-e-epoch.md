@@ -2,7 +2,7 @@
 
 ## Contexto
 
-O tier 5 pede uma autoridade de ownership com `dispatch_fences(shard_id,
+O tier 5 pede uma autoridade de ownership com `lunchrush_fences(shard_id,
 epoch, owner_region, lease_until, last_write_token)` e
 `active_assignments`, protegida por um protocolo que o roadmap descreve em
 detalhe (UPDATE condicional na fence, INSERT com unique constraints,
@@ -12,7 +12,7 @@ DSQL multi-região como implementação de referência.
 ## Decisão
 
 Implementar o protocolo completo em `internal/fencing`
-(`dispatch_fences`, `active_assignments`, `assignment_history`, migration
+(`lunchrush_fences`, `active_assignments`, `assignment_history`, migration
 `0006_fencing`), rodando contra o **PostgreSQL single-node local** que já
 serve todo o resto do projeto, não Aurora DSQL. O próprio roadmap já prevê
 essa saída: "se os limites reais do Aurora DSQL não atenderem à
@@ -44,16 +44,16 @@ está decidindo. Elas ficam registradas como não testadas em
 
 ### Desenho implementado
 
-- `dispatch_fences(shard_id PK, epoch, owner_region, lease_until,
-  last_write_token)`: uma linha por dispatch shard (um shard é um
+- `lunchrush_fences(shard_id PK, epoch, owner_region, lease_until,
+  last_write_token)`: uma linha por lunchrush shard (um shard é um
   subconjunto pequeno de entregas+couriers dentro de uma célula, não a
   célula inteira — o roadmap é explícito sobre isso para evitar hot key;
   este laboratório usa um shard só por experimento, o benchmark de
   contenção fica para uma sessão futura com mais shards);
 - `Promote`: só grava por cima de uma lease já expirada (`lease_until <
   now()`), nunca por cima de uma lease válida — a mesma regra que
-  `docs/tla/DispatchFencing.tla` chama de `LeaseExpire -> Promote`;
-- `CreateAssignment`: `UPDATE dispatch_fences SET last_write_token = ...
+  `docs/tla/LunchRushFencing.tla` chama de `LeaseExpire -> Promote`;
+- `CreateAssignment`: `UPDATE lunchrush_fences SET last_write_token = ...
   WHERE shard_id = ? AND epoch = ? AND owner_region = ? AND lease_until >
   now()` (deve afetar exatamente 1 linha, senão `ErrStaleFence`), depois
   `INSERT INTO active_assignments` (protegido pelas duas unique
@@ -64,12 +64,12 @@ está decidindo. Elas ficam registradas como não testadas em
 
 ### Correspondência com o modelo TLA+
 
-| TLA+ (`docs/tla/DispatchFencing.tla`) | Código (`internal/fencing`) |
+| TLA+ (`docs/tla/LunchRushFencing.tla`) | Código (`internal/fencing`) |
 | --- | --- |
-| `epoch`, `owner`, `leaseValid` | `dispatch_fences.epoch`, `.owner_region`, `.lease_until > now()` |
+| `epoch`, `owner`, `leaseValid` | `lunchrush_fences.epoch`, `.owner_region`, `.lease_until > now()` |
 | `Promote(w)` | `Service.Promote` |
 | `knownTokens`, `<<w, e>> \in knownTokens` | o `epoch` que o caller passa para `CreateAssignment` (o writer "lembra" de um epoch, correto ou obsoleto) |
-| `Assign(w, d, c, e)`, guarda `e = epoch` | `UPDATE dispatch_fences ... WHERE epoch = $3` dentro de `CreateAssignment` |
+| `Assign(w, d, c, e)`, guarda `e = epoch` | `UPDATE lunchrush_fences ... WHERE epoch = $3` dentro de `CreateAssignment` |
 | `assignment[d] = None` (unique) | `active_assignments.delivery_id UNIQUE` |
 | `courierState[c] = "free"` (unique) | `active_assignments.courier_id UNIQUE` |
 | `Finish(d)` | `Service.FinishAssignment` |
@@ -98,17 +98,17 @@ está decidindo. Elas ficam registradas como não testadas em
   projeto já tem PostgreSQL como fonte de verdade transacional desde o
   tier 1, e introduzir uma segunda tecnologia só para o fencing
   contradiz o princípio de "uma tecnologia só entra quando resolve um
-  problema medido agora" (`dispatch.md`).
+  problema medido agora" (`lunch-rush.md`).
 
 ## Consequências
 
 - o protocolo de fencing multi-shard é uma extensão direta, não uma
-  reescrita, do padrão de `internal/dispatch` desde o tier 1;
+  reescrita, do padrão de `internal/lunchrush` desde o tier 1;
 - a autoridade continua single-node: não há prova aqui de failover entre
   regiões reais, isso é o runbook de failover (célula local) e a
   limitação central de multi-região documentada em
   `docs/limitacoes-simulacao-local.md`;
-- o dimensionamento de quantos dispatch shards por célula (para evitar hot
+- o dimensionamento de quantos lunchrush shards por célula (para evitar hot
   key) não foi medido nesta sessão — candidato de
   `docs/benchmarks/tier-5-what-breaks-next.md`.
 

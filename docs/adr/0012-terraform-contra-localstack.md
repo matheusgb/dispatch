@@ -87,16 +87,16 @@ LocalStack real rodando no host:
 
 ```text
 $ aws --endpoint-url=http://localhost:4566 s3 ls
-2026-07-26 17:58:11 dispatch-delivery-receipts
+2026-07-26 17:58:11 lunchrush-delivery-receipts
 
-$ aws --endpoint-url=http://localhost:4566 s3api get-bucket-versioning --bucket dispatch-delivery-receipts
+$ aws --endpoint-url=http://localhost:4566 s3api get-bucket-versioning --bucket lunchrush-delivery-receipts
 {"Status": "Enabled"}
 
 $ aws --endpoint-url=http://localhost:4566 secretsmanager list-secrets
-{"SecretList": [{"Name": "dispatch/jwt-secret", "KmsKeyId": "301ad61a-...", ...}]}
+{"SecretList": [{"Name": "lunchrush/jwt-secret", "KmsKeyId": "301ad61a-...", ...}]}
 
 $ aws --endpoint-url=http://localhost:4566 kms list-aliases
-{"Aliases": [{"AliasName": "alias/dispatch-aws-lab-jwt", ...}]}
+{"Aliases": [{"AliasName": "alias/lunchrush-aws-lab-jwt", ...}]}
 ```
 
 O bucket e o segredo criados pelo Terraform são os mesmos que

@@ -1,4 +1,4 @@
-// Comando delivery-api é o serviço de lifecycle e dispatch: cadastro de
+// Comando delivery-api é o serviço de lifecycle e lunchrush: cadastro de
 // entregador, criação idempotente de entrega, oferta, aceite, coleta e
 // entrega. A partir do tier 3, tracking e notificação vivem em serviços
 // próprios (tracking-ingest, tracking-projector, notification-worker),
@@ -16,16 +16,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/db"
-	"github.com/matheusgb/dispatch/internal/platform/httpapi"
-	"github.com/matheusgb/dispatch/internal/platform/kafka"
-	"github.com/matheusgb/dispatch/internal/platform/objectstore"
-	"github.com/matheusgb/dispatch/internal/platform/outbox"
-	"github.com/matheusgb/dispatch/internal/platform/secrets"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/db"
+	"github.com/matheusgb/lunch-rush/internal/platform/httpapi"
+	"github.com/matheusgb/lunch-rush/internal/platform/kafka"
+	"github.com/matheusgb/lunch-rush/internal/platform/objectstore"
+	"github.com/matheusgb/lunch-rush/internal/platform/outbox"
+	"github.com/matheusgb/lunch-rush/internal/platform/secrets"
 )
 
 func main() {
@@ -45,21 +45,21 @@ func main() {
 
 	// Tier 4: se AWS_SECRETS_ENDPOINT estiver configurado (LocalStack, ver
 	// docker-compose.yml profile aws-lab), o JWT secret vem do Secrets
-	// Manager. Caso contrário, cai para DISPATCH_JWT_SECRET como nos tiers
+	// Manager. Caso contrário, cai para LUNCHRUSH_JWT_SECRET como nos tiers
 	// anteriores. Ver internal/platform/secrets.
 	secretsCtx, secretsCancel := context.WithTimeout(ctx, 5*time.Second)
 	jwtSecret := secrets.ResolveJWTSecret(secretsCtx,
 		os.Getenv("AWS_SECRETS_ENDPOINT"), envOr("AWS_REGION", "us-east-1"),
-		envOr("DISPATCH_JWT_SECRET_NAME", "dispatch/jwt-secret"),
-		os.Getenv("DISPATCH_JWT_SECRET"), logger)
+		envOr("LUNCHRUSH_JWT_SECRET_NAME", "lunchrush/jwt-secret"),
+		os.Getenv("LUNCHRUSH_JWT_SECRET"), logger)
 	secretsCancel()
 	if jwtSecret == "" {
-		logger.Error("configuração inválida: DISPATCH_JWT_SECRET não definido e secrets manager não devolveu segredo")
+		logger.Error("configuração inválida: LUNCHRUSH_JWT_SECRET não definido e secrets manager não devolveu segredo")
 		os.Exit(1)
 	}
-	adminSecret := os.Getenv("DISPATCH_ADMIN_SECRET")
+	adminSecret := os.Getenv("LUNCHRUSH_ADMIN_SECRET")
 	if adminSecret == "" {
-		logger.Error("configuração inválida: DISPATCH_ADMIN_SECRET não definido")
+		logger.Error("configuração inválida: LUNCHRUSH_ADMIN_SECRET não definido")
 		os.Exit(1)
 	}
 	brokers := strings.Split(envOr("KAFKA_BROKERS", "localhost:19092"), ",")
@@ -75,7 +75,7 @@ func main() {
 
 	deliveries := delivery.NewRepository(pool)
 	couriers := courier.NewRepository(pool)
-	dispatchSvc := dispatch.NewService(pool, dispatch.SystemClock{})
+	lunchrushSvc := lunchrush.NewService(pool, lunchrush.SystemClock{})
 
 	producer := kafka.NewProducer(brokers)
 	defer producer.Close()
@@ -86,7 +86,7 @@ func main() {
 	// AWS_S3_ENDPOINT, o client fica desabilitado e o comportamento é
 	// idêntico ao tier 3.
 	receipts, err := objectstore.New(ctx, os.Getenv("AWS_S3_ENDPOINT"),
-		envOr("AWS_REGION", "us-east-1"), envOr("DISPATCH_RECEIPTS_BUCKET", "dispatch-receipts"), logger)
+		envOr("AWS_REGION", "us-east-1"), envOr("LUNCHRUSH_RECEIPTS_BUCKET", "lunchrush-receipts"), logger)
 	if err != nil {
 		logger.Error("configurar objectstore de comprovantes", "error", err)
 		os.Exit(1)
@@ -100,7 +100,7 @@ func main() {
 	}
 
 	handler := httpapi.NewServer(httpapi.Deps{
-		Deliveries: deliveries, Couriers: couriers, Dispatch: dispatchSvc,
+		Deliveries: deliveries, Couriers: couriers, LunchRush: lunchrushSvc,
 		Issuer: auth.NewIssuer(jwtSecret, time.Hour), AdminSecret: adminSecret, Logger: logger,
 		Receipts: receipts,
 	})

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/matheusgb/dispatch/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
 )
 
 // authorizedForTracking replica, de propósito, a mesma decisão de

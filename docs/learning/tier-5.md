@@ -45,7 +45,7 @@
    que eu estava testando (o runbook é sobre restauração, não sobre
    profiling do relay), mas descobrir isso "de graça" enquanto uma
    ferramenta media outra coisa é exatamente o tipo de achado que este
-   projeto pede para não esconder. Também quebrou o LunchRush com courier
+   projeto pede para não esconder. Também quebrou o LoadGen com courier
    pool pequeno demais: 2000 ordens com 60 couriers e concorrência 30
    produziram 1521 erros "nenhum entregador do pool ficou livre" — não é
    bug do simulador, é o pool de couriers saturando mais rápido do que as
@@ -55,7 +55,7 @@
    `outbox_events` pendentes antes e depois da janela de carga, e lendo os
    logs estruturados do `delivery-api` (`"eventos do outbox publicados"`)
    para ver o intervalo real entre ciclos. Para o pool de couriers: lendo
-   a amostra de falhas do próprio relatório JSON do LunchRush
+   a amostra de falhas do próprio relatório JSON do LoadGen
    (`failure_samples`), que já existia desde o tier 1 e continuou útil sem
    mudança nenhuma.
 
@@ -69,7 +69,7 @@
    escondida: o teste de noisy neighbor existe justamente para quantificar
    o quanto essa escolha custa.
 
-7. **Que complexidade aceitei?** Um único dispatch shard no teste de
+7. **Que complexidade aceitei?** Um único lunchrush shard no teste de
    concorrência real (`internal/fencing`), não vários. O roadmap é
    explícito que uma única linha de fence por célula seria hot key e que
    múltiplos shards precisam de benchmark antes de escolher a quantidade
@@ -82,7 +82,7 @@
    desenvolvimento/CI (TLC, scans de imagem) no mesmo host que serve
    tráfego — pareceria óbvio, mas só ficou visível medindo, não
    supondo. Também dimensionaria o pool de couriers/capacidade do
-   LunchRush como parte do cenário declarado (igual ao roadmap já exige
+   LoadGen como parte do cenário declarado (igual ao roadmap já exige
    para dataset/concorrência/duração), não como um valor arbitrário
    reaproveitado de uma execução menor.
 
@@ -91,8 +91,8 @@
    de alcance sem conta AWS real — essa é a limitação central do tier 5,
    documentada com honestidade em `docs/limitacoes-simulacao-local.md`,
    não escondida atrás de "célula" como sinônimo de "região". O
-   dimensionamento de múltiplos dispatch shards, o failover coordenado
-   com o LunchRush rodando ao mesmo tempo, e a causa raiz do atraso do
+   dimensionamento de múltiplos lunchrush shards, o failover coordenado
+   com o LoadGen rodando ao mesmo tempo, e a causa raiz do atraso do
    relay do outbox sob carga combinada ficam como candidatos concretos de
    uma sessão futura, listados em
    `docs/benchmarks/tier-5-what-breaks-next.md`.

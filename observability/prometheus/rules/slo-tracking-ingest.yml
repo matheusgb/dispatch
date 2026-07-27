@@ -13,35 +13,35 @@ groups:
       - record: slo:tracking_ingest_errors:ratio_rate5m
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[5m]))
+            sum(rate(lunchrush_http_requests_total{job="tracking-ingest",status=~"5.."}[5m]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[5m]))
+          sum(rate(lunchrush_http_requests_total{job="tracking-ingest"}[5m]))
       - record: slo:tracking_ingest_errors:ratio_rate30m
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[30m]))
+            sum(rate(lunchrush_http_requests_total{job="tracking-ingest",status=~"5.."}[30m]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[30m]))
+          sum(rate(lunchrush_http_requests_total{job="tracking-ingest"}[30m]))
       - record: slo:tracking_ingest_errors:ratio_rate1h
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[1h]))
+            sum(rate(lunchrush_http_requests_total{job="tracking-ingest",status=~"5.."}[1h]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[1h]))
+          sum(rate(lunchrush_http_requests_total{job="tracking-ingest"}[1h]))
       - record: slo:tracking_ingest_errors:ratio_rate6h
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="tracking-ingest",status=~"5.."}[6h]))
+            sum(rate(lunchrush_http_requests_total{job="tracking-ingest",status=~"5.."}[6h]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="tracking-ingest"}[6h]))
+          sum(rate(lunchrush_http_requests_total{job="tracking-ingest"}[6h]))
 
   - name: slo-tracking-ingest-alerting
     rules:

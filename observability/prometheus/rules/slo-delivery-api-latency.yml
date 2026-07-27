@@ -11,30 +11,30 @@ groups:
       - record: slo:delivery_api_latency_breach:ratio_rate5m
         expr: |
           1 - (
-            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[5m]))
+            sum(rate(lunchrush_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[5m]))
             /
-            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[5m]))
+            sum(rate(lunchrush_http_request_duration_seconds_count{job="delivery-api"}[5m]))
           )
       - record: slo:delivery_api_latency_breach:ratio_rate30m
         expr: |
           1 - (
-            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[30m]))
+            sum(rate(lunchrush_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[30m]))
             /
-            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[30m]))
+            sum(rate(lunchrush_http_request_duration_seconds_count{job="delivery-api"}[30m]))
           )
       - record: slo:delivery_api_latency_breach:ratio_rate1h
         expr: |
           1 - (
-            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[1h]))
+            sum(rate(lunchrush_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[1h]))
             /
-            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[1h]))
+            sum(rate(lunchrush_http_request_duration_seconds_count{job="delivery-api"}[1h]))
           )
       - record: slo:delivery_api_latency_breach:ratio_rate6h
         expr: |
           1 - (
-            sum(rate(dispatch_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[6h]))
+            sum(rate(lunchrush_http_request_duration_seconds_bucket{job="delivery-api",le="0.5"}[6h]))
             /
-            sum(rate(dispatch_http_request_duration_seconds_count{job="delivery-api"}[6h]))
+            sum(rate(lunchrush_http_request_duration_seconds_count{job="delivery-api"}[6h]))
           )
 
   - name: slo-delivery-api-latency-alerting

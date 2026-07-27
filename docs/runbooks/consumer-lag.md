@@ -2,7 +2,7 @@
 
 ## Sintoma
 
-Entregas demoram para sair de `created`/`ready_for_dispatch`, ou posições
+Entregas demoram para sair de `created`/`ready_for_lunchrush`, ou posições
 de GPS demoram para aparecer em `GET /deliveries/{id}/position`.
 
 ## Diagnóstico
@@ -10,8 +10,8 @@ de GPS demoram para aparecer em `GET /deliveries/{id}/position`.
 1. Checar o lag real do grupo:
 
    ```bash
-   docker exec dispatch-redpanda rpk group describe dispatch-worker
-   docker exec dispatch-redpanda rpk group describe tracking-projector
+   docker exec lunchrush-redpanda rpk group describe lunchrush-worker
+   docker exec lunchrush-redpanda rpk group describe tracking-projector
    ```
 
    A coluna `LAG` por partição é a fonte da verdade. `TOTAL-LAG` alto e

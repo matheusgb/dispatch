@@ -11,7 +11,7 @@ Protobuf real, nem documentação da decisão consciente de não migrar.
 
 **Não migrar o outbox/Kafka para Protobuf agora.** Continuar com JSON.
 Fechar a lacuna de _entendimento_, não de _implementação_: este ADR
-documenta o trade-off, e `api/proto/dispatch/v1/delivery_events.proto`
+documenta o trade-off, e `api/proto/lunchrush/v1/delivery_events.proto`
 mostra como o payload de `delivery.created` ficaria em Protobuf, como
 referência para uma migração futura, sem trocar o sistema real.
 
@@ -36,12 +36,12 @@ referência para uma migração futura, sem trocar o sistema real.
   compatibilidade entre versões de forma segura — infraestrutura nova, sem
   contrapartida de aprendizado que o laboratório ainda não tenha coberto de
   outra forma (o laboratório já cobre versionamento de schema de forma
-  mais simples via AsyncAPI documentado, `contracts/asyncapi/dispatch-events.yaml`).
+  mais simples via AsyncAPI documentado, `contracts/asyncapi/lunchrush-events.yaml`).
 
 ## O que fica pronto para quando migrar
 
-`api/proto/dispatch/v1/delivery_events.proto` define o mesmo evento
-`delivery.created` (`internal/dispatch/dispatch.go` `enqueueDeliveryEvent`,
+`api/proto/lunchrush/v1/delivery_events.proto` define o mesmo evento
+`delivery.created` (`internal/lunchrush/lunchrush.go` `enqueueDeliveryEvent`,
 payload real hoje: só `delivery_id`) em Protobuf, com comentário explicando
 o mapeamento campo a campo com o JSON atual. Não é consumido por nenhum
 código Go de produção: é documentação executável de forma, para provar que
@@ -58,10 +58,10 @@ rodou:
 ```
 protoc -I api/proto -I <include dos well-known types do release> \
   --go_out=api/proto/gen --go_opt=paths=source_relative \
-  api/proto/dispatch/v1/delivery_events.proto
+  api/proto/lunchrush/v1/delivery_events.proto
 ```
 
-Gerou `api/proto/gen/dispatch/v1/delivery_events.pb.go` sem erro, e
+Gerou `api/proto/gen/lunchrush/v1/delivery_events.pb.go` sem erro, e
 `go build ./api/...` compila o pacote gerado (`google.golang.org/protobuf`
 virou dependência direta do módulo em vez de `// indirect`, confirmado por
 `go mod tidy`). O `.proto` agora é validado por geração de código real, não
@@ -77,7 +77,7 @@ inalterada.
 ## O que mudaria se fosse produção
 
 - **Tamanho de mensagem:** Protobuf binário é menor que JSON texto; em
-  volume alto (o LunchRush já mostrou milhares de eventos por corrida),
+  volume alto (o LoadGen já mostrou milhares de eventos por corrida),
   isso reduz custo de rede e storage no broker.
 - **Validação de schema em compile-time:** um produtor Go ganharia erro de
   compilação ao esquecer um campo obrigatório, em vez de erro de runtime

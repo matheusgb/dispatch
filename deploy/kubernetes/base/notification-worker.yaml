@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notification-worker
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   replicas: 2
   selector:
@@ -13,7 +13,7 @@ spec:
       labels:
         app: notification-worker
     spec:
-      serviceAccountName: dispatch-workload
+      serviceAccountName: lunchrush-workload
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
@@ -22,14 +22,14 @@ spec:
           type: RuntimeDefault
       containers:
         - name: notification-worker
-          image: dispatch-notification-worker:kind
+          image: lunchrush-notification-worker:kind
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
               name: http
           envFrom:
             - configMapRef:
-                name: dispatch-config
+                name: lunchrush-config
           env:
             - name: HTTP_ADDR
               value: ":8080"
@@ -58,7 +58,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: notification-worker
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   selector:
     app: notification-worker

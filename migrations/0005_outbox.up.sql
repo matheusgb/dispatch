@@ -20,7 +20,7 @@ CREATE INDEX idx_outbox_events_unpublished
 -- Inbox/dedup por consumidor: um evento com o mesmo event_id processado de
 -- novo pelo mesmo consumidor não repete o efeito (invariante 8). A chave é
 -- por consumidor porque o mesmo evento pode legitimamente ser processado
--- por mais de um consumidor (ex.: dispatch-worker e notification-worker).
+-- por mais de um consumidor (ex.: lunchrush-worker e notification-worker).
 CREATE TABLE consumed_events (
     consumer     text NOT NULL,
     event_id     uuid NOT NULL,

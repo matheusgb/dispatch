@@ -2,13 +2,13 @@
 
 **Medido** em 2026-07-26, ambiente `local`: `docker compose --profile
 app` (PostgreSQL 17, Redis 8, Redpanda v24.3.1, delivery-api,
-dispatch-worker, tracking-ingest, tracking-projector,
+lunchrush-worker, tracking-ingest, tracking-projector,
 notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
 
 ## Correção
 
 - `go build ./...`, `gofmt -l .` e `go vet ./...` limpos em todo o código
-  novo (`internal/fencing`, `cmd/cellrouter`, `cmd/lunchrush/netfault.go`).
+  novo (`internal/fencing`, `cmd/cellrouter`, `cmd/loadgen/netfault.go`).
 - `go test -race ./...` e `go test -tags=integration -race
   ./test/integration/...` passando, incluindo os dois testes novos de
   fencing (`TestFencing_StaleEpochWriterNeverWrites`,
@@ -17,7 +17,7 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
 
 ## TLA+ real (TLC)
 
-- `docs/tla/DispatchFencing.tla`: **0 violações** em 1086 estados
+- `docs/tla/LunchRushFencing.tla`: **0 violações** em 1086 estados
   distintos (`Model checking completed. No error has been found.`),
   cobrindo `TypeInvariant`, `Safety` (sem dupla atribuição, sem writer
   antigo escrevendo, epoch monotônico) e a propriedade de vivacidade
@@ -55,7 +55,7 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
 - ver `docs/adr/0019-arquitetura-celular-local.md` e
   `docs/benchmarks/tier-5-cells/README.md`.
 
-## LunchRush com rede e relógio virtuais
+## LoadGen com rede e relógio virtuais
 
 - reprodutibilidade: duas execuções com a mesma seed (`20260726`),
   banco truncado entre elas, produziram relatórios **idênticos campo a
@@ -66,8 +66,8 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
   erros, **5 de 5 tentativas de clock skew seguras** (nenhuma regrediu a
   posição atual — invariante 7 preservada sob rede adversarial real, não
   só em unit test);
-- ver `docs/adr/0020-lunchrush-rede-e-relogio-virtuais.md` e
-  `docs/benchmarks/tier-5-lunchrush-netfault/README.md`.
+- ver `docs/adr/0020-loadgen-rede-e-relogio-virtuais.md` e
+  `docs/benchmarks/tier-5-loadgen-netfault/README.md`.
 
 ## Soak reduzido (volume real, não extrapolado)
 
@@ -110,8 +110,8 @@ CPU compartilhada) não escala linearmente, como o item 2 de
 
 ## O que este baseline não mede
 
-- contenção entre múltiplos dispatch shards (só um shard testado);
-- failover coordenado com carga do LunchRush rodando ao mesmo tempo (o
+- contenção entre múltiplos lunchrush shards (só um shard testado);
+- failover coordenado com carga do LoadGen rodando ao mesmo tempo (o
   "pior momento" do roadmap);
 - latência real entre regiões (nenhuma região AWS real disponível);
 - réplica cross-region de Kafka (MSK Replicator, fora de alcance sem AWS

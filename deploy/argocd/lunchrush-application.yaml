@@ -1,0 +1,34 @@
+# Application do ArgoCD para o chart deploy/helm/lunchrush, ver
+# docs/adr/0026-gitops-com-argocd-real.md e docs/runbooks/gitops-argocd.md
+# para o porquê e a evidência real de sync/drift.
+#
+# externalInfra.hostGatewayIP é o único valor que este Application
+# sobrescreve: o gateway da rede docker do kind muda por ambiente (mesma
+# razão documentada em scripts/helm-deploy.sh e ADR 0011), então nunca vai
+# para deploy/helm/lunchrush/values.yaml. Ajuste antes de aplicar:
+#   GATEWAY_IP=$(docker network inspect kind --format '{{ (index .IPAM.Config 0).Gateway }}')
+#   sed "s/HOST_GATEWAY_IP/${GATEWAY_IP}/" deploy/argocd/lunchrush-application.yaml | kubectl --context kind-lunchrush apply -n argocd -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lunchrush
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/matheusgb/lunch-rush.git
+    targetRevision: master
+    path: deploy/helm/lunchrush
+    helm:
+      parameters:
+        - name: externalInfra.hostGatewayIP
+          value: "HOST_GATEWAY_IP"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lunchrush
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

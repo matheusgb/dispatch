@@ -32,7 +32,7 @@ projeto, o `docker-compose.yml` já publica `delivery-api` em `8083` e
 ## Passo 2: ver o dashboard
 
 Abra `http://localhost:3000` (Grafana, login anônimo habilitado só para
-uso local) e `http://localhost:9090` (Prometheus). O dashboard "dispatch —
+uso local) e `http://localhost:9090` (Prometheus). O dashboard "lunchrush —
 RED e negócio" já vem provisionado, em
 [observability/grafana/provisioning](../../observability/grafana/provisioning).
 
@@ -122,20 +122,20 @@ BASE_URL=http://localhost:8083 ADMIN_SECRET=compose-dev-admin-secret k6 run load
 
 ---
 
-## Passo 7: rodar o LunchRush com GPS
+## Passo 7: rodar o LoadGen com GPS
 
 ```bash
-DISPATCH_ADMIN_SECRET=compose-dev-admin-secret go run ./cmd/lunchrush \
+LUNCHRUSH_ADMIN_SECRET=compose-dev-admin-secret go run ./cmd/loadgen \
   -base-url http://localhost:8083 -orders 30 -couriers 10 -concurrency 1 \
-  -seed 555 -out /tmp/lunchrush-tier2
+  -seed 555 -out /tmp/loadgen-tier2
 ```
 
 **O que você vai ver:** `erros=0`, com posições enviadas e a contagem de
 quantas avançaram a projeção de última posição.
 
 Rode de novo com `-concurrency 5` e mais ordens: você vai ver `429` na
-ingestão de GPS. Isso é esperado: o LunchRush usa uma única identidade
-(`lunchrush`) para todo o tracking, então a concorrência do teste compete
+ingestão de GPS. Isso é esperado: o LoadGen usa uma única identidade
+(`loadgen`) para todo o tracking, então a concorrência do teste compete
 pelo mesmo bucket de rate limit. Ver `docs/benchmarks/tier-2-what-breaks-next.md`.
 
 ---
@@ -143,10 +143,10 @@ pelo mesmo bucket de rate limit. Ver `docs/benchmarks/tier-2-what-breaks-next.md
 ## Passo 8: chaos — matar o delivery-api no meio da carga
 
 ```bash
-go run ./cmd/lunchrush -base-url http://localhost:8083 -orders 80 -couriers 12 \
-  -concurrency 8 -seed 9001 -out /tmp/lunchrush-chaos &
+go run ./cmd/loadgen -base-url http://localhost:8083 -orders 80 -couriers 12 \
+  -concurrency 8 -seed 9001 -out /tmp/loadgen-chaos &
 sleep 2
-docker kill dispatch-delivery-api-1
+docker kill lunchrush-delivery-api-1
 sleep 2
 docker compose up -d delivery-api
 wait
@@ -157,7 +157,7 @@ falha (conexão recusada), mas depois de religar, verificar o banco mostra
 zero entregadores com duas entregas ativas:
 
 ```bash
-PGPASSWORD=dispatch psql -h localhost -U dispatch -d dispatch -c \
+PGPASSWORD=lunchrush psql -h localhost -U lunchrush -d lunchrush -c \
   "SELECT courier_id, count(*) FROM deliveries WHERE state IN ('assigned','picked_up') GROUP BY courier_id HAVING count(*) > 1;"
 ```
 

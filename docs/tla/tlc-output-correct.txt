@@ -1,6 +1,6 @@
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
 Running breadth-first search Model-Checking with fp 24 and seed 4701685449333301563 with 4 workers on 32 cores with 3513MB heap and 64MB offheap memory [pid: 326371] (Linux 5.15.167.4-microsoft-standard-WSL2 amd64, Ubuntu 17.0.19 x86_64, MSBDiskFPSet, DiskStateQueue).
-Parsing file /home/ubuntu/me/labs/dispatch/docs/tla/DispatchFencing.tla
+Parsing file /home/ubuntu/me/labs/lunchrush/docs/tla/LunchRushFencing.tla
 Parsing file /tmp/Integers.tla
 Parsing file /tmp/FiniteSets.tla
 Parsing file /tmp/Sequences.tla
@@ -11,7 +11,7 @@ Semantic processing of module Integers
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module TLC
-Semantic processing of module DispatchFencing
+Semantic processing of module LunchRushFencing
 Starting... (2026-07-26 19:10:54)
 Implied-temporal checking--satisfiability problem has 1 branches.
 Computing initial states...

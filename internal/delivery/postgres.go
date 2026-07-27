@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/matheusgb/dispatch/internal/platform/idempotency"
-	"github.com/matheusgb/dispatch/internal/platform/outbox"
-	"github.com/matheusgb/dispatch/internal/platform/topics"
+	"github.com/matheusgb/lunch-rush/internal/platform/idempotency"
+	"github.com/matheusgb/lunch-rush/internal/platform/outbox"
+	"github.com/matheusgb/lunch-rush/internal/platform/topics"
 )
 
 // idempotencyTTL é o prazo em que uma repetição da mesma chave ainda é

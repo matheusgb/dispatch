@@ -1,5 +1,5 @@
 // Package courier cadastra entregadores e controla a disponibilidade que o
-// dispatch usa para selecionar candidatos.
+// lunchrush usa para selecionar candidatos.
 package courier
 
 import (
@@ -37,7 +37,7 @@ func (r *Repository) Register(ctx context.Context, name string) (Courier, error)
 }
 
 // SetAvailability muda a disponibilidade do entregador. Não interfere em uma
-// entrega já ativa: a exclusividade de atribuição é regra do dispatch, não
+// entrega já ativa: a exclusividade de atribuição é regra do lunchrush, não
 // da disponibilidade declarada aqui.
 func (r *Repository) SetAvailability(ctx context.Context, id string, available bool) error {
 	tag, err := r.pool.Exec(ctx, `

@@ -12,7 +12,7 @@
    `cloud-a` e `cloud-b`, apesar de redes e bancos completamente
    isolados, seria alguma coisa de rede ou de porta. Errado: a primeira
    tentativa de derrubar essa dependência (`docker rmi
-   dispatch-delivery-api`) nem conseguiu remover a imagem, porque o
+   lunchrush-delivery-api`) nem conseguiu remover a imagem, porque o
    Docker recusa remover uma imagem enquanto qualquer container a
    referencia — e o container de `cloud-a` ainda estava rodando. Só
    depois de parar os containers dos dois lados foi possível revelar a
@@ -105,5 +105,5 @@
 Nenhum tier terminou só porque as funcionalidades foram implementadas: os
 seis têm teste de corrida, benchmark reproduzível, pelo menos um
 experimento de falha, ADR e ferramenta executável por outra pessoa — o
-critério de conclusão que `dispatch.md` define para qualquer tier, agora
+critério de conclusão que `lunch-rush.md` define para qualquer tier, agora
 fechado para o roadmap inteiro.

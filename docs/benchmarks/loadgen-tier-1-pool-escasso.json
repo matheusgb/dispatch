@@ -1,0 +1,1426 @@
+{
+  "seed": 999,
+  "orders": 150,
+  "couriers": 5,
+  "completed": 99,
+  "declined": 15,
+  "expired": 14,
+  "errors": 22,
+  "duplicates_checked": 30,
+  "duplicates_ok": 30,
+  "total_assign_retries": 240,
+  "duration_ns": 3179283198,
+  "results": [
+    {
+      "index": 0,
+      "delivery_id": "e5de0095-c068-4f10-9613-144e72fa182b",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 2,
+      "duration_ns": 96296283
+    },
+    {
+      "index": 1,
+      "delivery_id": "7f9d2f7d-f97c-495a-af02-273da83307e8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 86923283
+    },
+    {
+      "index": 2,
+      "delivery_id": "3f42130e-c486-4ba2-adc3-b5c9f7dbb9c3",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 87335968,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 3,
+      "delivery_id": "f2f9d544-7d0f-41e3-a764-2ae43a5e3469",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3071787922
+    },
+    {
+      "index": 4,
+      "delivery_id": "a796efbb-5c84-4dd0-b646-70d698c6a3b8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 77391533
+    },
+    {
+      "index": 5,
+      "delivery_id": "0ca1ea40-9bd2-48a9-b076-a9533eeee3c2",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 80357823,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 6,
+      "delivery_id": "90116203-5dea-495c-a78a-0d28c338cf48",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 98974710
+    },
+    {
+      "index": 7,
+      "delivery_id": "0af90a1f-45ae-44b8-8d1a-0bffa83a4e12",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 3,
+      "duration_ns": 90142380
+    },
+    {
+      "index": 8,
+      "delivery_id": "8157fb01-8713-4487-9556-a8e6c48303bd",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3081100479
+    },
+    {
+      "index": 9,
+      "delivery_id": "e6ae6978-a243-4260-b647-06cf4394b338",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 88084531
+    },
+    {
+      "index": 10,
+      "delivery_id": "0ddee1ad-ffc4-4b71-b7b4-37698f0f6365",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 78060590
+    },
+    {
+      "index": 11,
+      "delivery_id": "9b64e171-21c2-4fba-9d55-e6b01585c662",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 86120592
+    },
+    {
+      "index": 12,
+      "delivery_id": "2b1632fa-7b75-435a-84cf-cd603227d13e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 90154644,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 13,
+      "delivery_id": "c288b261-2771-41c0-91ef-ea3f9969fb8b",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 74543653
+    },
+    {
+      "index": 14,
+      "delivery_id": "bdcb7632-a810-4923-b37b-9c509666f093",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 91243079,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "6288846f-6843-4aa7-a8cf-d695c95fa7d9",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 96232402,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 16,
+      "delivery_id": "11ef23f9-b481-46e4-b181-891ab6aadbef",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 91424510
+    },
+    {
+      "index": 17,
+      "delivery_id": "2018c048-d32c-41c7-83ab-458e4ea09f6d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 80611903
+    },
+    {
+      "index": 18,
+      "delivery_id": "ed3ff2fc-84e8-4de5-9fc1-3ff3b00d97ff",
+      "outcome": "declined",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 73329658
+    },
+    {
+      "index": 19,
+      "delivery_id": "b008dd68-260d-4e19-a76f-35afc05e4f13",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 90511768,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 20,
+      "delivery_id": "dd45e925-9b05-4c3c-8eb9-9f66ce17bf3c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 74106312
+    },
+    {
+      "index": 21,
+      "delivery_id": "1ddd378d-6db0-4723-946c-92c754022d8b",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3071520712
+    },
+    {
+      "index": 22,
+      "delivery_id": "00c92346-b748-4c93-9e4e-eda4d1da8665",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 82807731
+    },
+    {
+      "index": 23,
+      "delivery_id": "43b8bdbd-ca3e-40ba-94fd-83bd288198d4",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 71308063
+    },
+    {
+      "index": 24,
+      "delivery_id": "7e17f6c1-a2e5-46d9-813c-178082e675ad",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 84427616,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 25,
+      "delivery_id": "c178c87b-cb3f-49ec-9921-019ca106b1a1",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 77093073
+    },
+    {
+      "index": 26,
+      "delivery_id": "cd607c3c-d652-4555-bd5a-3c235d66a6b7",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3076454952
+    },
+    {
+      "index": 27,
+      "delivery_id": "20e5fe0d-3ece-4e32-a941-43faaa113b75",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 82489557,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 28,
+      "delivery_id": "eb284c7d-771a-4662-9f3e-9b641049e2db",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 75133249
+    },
+    {
+      "index": 29,
+      "delivery_id": "98876373-6202-476c-9a93-113ece84e13e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 85911503,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 30,
+      "delivery_id": "57d51d84-194a-466a-9a6f-c861736d3772",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 24827423
+    },
+    {
+      "index": 31,
+      "delivery_id": "1569a9e2-b03d-4b71-a85c-74fcc10aa310",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 26402469
+    },
+    {
+      "index": 32,
+      "delivery_id": "cd1f6b89-eaee-4a13-8c56-e3027e98aff5",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 30148657
+    },
+    {
+      "index": 33,
+      "delivery_id": "cc9cb762-1dc0-43b8-a8f0-49155471116b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 22184682
+    },
+    {
+      "index": 34,
+      "delivery_id": "b594fb5e-a964-41c1-84dd-772ebc39fe27",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 28081869
+    },
+    {
+      "index": 35,
+      "delivery_id": "cbf3cff8-3a08-4e37-9028-c015e89867a3",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 25952890
+    },
+    {
+      "index": 36,
+      "delivery_id": "5771f5b2-38eb-440d-b4e5-841eb50dce78",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3019652202
+    },
+    {
+      "index": 37,
+      "delivery_id": "ab66bc03-7861-4c75-a55a-dd02282ba4e7",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 37736319,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 38,
+      "delivery_id": "7c378d81-4767-478d-a38e-a5ad4e4379b7",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 25986324,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 39,
+      "delivery_id": "3d3e9d8e-e8e7-4fa7-905f-76225e8e9698",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 26640593,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 40,
+      "delivery_id": "d4e64cee-128e-4070-b99e-e58997814fcf",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 28561322
+    },
+    {
+      "index": 41,
+      "delivery_id": "ce1602e1-a5a6-42c9-83c0-22896be6deda",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 14049826
+    },
+    {
+      "index": 42,
+      "delivery_id": "010ab072-5f61-492c-bc06-3e00a105a6fb",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 24635611
+    },
+    {
+      "index": 43,
+      "delivery_id": "0bcb48ed-9797-4c78-a056-437c644b3e0f",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 19833790
+    },
+    {
+      "index": 44,
+      "delivery_id": "55f5dbbd-94b2-4391-ab03-eb693f63d432",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 26473528
+    },
+    {
+      "index": 45,
+      "delivery_id": "505d2312-ccec-4f32-9d1e-220b2d23a512",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 4,
+      "duration_ns": 34088460
+    },
+    {
+      "index": 46,
+      "delivery_id": "c7f59fc3-a867-4d1f-a5bc-b4b0d554fe3a",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3017824149
+    },
+    {
+      "index": 47,
+      "delivery_id": "64234508-6dba-4e5e-9491-46adf466123a",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 28706103
+    },
+    {
+      "index": 48,
+      "delivery_id": "9b114096-2740-4fc0-9972-1842199ca986",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 28773453,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 49,
+      "delivery_id": "54db57b2-95c8-4c5e-bd92-542b66e8ba3e",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 25404401
+    },
+    {
+      "index": 50,
+      "delivery_id": "dbc1449a-7b00-47e8-86b3-036e7fb25c0d",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 21491165
+    },
+    {
+      "index": 51,
+      "delivery_id": "a3343309-4eff-45b1-9e26-21bed3a24b7d",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3015376886
+    },
+    {
+      "index": 52,
+      "delivery_id": "426d60a3-e50e-45a3-be82-72b5e4c8cac2",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 24868456,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 53,
+      "delivery_id": "8a0d115e-b893-44f6-8fd6-16855a0296b2",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 22978921,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 54,
+      "delivery_id": "8323f51d-2e0c-4fbf-8768-fb9f369f6641",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 24197954
+    },
+    {
+      "index": 55,
+      "delivery_id": "192a9b5c-eecd-4d47-b6a4-d84a5437f30b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 25545405
+    },
+    {
+      "index": 56,
+      "delivery_id": "b79660a3-9205-4f07-9278-9f9bbbbaefb1",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 16127454
+    },
+    {
+      "index": 57,
+      "delivery_id": "321d1b34-0cee-496b-ad40-c3599cfb9f94",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 29283017
+    },
+    {
+      "index": 58,
+      "delivery_id": "8a0b2aaa-c60b-4816-96c6-0fee1c4ba659",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 24971252
+    },
+    {
+      "index": 59,
+      "delivery_id": "e6514273-09ec-4d43-b2fd-71ee3008d5b0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 25377012
+    },
+    {
+      "index": 60,
+      "delivery_id": "04897ee8-a7fa-4861-b3dc-4ab67eca424b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 27117370
+    },
+    {
+      "index": 61,
+      "delivery_id": "8cb006bc-27f6-4d95-90ad-724e882b13af",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 25104678,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 62,
+      "delivery_id": "ef9ca977-5871-4d3e-b758-0accd57a280c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 23591410
+    },
+    {
+      "index": 63,
+      "delivery_id": "b6fc6bd0-2c21-4ae2-bc86-9328f6c83aa9",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 24025855
+    },
+    {
+      "index": 64,
+      "delivery_id": "7fb85968-bb97-4fed-b77b-e546c0bc1068",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3016363635
+    },
+    {
+      "index": 65,
+      "delivery_id": "5d98c894-6a14-4cbf-ad41-e40f67c7391e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 24192374,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 66,
+      "delivery_id": "ee7d8912-f1d8-4053-95d5-8ed04f8209d5",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 12113968
+    },
+    {
+      "index": 67,
+      "delivery_id": "e81a538b-7eb2-4a89-b26d-cbc379e3c38a",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 24382462
+    },
+    {
+      "index": 68,
+      "delivery_id": "ec9c3486-62f9-4962-a851-b71f5b53f972",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 26084010
+    },
+    {
+      "index": 69,
+      "delivery_id": "1e5a8d3b-3329-4ad1-80ab-798451333abd",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3017497386
+    },
+    {
+      "index": 70,
+      "delivery_id": "085a0bb3-45c4-4cad-a44c-caec3342f971",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 22392129
+    },
+    {
+      "index": 71,
+      "delivery_id": "dd8809bf-bc04-4941-878f-b8889318678e",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 18284327
+    },
+    {
+      "index": 72,
+      "delivery_id": "444d79d9-2633-4c63-a9b9-a40eb8a2b151",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 27557191
+    },
+    {
+      "index": 73,
+      "delivery_id": "0daa5cc7-16c9-4abe-ace8-29a9d4d42cb0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 19336933
+    },
+    {
+      "index": 74,
+      "delivery_id": "e5e43b34-bc94-4b46-ae09-66e335f0cd62",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3017083764
+    },
+    {
+      "index": 75,
+      "delivery_id": "85f9389f-a39a-4d5c-a94a-01b1c9ede0ce",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 4,
+      "duration_ns": 31214232
+    },
+    {
+      "index": 76,
+      "delivery_id": "aef83052-9588-40d1-b0cc-6c52eb087744",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 29038230
+    },
+    {
+      "index": 77,
+      "delivery_id": "dc44db81-f1d4-4124-b3ec-27faa210fb70",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 2,
+      "duration_ns": 25095264
+    },
+    {
+      "index": 78,
+      "delivery_id": "7e6870e2-b357-4b3c-a84a-02d4535f27c6",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 20866974
+    },
+    {
+      "index": 79,
+      "delivery_id": "56aba9e9-c66a-4f11-81b8-b4d9c6a5d36a",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 14820341
+    },
+    {
+      "index": 80,
+      "delivery_id": "113158d1-3743-4ad2-9288-5153429f3113",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 20958525
+    },
+    {
+      "index": 81,
+      "delivery_id": "013d75c3-5d30-4e0e-a057-799fd9912fe5",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 18378944
+    },
+    {
+      "index": 82,
+      "delivery_id": "d50aba4d-e430-48b1-858a-7ecd459fd95c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 24188659
+    },
+    {
+      "index": 83,
+      "delivery_id": "24b275ce-febb-4ff4-bfe5-f9382ac7caf1",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 19417793,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 84,
+      "delivery_id": "ab2c2faf-fc44-4eba-8015-da658ccff92e",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 11845927
+    },
+    {
+      "index": 85,
+      "delivery_id": "93be3ec5-2f12-406d-b282-2dda9954d16b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 4,
+      "duration_ns": 25387429
+    },
+    {
+      "index": 86,
+      "delivery_id": "1aa884c6-3eb6-42dd-b6af-ef57c9b32802",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 24241079
+    },
+    {
+      "index": 87,
+      "delivery_id": "dbd99659-b515-4cac-87d3-c818561dc5c7",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 18901606
+    },
+    {
+      "index": 88,
+      "delivery_id": "f4c51329-2694-497b-8540-e5ef5afe166c",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 19582637,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 89,
+      "delivery_id": "4d7dd477-33b9-4873-93b3-7606866a75f9",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3016270742
+    },
+    {
+      "index": 90,
+      "delivery_id": "82b19e14-4fd2-4dbb-bc59-5359c5aaddaf",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 26598516
+    },
+    {
+      "index": 91,
+      "delivery_id": "9e6f8f6b-20ee-40f4-9714-8376a8488957",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 19724177
+    },
+    {
+      "index": 92,
+      "delivery_id": "1847cb74-09e2-4d05-9fd2-32995b48c2f1",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 18365733
+    },
+    {
+      "index": 93,
+      "delivery_id": "6a3c19bb-da2e-4d8d-aba4-703beca3e766",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 4,
+      "duration_ns": 26442671
+    },
+    {
+      "index": 94,
+      "delivery_id": "b36c8aa3-692a-4511-ae0a-63eb7481fb3c",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 11818506
+    },
+    {
+      "index": 95,
+      "delivery_id": "a15f7351-7423-458e-b02b-55b1b493466a",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 21183428
+    },
+    {
+      "index": 96,
+      "delivery_id": "5e1dc3a2-2d72-4040-8633-3f65cf57a8e3",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 4,
+      "duration_ns": 26684605
+    },
+    {
+      "index": 97,
+      "delivery_id": "751fd3ec-7c17-4d93-a063-7e7df11af42c",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 15964356
+    },
+    {
+      "index": 98,
+      "delivery_id": "0d662e65-4bfa-45c3-a022-07a7c773a2b0",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 19785027
+    },
+    {
+      "index": 99,
+      "delivery_id": "289f74bc-d914-4482-a2f1-629220ba6f07",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 22521727
+    },
+    {
+      "index": 100,
+      "delivery_id": "0da73d48-9734-49e7-9c04-7bbd63fd4928",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 22948709
+    },
+    {
+      "index": 101,
+      "delivery_id": "83609294-bc19-44ce-b743-18fa76389c76",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 18998995,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 102,
+      "delivery_id": "4de4f977-e56c-4f5e-b1e3-b1a9a9802c85",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 4,
+      "duration_ns": 23562800
+    },
+    {
+      "index": 103,
+      "delivery_id": "aed64df5-397f-429a-994c-6e7423792632",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 20625626,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 104,
+      "delivery_id": "5dae375f-ae9b-402f-8a7f-dfa7e9a04a43",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 22118011,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 105,
+      "delivery_id": "049e3b89-f6eb-4688-a75f-41ed6ab6588d",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 19100846
+    },
+    {
+      "index": 106,
+      "delivery_id": "1c793a77-c371-4d75-96f2-81959f9792a6",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 24646747
+    },
+    {
+      "index": 107,
+      "delivery_id": "f2badfca-54cc-467f-a812-7b19c653812a",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3017982548
+    },
+    {
+      "index": 108,
+      "delivery_id": "de8c6a6a-dd89-41b4-a771-ef5ee1c9711f",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 15671796
+    },
+    {
+      "index": 109,
+      "delivery_id": "1404c90c-f119-4540-baf1-1aac5caa82de",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 11487326
+    },
+    {
+      "index": 110,
+      "delivery_id": "eb2c56e0-7fe5-4e6c-a60b-f7b82bcf8c32",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 20858919
+    },
+    {
+      "index": 111,
+      "delivery_id": "5793ae1f-5019-45b4-93d5-2b365feed7ed",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 20573717
+    },
+    {
+      "index": 112,
+      "delivery_id": "70b45624-698d-445d-aee7-099f3f112695",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3015449566
+    },
+    {
+      "index": 113,
+      "delivery_id": "44082b4f-86e9-4ffd-897b-97dd5f7f9692",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 3,
+      "duration_ns": 20870345
+    },
+    {
+      "index": 114,
+      "delivery_id": "f7456efe-4b80-4d43-8c8f-4c94c1ad5264",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 20797818
+    },
+    {
+      "index": 115,
+      "delivery_id": "c97e714b-7569-4d58-bf38-4f2252863cef",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 15408314
+    },
+    {
+      "index": 116,
+      "delivery_id": "67ebbf42-505b-440d-a8a5-2d5a962e6c37",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 13720423
+    },
+    {
+      "index": 117,
+      "delivery_id": "a0f01929-13a8-44c5-ba74-12f97a996d28",
+      "outcome": "expired",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 3012901354
+    },
+    {
+      "index": 118,
+      "delivery_id": "81f76120-1aa4-4d55-8596-ca6f0699b4ff",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 14773524
+    },
+    {
+      "index": 119,
+      "delivery_id": "7c33e32a-f8b5-440e-aeed-28faf56ccb25",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 16227588
+    },
+    {
+      "index": 120,
+      "delivery_id": "b970869a-e002-4791-bd58-82bbc87b9ced",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 20197898
+    },
+    {
+      "index": 121,
+      "delivery_id": "5068bc37-8537-490b-af7d-021f30188c89",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 19112170
+    },
+    {
+      "index": 122,
+      "delivery_id": "37303b4a-54af-442e-ab79-426a8a8c8baa",
+      "outcome": "declined",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 13256992
+    },
+    {
+      "index": 123,
+      "delivery_id": "f7cfbe1c-83ff-4e99-a8b0-4e4ed68430d1",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 14911867
+    },
+    {
+      "index": 124,
+      "delivery_id": "20373b1c-36f7-49f5-8111-a4e2d8b4e6cb",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 18672112
+    },
+    {
+      "index": 125,
+      "delivery_id": "f87d76c5-4668-40c9-be1c-8a47f80fcf3b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 18178557
+    },
+    {
+      "index": 126,
+      "delivery_id": "1f5975e0-e570-4f48-b895-2710a4f0e8a2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 16792395
+    },
+    {
+      "index": 127,
+      "delivery_id": "c6205761-da70-48ff-be60-974f958e24ee",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 11002602
+    },
+    {
+      "index": 128,
+      "delivery_id": "1ac3f487-0e0d-43aa-9d7c-692b66b52345",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 18450296
+    },
+    {
+      "index": 129,
+      "delivery_id": "dd8ffff6-1cbd-4d94-b9b4-6d237a2ac0ca",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 2,
+      "duration_ns": 17912929
+    },
+    {
+      "index": 130,
+      "delivery_id": "10624fb9-4fa0-4485-b087-647d83f4944b",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 18628055
+    },
+    {
+      "index": 131,
+      "delivery_id": "690ff2dd-3514-4e9a-9d65-21c0175f4648",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "duration_ns": 16044168
+    },
+    {
+      "index": 132,
+      "delivery_id": "73361d2a-932a-4223-9284-e3fffeabf4cc",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 10284390
+    },
+    {
+      "index": 133,
+      "delivery_id": "6b6211f8-6ff4-4c44-b62a-9422108708af",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 18666081
+    },
+    {
+      "index": 134,
+      "delivery_id": "3ecf12b7-f415-4a69-b052-866f56456b75",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 18423183
+    },
+    {
+      "index": 135,
+      "delivery_id": "feadfd39-bb72-4472-acea-3bb989db6b21",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 13130782
+    },
+    {
+      "index": 136,
+      "delivery_id": "628ca7a4-b535-4a81-8640-f9d5dd765743",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 1,
+      "duration_ns": 16555630
+    },
+    {
+      "index": 137,
+      "delivery_id": "09f73a90-6812-4e91-90ec-ec70f3f5344f",
+      "outcome": "declined",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 9628201
+    },
+    {
+      "index": 138,
+      "delivery_id": "e67c0da9-44be-4342-8268-9ec8f30d00aa",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 3,
+      "duration_ns": 20154239
+    },
+    {
+      "index": 139,
+      "delivery_id": "09858781-1063-4619-bdaa-a9c11fd59b05",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 12769890
+    },
+    {
+      "index": 140,
+      "delivery_id": "c2ae1451-2e67-4e6e-b4cf-0905ea154cf2",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 16925232
+    },
+    {
+      "index": 141,
+      "delivery_id": "6511b859-14da-4fe8-b2dd-a702436e6999",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "duration_ns": 12924594
+    },
+    {
+      "index": 142,
+      "delivery_id": "0d693852-0bc9-40ba-bb92-e4dda7a518af",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 3,
+      "duration_ns": 17154072
+    },
+    {
+      "index": 143,
+      "delivery_id": "f3085f25-07ba-4804-9219-a47d9ebc5bbe",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 14920320
+    },
+    {
+      "index": 144,
+      "delivery_id": "2d7a8b82-55e5-4f46-a453-1c537d8febd8",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 1,
+      "duration_ns": 14827024
+    },
+    {
+      "index": 145,
+      "delivery_id": "85faa110-acff-4713-aa3f-900430e3ae9f",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 15284814
+    },
+    {
+      "index": 146,
+      "delivery_id": "bada37fa-30e5-4987-901d-e4ba20605535",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 14887288
+    },
+    {
+      "index": 147,
+      "delivery_id": "5e3d0fb9-37ea-452f-b96c-083b05813e2b",
+      "outcome": "completed",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 2,
+      "duration_ns": 15588542
+    },
+    {
+      "index": 148,
+      "delivery_id": "f852371a-fefc-47b1-b8ea-22af7cd8e7cf",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 14353643
+    },
+    {
+      "index": 149,
+      "delivery_id": "e08beb50-8320-45c7-9a42-87e0849dd1df",
+      "outcome": "completed",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 2,
+      "duration_ns": 15121999
+    }
+  ],
+  "failure_samples": [
+    {
+      "index": 2,
+      "delivery_id": "3f42130e-c486-4ba2-adc3-b5c9f7dbb9c3",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 87335968,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 5,
+      "delivery_id": "0ca1ea40-9bd2-48a9-b076-a9533eeee3c2",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 80357823,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 12,
+      "delivery_id": "2b1632fa-7b75-435a-84cf-cd603227d13e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 90154644,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 14,
+      "delivery_id": "bdcb7632-a810-4923-b37b-9c509666f093",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 91243079,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 15,
+      "delivery_id": "6288846f-6843-4aa7-a8cf-d695c95fa7d9",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 96232402,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 19,
+      "delivery_id": "b008dd68-260d-4e19-a76f-35afc05e4f13",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 90511768,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 24,
+      "delivery_id": "7e17f6c1-a2e5-46d9-813c-178082e675ad",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 84427616,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 27,
+      "delivery_id": "20e5fe0d-3ece-4e32-a941-43faaa113b75",
+      "outcome": "",
+      "duplicate_checked": true,
+      "duplicate_ok": true,
+      "assign_retries": 5,
+      "duration_ns": 82489557,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 29,
+      "delivery_id": "98876373-6202-476c-9a93-113ece84e13e",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 85911503,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    },
+    {
+      "index": 37,
+      "delivery_id": "ab66bc03-7861-4c75-a55a-dd02282ba4e7",
+      "outcome": "",
+      "duplicate_checked": false,
+      "duplicate_ok": false,
+      "assign_retries": 5,
+      "duration_ns": 37736319,
+      "error": "nenhum entregador do pool ficou livre: atribuir: status 409: {\"error\":\"lunchrush: entregador já possui entrega ativa\"}\n"
+    }
+  ]
+}

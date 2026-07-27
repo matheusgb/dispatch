@@ -19,8 +19,8 @@ terraform apply -auto-approve
 ```
 
 **O que você vai ver:** o LocalStack sobe saudável em `localhost:4566`; o
-`apply` cria um bucket S3 (`dispatch-delivery-receipts`) e um segredo no
-Secrets Manager (`dispatch/jwt-secret`, cifrado por uma chave KMS
+`apply` cria um bucket S3 (`lunchrush-delivery-receipts`) e um segredo no
+Secrets Manager (`lunchrush/jwt-secret`, cifrado por uma chave KMS
 criada junto).
 
 **O que roda por baixo:** o provider `hashicorp/aws` oficial, sem fork,
@@ -46,7 +46,7 @@ confirmando que o Terraform aplicou de verdade, não só validou sintaxe.
 docker compose --profile app --profile aws-lab up -d --build
 ```
 
-**O que você vai ver:** `delivery-api` inicia lendo `DISPATCH_JWT_SECRET`
+**O que você vai ver:** `delivery-api` inicia lendo `LUNCHRUSH_JWT_SECRET`
 do Secrets Manager (não da variável de ambiente, quando
 `AWS_SECRETS_ENDPOINT` está setado) e sobe um comprovante para o S3 a
 cada entrega concluída (`internal/platform/objectstore`).
@@ -67,21 +67,21 @@ docker compose --profile app up -d postgres redis redpanda \
 ./scripts/helm-deploy.sh
 ```
 
-**O que você vai ver:** um cluster `kind` chamado `dispatch` (criado se
+**O que você vai ver:** um cluster `kind` chamado `lunchrush` (criado se
 não existir), as cinco imagens construídas e carregadas, e
-`helm upgrade --install` aplicando `deploy/helm/dispatch`. Ao final, os
+`helm upgrade --install` aplicando `deploy/helm/lunchrush`. Ao final, os
 cinco `Deployment` ficam `2/2` (ou o número configurado em
 `values.yaml:workloads`).
 
 **O que roda por baixo:** um único chart parametrizado
-(`deploy/helm/dispatch`) substitui os cinco manifests quase idênticos do
+(`deploy/helm/lunchrush`) substitui os cinco manifests quase idênticos do
 `deploy/kubernetes/base` (Kustomize, tier 3, congelado como histórico).
 `templates/workloads.yaml` itera sobre `values.yaml:workloads` para gerar
 `Deployment`/`Service`/`PodDisruptionBudget`/`HorizontalPodAutoscaler`
 por serviço (ver ADR 0013).
 
 ```bash
-kubectl --context kind-dispatch -n dispatch get deploy,svc,hpa,pdb
+kubectl --context kind-lunchrush -n lunchrush get deploy,svc,hpa,pdb
 ```
 
 **O que você vai ver:** os cinco `Deployment`, os `Service` internos e
@@ -91,31 +91,31 @@ externos (`postgres-external`, `redis-external`, `redpanda-external`,
 
 ---
 
-## Passo 4: instalar o KEDA e escalar `dispatch-worker` por lag real
+## Passo 4: instalar o KEDA e escalar `lunchrush-worker` por lag real
 
 ```bash
 ./scripts/keda-install.sh
 ```
 
 **O que você vai ver:** o operador do KEDA instalado no namespace `keda`,
-e um `ScaledObject` (`dispatch-worker`) com `READY: True`. Sem lag no
-tópico, `dispatch-worker` fica em 0 réplicas (`minReplicaCount: 0`).
+e um `ScaledObject` (`lunchrush-worker`) com `READY: True`. Sem lag no
+tópico, `lunchrush-worker` fica em 0 réplicas (`minReplicaCount: 0`).
 
 **O que roda por baixo:** o chart do KEDA oficial (`kedacore/keda`) mais
 um `Service` `ExternalName` que este repositório cria no namespace `keda`
-apontando para `redpanda.dispatch.svc.cluster.local` — sem ele, o
-operador do KEDA (rodando fora do namespace `dispatch`) não resolve o
+apontando para `redpanda.lunchrush.svc.cluster.local` — sem ele, o
+operador do KEDA (rodando fora do namespace `lunchrush`) não resolve o
 nome curto `redpanda` que o broker anuncia de volta (ADR 0014, mesma
 causa raiz do ADR 0011).
 
 ```bash
 for i in $(seq 1 40); do echo "teste-lag-$i"; done | \
-  docker exec -i dispatch-redpanda-1 rpk topic produce dispatch.delivery-events -f '%v\n'
-watch -n2 'kubectl --context kind-dispatch -n dispatch get scaledobject,hpa,deploy dispatch-worker'
+  docker exec -i lunchrush-redpanda-1 rpk topic produce lunchrush.delivery-events -f '%v\n'
+watch -n2 'kubectl --context kind-lunchrush -n lunchrush get scaledobject,hpa,deploy lunchrush-worker'
 ```
 
 **O que você vai ver:** `TOTAL-LAG` de 40 no `rpk group describe
-dispatch-worker`, o `ScaledObject` marcando `ACTIVE: True`, e o
+lunchrush-worker`, o `ScaledObject` marcando `ACTIVE: True`, e o
 `Deployment` subindo de 0 para até 3 réplicas em menos de um minuto
 (`pollingInterval: 5s`).
 
@@ -130,9 +130,9 @@ PostgreSQL) com o comando exato de cada injeção e a evidência coletada.
 **Atalho para o cenário mais simples (pod kill):**
 
 ```bash
-kubectl --context kind-dispatch -n dispatch delete pod \
-  $(kubectl --context kind-dispatch -n dispatch get pod -l app=delivery-api -o jsonpath='{.items[0].metadata.name}')
-kubectl --context kind-dispatch -n dispatch get pods -l app=delivery-api -w
+kubectl --context kind-lunchrush -n lunchrush delete pod \
+  $(kubectl --context kind-lunchrush -n lunchrush get pod -l app=delivery-api -o jsonpath='{.items[0].metadata.name}')
+kubectl --context kind-lunchrush -n lunchrush get pods -l app=delivery-api -w
 ```
 
 **O que você vai ver:** o pod morto sai de `Terminating`, um novo nasce em
@@ -170,7 +170,7 @@ vazio: ver o bug do `or on() vector(0)` documentado no ADR 0015).
 ## Encerrando
 
 ```bash
-kind delete cluster --name dispatch
+kind delete cluster --name lunchrush
 docker compose --profile app --profile observability --profile aws-lab down
 ```
 

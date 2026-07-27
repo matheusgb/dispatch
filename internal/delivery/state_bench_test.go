@@ -15,7 +15,7 @@ func BenchmarkDelivery_Apply(b *testing.B) {
 	now := time.Now()
 	for i := 0; i < b.N; i++ {
 		d := New("bench")
-		_ = d.Apply(ReadyForDispatch, now)
+		_ = d.Apply(ReadyForLunchRush, now)
 		_ = d.Apply(Offered, now)
 		_ = d.Apply(Assigned, now)
 	}

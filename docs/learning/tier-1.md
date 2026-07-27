@@ -51,5 +51,5 @@
 9. **Qual é o próximo limite conhecido?** Não existe ainda nenhuma medição
    de throughput sob concorrência real: os números do baseline são de um
    processo sequencial, um benchmark, uma máquina. O próximo passo é o
-   LunchRush e os cenários de carga em k6 do próprio backlog do tier 1,
+   LoadGen e os cenários de carga em k6 do próprio backlog do tier 1,
    antes de qualquer decisão sobre separar serviços no tier 3.

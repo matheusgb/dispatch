@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
 )
 
 // Invariantes 3 e 4 do README: "uma transição de estado só ocorre a partir
@@ -17,7 +17,7 @@ import (
 // anterior". internal/delivery/state_test.go já prova isso para a função
 // pura Transition (tabela + 100 mil random walks + fuzz); este teste prova
 // um ângulo que aquele não cobre: que o *log de transições persistido no
-// Postgres* por uma jornada completa via internal/dispatch é, ele mesmo,
+// Postgres* por uma jornada completa via internal/lunchrush é, ele mesmo,
 // um caminho válido no mesmo grafo, sem pular etapa e sem duplicar entrada.
 func TestInvariant_PersistedTransitionLogFollowsStateMachine(t *testing.T) {
 	truncateAll(t)
@@ -38,9 +38,9 @@ func TestInvariant_PersistedTransitionLogFollowsStateMachine(t *testing.T) {
 		t.Fatalf("criar entrega: %v", err)
 	}
 
-	svc := dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()})
-	if err := svc.MarkReadyForDispatch(ctx, created.ID); err != nil {
-		t.Fatalf("ready_for_dispatch: %v", err)
+	svc := lunchrush.NewService(pool, lunchrush.FixedClock{At: time.Now()})
+	if err := svc.MarkReadyForLunchRush(ctx, created.ID); err != nil {
+		t.Fatalf("ready_for_lunchrush: %v", err)
 	}
 	if err := svc.Offer(ctx, created.ID, time.Hour); err != nil {
 		t.Fatalf("offer: %v", err)
@@ -93,8 +93,8 @@ func TestInvariant_PersistedTransitionLogFollowsStateMachine(t *testing.T) {
 	}
 
 	wantPath := []delivery.State{
-		delivery.Created, delivery.ReadyForDispatch,
-		delivery.ReadyForDispatch, delivery.Offered,
+		delivery.Created, delivery.ReadyForLunchRush,
+		delivery.ReadyForLunchRush, delivery.Offered,
 		delivery.Offered, delivery.Assigned,
 		delivery.Assigned, delivery.PickedUp,
 		delivery.PickedUp, delivery.Delivered,

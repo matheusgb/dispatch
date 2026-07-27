@@ -12,19 +12,19 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/fencing"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/fencing"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
 )
 
-// asyncAPIRequiredFields carrega contracts/asyncapi/dispatch-events.yaml e
+// asyncAPIRequiredFields carrega contracts/asyncapi/lunchrush-events.yaml e
 // devolve os campos `required` do schema indicado, seguindo `allOf` quando
 // necessário (as duas variantes de Envelope usadas neste repositório).
 func asyncAPIRequiredFields(t *testing.T, schemaName string) []string {
 	t.Helper()
 	root := repoRoot(t)
-	raw, err := os.ReadFile(filepath.Join(root, "contracts/asyncapi/dispatch-events.yaml"))
+	raw, err := os.ReadFile(filepath.Join(root, "contracts/asyncapi/lunchrush-events.yaml"))
 	if err != nil {
 		t.Fatalf("ler AsyncAPI: %v", err)
 	}
@@ -37,7 +37,7 @@ func asyncAPIRequiredFields(t *testing.T, schemaName string) []string {
 	schemas := components["schemas"].(map[string]any)
 	schema, ok := schemas[schemaName].(map[string]any)
 	if !ok {
-		t.Fatalf("schema %q não encontrado em contracts/asyncapi/dispatch-events.yaml", schemaName)
+		t.Fatalf("schema %q não encontrado em contracts/asyncapi/lunchrush-events.yaml", schemaName)
 	}
 	if req, ok := schema["required"].([]any); ok {
 		return toStrings(req)
@@ -62,7 +62,7 @@ func assertJSONHasExactKeys(t *testing.T, raw []byte, want []string) {
 	}
 	for _, k := range want {
 		if _, ok := got[k]; !ok {
-			t.Errorf("contrato quebrado: payload real não tem o campo %q documentado em contracts/asyncapi/dispatch-events.yaml (payload=%s)", k, raw)
+			t.Errorf("contrato quebrado: payload real não tem o campo %q documentado em contracts/asyncapi/lunchrush-events.yaml (payload=%s)", k, raw)
 		}
 	}
 	for k := range got {
@@ -74,13 +74,13 @@ func assertJSONHasExactKeys(t *testing.T, raw []byte, want []string) {
 			}
 		}
 		if !found {
-			t.Errorf("contrato quebrado: payload real tem o campo %q que não está documentado como required em contracts/asyncapi/dispatch-events.yaml (payload=%s)", k, raw)
+			t.Errorf("contrato quebrado: payload real tem o campo %q que não está documentado como required em contracts/asyncapi/lunchrush-events.yaml (payload=%s)", k, raw)
 		}
 	}
 }
 
 // TestContract_DeliveryLifecyclePayloadMatchesAsyncAPI cria uma entrega
-// real e percorre o lifecycle via internal/dispatch (o mesmo código que o
+// real e percorre o lifecycle via internal/lunchrush (o mesmo código que o
 // delivery-api real usa), depois lê o payload de verdade gravado por
 // internal/platform/outbox.Enqueue e confirma que bate exatamente com o
 // schema DeliveryLifecyclePayload documentado.
@@ -95,14 +95,14 @@ func TestContract_DeliveryLifecyclePayloadMatchesAsyncAPI(t *testing.T) {
 		t.Fatalf("criar entrega: %v", err)
 	}
 
-	svc := dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()})
-	if err := svc.MarkReadyForDispatch(ctx, created.ID); err != nil {
-		t.Fatalf("ready_for_dispatch: %v", err)
+	svc := lunchrush.NewService(pool, lunchrush.FixedClock{At: time.Now()})
+	if err := svc.MarkReadyForLunchRush(ctx, created.ID); err != nil {
+		t.Fatalf("ready_for_lunchrush: %v", err)
 	}
 
 	var payload []byte
 	if err := pool.QueryRow(ctx, `
-		SELECT payload FROM outbox_events WHERE aggregate_id = $1 AND kind = 'delivery.ready_for_dispatch'
+		SELECT payload FROM outbox_events WHERE aggregate_id = $1 AND kind = 'delivery.ready_for_lunchrush'
 	`, created.ID).Scan(&payload); err != nil {
 		t.Fatalf("buscar payload gravado no outbox: %v", err)
 	}

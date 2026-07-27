@@ -13,12 +13,12 @@ import (
 // tier 1 do roadmap explicitamente proíbe.
 var (
 	requestsTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "dispatch_http_requests_total",
+		Name: "lunchrush_http_requests_total",
 		Help: "Total de requisições HTTP por rota, método e status.",
 	}, []string{"route", "method", "status"})
 
 	requestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:    "dispatch_http_request_duration_seconds",
+		Name:    "lunchrush_http_request_duration_seconds",
 		Help:    "Duração das requisições HTTP por rota e método.",
 		Buckets: prometheus.DefBuckets,
 	}, []string{"route", "method"})
@@ -26,19 +26,19 @@ var (
 	// Métricas de negócio: contadores agregados, sem identificador de
 	// entrega ou entregador.
 	deliveriesCreatedTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "dispatch_deliveries_created_total",
+		Name: "lunchrush_deliveries_created_total",
 		Help: "Total de entregas criadas.",
 	})
 	deliveriesAssignedTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "dispatch_deliveries_assigned_total",
+		Name: "lunchrush_deliveries_assigned_total",
 		Help: "Total de atribuições de entregador confirmadas.",
 	})
 	assignmentConflictsTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "dispatch_assignment_conflicts_total",
+		Name: "lunchrush_assignment_conflicts_total",
 		Help: "Total de tentativas de atribuição rejeitadas por disputa concorrente.",
 	})
 	deliveriesCompletedTotal = prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "dispatch_deliveries_completed_total",
+		Name: "lunchrush_deliveries_completed_total",
 		Help: "Total de entregas concluídas (picked_up -> delivered).",
 	})
 )

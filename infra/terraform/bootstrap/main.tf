@@ -43,11 +43,11 @@ variable "localstack_endpoint" {
 }
 
 resource "aws_s3_bucket" "tfstate" {
-  bucket = "dispatch-tfstate-lab"
+  bucket = "lunchrush-tfstate-lab"
 
   tags = {
-    Owner   = "dispatch"
-    Project = "dispatch"
+    Owner   = "lunchrush"
+    Project = "lunchrush"
     Purpose = "bootstrap-state-backend-demo"
   }
 }
@@ -60,7 +60,7 @@ resource "aws_s3_bucket_versioning" "tfstate" {
 }
 
 resource "aws_dynamodb_table" "tfstate_lock" {
-  name         = "dispatch-tfstate-lock"
+  name         = "lunchrush-tfstate-lock"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -70,8 +70,8 @@ resource "aws_dynamodb_table" "tfstate_lock" {
   }
 
   tags = {
-    Owner   = "dispatch"
-    Project = "dispatch"
+    Owner   = "lunchrush"
+    Project = "lunchrush"
     Purpose = "bootstrap-state-backend-demo"
   }
 }

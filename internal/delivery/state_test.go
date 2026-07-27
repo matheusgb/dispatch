@@ -7,7 +7,7 @@ import (
 )
 
 var allStates = []State{
-	Created, ReadyForDispatch, Offered, Assigned, PickedUp,
+	Created, ReadyForLunchRush, Offered, Assigned, PickedUp,
 	Delivered, Declined, Expired, Canceled,
 }
 
@@ -16,21 +16,21 @@ func TestTransition_TableDriven(t *testing.T) {
 		from, to State
 		want     bool
 	}{
-		{Created, ReadyForDispatch, true},
+		{Created, ReadyForLunchRush, true},
 		{Created, Canceled, true},
 		{Created, Assigned, false},
-		{ReadyForDispatch, Offered, true},
+		{ReadyForLunchRush, Offered, true},
 		{Offered, Assigned, true},
 		{Offered, Declined, true},
 		{Offered, Expired, true},
-		{Declined, ReadyForDispatch, true},
-		{Expired, ReadyForDispatch, true},
+		{Declined, ReadyForLunchRush, true},
+		{Expired, ReadyForLunchRush, true},
 		{Assigned, PickedUp, true},
 		{PickedUp, Delivered, true},
 		{PickedUp, Canceled, false}, // picked_up não cancela mais neste roadmap
 		{Delivered, Canceled, false},
-		{Delivered, ReadyForDispatch, false},
-		{Canceled, ReadyForDispatch, false},
+		{Delivered, ReadyForLunchRush, false},
+		{Canceled, ReadyForLunchRush, false},
 	}
 	for _, c := range cases {
 		err := Transition(c.from, c.to)

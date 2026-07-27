@@ -11,7 +11,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/matheusgb/dispatch/internal/tracking"
+	"github.com/matheusgb/lunch-rush/internal/tracking"
 )
 
 func redisAddr() string {

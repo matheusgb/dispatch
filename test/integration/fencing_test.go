@@ -12,17 +12,17 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/matheusgb/dispatch/internal/fencing"
+	"github.com/matheusgb/lunch-rush/internal/fencing"
 )
 
 // TestFencing_StaleEpochWriterNeverWrites é o gate multi-shard/multi-epoch
-// do tier 5, equivalente a TestDispatch_TwentyConcurrentAssignsProduceExactlyOne
+// do tier 5, equivalente a TestLunchRush_TwentyConcurrentAssignsProduceExactlyOne
 // do tier 1: um writer com epoch antigo (representando uma região que já
 // perdeu a lease, ou um processo que ainda não descobriu o failover) nunca
 // consegue criar um assignment, mesmo disparando muitas tentativas
 // concorrentes contra o mesmo shard onde um writer novo (epoch atual)
 // também está criando assignments. Prova em código real a mesma
-// propriedade que docs/tla/DispatchFencing.tla verifica formalmente
+// propriedade que docs/tla/LunchRushFencing.tla verifica formalmente
 // (Safety / NoStaleAssignEverHappened).
 func TestFencing_StaleEpochWriterNeverWrites(t *testing.T) {
 	truncateAll(t)
@@ -43,7 +43,7 @@ func TestFencing_StaleEpochWriterNeverWrites(t *testing.T) {
 	// A lease de "region-a" expira (simulado por lease_until no passado) e
 	// "region-b" assume: epoch 2. "region-a" continua achando que o epoch
 	// vigente é 1 (staleFence), como um processo que não soube do failover.
-	if _, err := pool.Exec(ctx, `UPDATE dispatch_fences SET lease_until = now() - interval '1 second' WHERE shard_id = $1`, shardID); err != nil {
+	if _, err := pool.Exec(ctx, `UPDATE lunchrush_fences SET lease_until = now() - interval '1 second' WHERE shard_id = $1`, shardID); err != nil {
 		t.Fatalf("expirar lease: %v", err)
 	}
 	currentFence, err := svc.Promote(ctx, shardID, "region-b", time.Hour)

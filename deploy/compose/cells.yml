@@ -1,7 +1,7 @@
 # Arquitetura celular local do tier 5 (ver docs/adr/0019-arquitetura-celular-local.md
 # e docs/limitacoes-simulacao-local.md). Duas células lógicas, cada uma com
-# seu próprio delivery-api e seu próprio banco de dados (dispatch_cell_a e
-# dispatch_cell_b), rodando no MESMO container PostgreSQL já usado pelo
+# seu próprio delivery-api e seu próprio banco de dados (lunchrush_cell_a e
+# lunchrush_cell_b), rodando no MESMO container PostgreSQL já usado pelo
 # resto do laboratório: isolamento de dados real (bancos diferentes,
 # nenhuma tabela compartilhada, cell_id nunca cruza banco), mas não
 # isolamento físico de processo de banco, rede ou hardware — rotulado
@@ -12,7 +12,7 @@
 #   docker compose -f docker-compose.yml -f deploy/compose/cells.yml \
 #     --profile app --profile cells up -d --build delivery-api-cell-a delivery-api-cell-b cellrouter
 #
-# As duas databases (dispatch_cell_a, dispatch_cell_b) e suas migrations
+# As duas databases (lunchrush_cell_a, lunchrush_cell_b) e suas migrations
 # são criadas manualmente antes de subir (não automatizado neste arquivo
 # para não duplicar o serviço `migrate` por célula só para este
 # experimento local — ver docs/passo-a-passo/tier-5.md para o comando
@@ -24,10 +24,10 @@ services:
       context: .
       dockerfile: deploy/compose/Dockerfile.delivery-api
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch_cell_a?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush_cell_a?sslmode=disable
       HTTP_ADDR: ":8080"
-      DISPATCH_JWT_SECRET: compose-dev-secret
-      DISPATCH_ADMIN_SECRET: compose-dev-admin-secret
+      LUNCHRUSH_JWT_SECRET: compose-dev-secret
+      LUNCHRUSH_ADMIN_SECRET: compose-dev-admin-secret
       KAFKA_BROKERS: redpanda:9092
     ports:
       - "8094:8080"
@@ -38,10 +38,10 @@ services:
       context: .
       dockerfile: deploy/compose/Dockerfile.delivery-api
     environment:
-      DATABASE_URL: postgres://dispatch:dispatch@postgres:5432/dispatch_cell_b?sslmode=disable
+      DATABASE_URL: postgres://lunchrush:lunchrush@postgres:5432/lunchrush_cell_b?sslmode=disable
       HTTP_ADDR: ":8080"
-      DISPATCH_JWT_SECRET: compose-dev-secret
-      DISPATCH_ADMIN_SECRET: compose-dev-admin-secret
+      LUNCHRUSH_JWT_SECRET: compose-dev-secret
+      LUNCHRUSH_ADMIN_SECRET: compose-dev-admin-secret
       KAFKA_BROKERS: redpanda:9092
     ports:
       - "8095:8080"

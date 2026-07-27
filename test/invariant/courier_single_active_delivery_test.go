@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
 )
 
 // Invariante 2 do README: "um entregador possui no máximo uma entrega
-// ativa". test/integration/dispatch_test.go já cobre isso via
-// TestDispatch_CourierCannotHoldTwoActiveDeliveries; este teste é o mesmo
+// ativa". test/integration/lunchrush_test.go já cobre isso via
+// TestLunchRush_CourierCannotHoldTwoActiveDeliveries; este teste é o mesmo
 // invariante, rotulado como tal, exercitado com duas entregas distintas em
 // vez de reenviar a mesma (a mesma propriedade, ângulo levemente diferente:
 // aqui as duas entregas concorrem por atenção do MESMO entregador ao mesmo
@@ -34,7 +34,7 @@ func TestInvariant_CourierNeverHoldsTwoActiveDeliveriesConcurrently(t *testing.T
 	}
 
 	deliveries := delivery.NewRepository(pool)
-	svc := dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()})
+	svc := lunchrush.NewService(pool, lunchrush.FixedClock{At: time.Now()})
 
 	ids := make([]string, 2)
 	for i := range ids {
@@ -42,8 +42,8 @@ func TestInvariant_CourierNeverHoldsTwoActiveDeliveriesConcurrently(t *testing.T
 		if err != nil {
 			t.Fatalf("criar entrega %d: %v", i, err)
 		}
-		if _, err := pool.Exec(ctx, `UPDATE deliveries SET state = $1 WHERE id = $2`, delivery.ReadyForDispatch, created.ID); err != nil {
-			t.Fatalf("mover entrega %d para ready_for_dispatch: %v", i, err)
+		if _, err := pool.Exec(ctx, `UPDATE deliveries SET state = $1 WHERE id = $2`, delivery.ReadyForLunchRush, created.ID); err != nil {
+			t.Fatalf("mover entrega %d para ready_for_lunchrush: %v", i, err)
 		}
 		if err := svc.Offer(ctx, created.ID, time.Hour); err != nil {
 			t.Fatalf("oferecer entrega %d: %v", i, err)
@@ -67,7 +67,7 @@ func TestInvariant_CourierNeverHoldsTwoActiveDeliveriesConcurrently(t *testing.T
 	for _, err := range errs {
 		if err == nil {
 			successes++
-		} else if !errors.Is(err, dispatch.ErrCourierAlreadyActive) {
+		} else if !errors.Is(err, lunchrush.ErrCourierAlreadyActive) {
 			t.Fatalf("erro inesperado: %v", err)
 		}
 	}

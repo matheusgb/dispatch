@@ -21,35 +21,35 @@ groups:
       - record: slo:delivery_api_errors:ratio_rate5m
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[5m]))
+            sum(rate(lunchrush_http_requests_total{job="delivery-api",status=~"5.."}[5m]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="delivery-api"}[5m]))
+          sum(rate(lunchrush_http_requests_total{job="delivery-api"}[5m]))
       - record: slo:delivery_api_errors:ratio_rate30m
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[30m]))
+            sum(rate(lunchrush_http_requests_total{job="delivery-api",status=~"5.."}[30m]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="delivery-api"}[30m]))
+          sum(rate(lunchrush_http_requests_total{job="delivery-api"}[30m]))
       - record: slo:delivery_api_errors:ratio_rate1h
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[1h]))
+            sum(rate(lunchrush_http_requests_total{job="delivery-api",status=~"5.."}[1h]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="delivery-api"}[1h]))
+          sum(rate(lunchrush_http_requests_total{job="delivery-api"}[1h]))
       - record: slo:delivery_api_errors:ratio_rate6h
         expr: |
           (
-            sum(rate(dispatch_http_requests_total{job="delivery-api",status=~"5.."}[6h]))
+            sum(rate(lunchrush_http_requests_total{job="delivery-api",status=~"5.."}[6h]))
             or on() vector(0)
           )
           /
-          sum(rate(dispatch_http_requests_total{job="delivery-api"}[6h]))
+          sum(rate(lunchrush_http_requests_total{job="delivery-api"}[6h]))
 
   - name: slo-delivery-api-alerting
     rules:

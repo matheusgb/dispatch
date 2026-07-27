@@ -27,10 +27,10 @@ resolver `redpanda` sozinho e falhava.
 
 ## Decisão
 
-Criar um segundo par `Service`/`Endpoints` no namespace `dispatch`, com o
+Criar um segundo par `Service`/`Endpoints` no namespace `lunchrush`, com o
 nome curto `redpanda` (sem sufixo `-external`), apontando para o mesmo IP
 de gateway. O DNS do pod resolve nomes curtos via search domain
-(`redpanda.dispatch.svc.cluster.local`), então o metadado devolvido pelo
+(`redpanda.lunchrush.svc.cluster.local`), então o metadado devolvido pelo
 broker passa a resolver também.
 
 ## Alternativas consideradas

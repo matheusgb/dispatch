@@ -13,7 +13,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-external
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   ports:
     - port: 5432
@@ -22,7 +22,7 @@ apiVersion: v1
 kind: Endpoints
 metadata:
   name: postgres-external
-  namespace: dispatch
+  namespace: lunchrush
 subsets:
   - addresses:
       - ip: HOST_GATEWAY_IP
@@ -33,7 +33,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-external
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   ports:
     - port: 6379
@@ -42,7 +42,7 @@ apiVersion: v1
 kind: Endpoints
 metadata:
   name: redis-external
-  namespace: dispatch
+  namespace: lunchrush
 subsets:
   - addresses:
       - ip: HOST_GATEWAY_IP
@@ -53,7 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redpanda-external
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   ports:
     - port: 9092
@@ -62,7 +62,7 @@ apiVersion: v1
 kind: Endpoints
 metadata:
   name: redpanda-external
-  namespace: dispatch
+  namespace: lunchrush
 subsets:
   - addresses:
       - ip: HOST_GATEWAY_IP
@@ -76,12 +76,12 @@ subsets:
 # primeiro contato, mas toda produção/consumo real falharia tentando
 # resolver "redpanda" sozinho. Este Service replica o mesmo apontamento
 # sob o nome curto "redpanda", que o DNS do pod resolve via search domain
-# (redpanda.dispatch.svc.cluster.local).
+# (redpanda.lunchrush.svc.cluster.local).
 apiVersion: v1
 kind: Service
 metadata:
   name: redpanda
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   ports:
     - port: 9092
@@ -90,7 +90,7 @@ apiVersion: v1
 kind: Endpoints
 metadata:
   name: redpanda
-  namespace: dispatch
+  namespace: lunchrush
 subsets:
   - addresses:
       - ip: HOST_GATEWAY_IP
@@ -101,7 +101,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: dependency-simulator-external
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   ports:
     - port: 8092
@@ -110,7 +110,7 @@ apiVersion: v1
 kind: Endpoints
 metadata:
   name: dependency-simulator-external
-  namespace: dispatch
+  namespace: lunchrush
 subsets:
   - addresses:
       - ip: HOST_GATEWAY_IP

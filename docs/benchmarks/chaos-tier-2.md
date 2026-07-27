@@ -26,7 +26,7 @@ manual.
 deixa nenhum entregador com duas entregas ativas nem corrompe uma
 transação parcial: o PostgreSQL só confirma o que comitou.
 
-**Injeção:** `docker kill dispatch-delivery-api-1` com o LunchRush
+**Injeção:** `docker kill lunchrush-delivery-api-1` com o LoadGen
 disparando 80 ordens em concorrência 8 (seed 9001), religado ~2s depois com
 `docker compose up -d delivery-api`.
 

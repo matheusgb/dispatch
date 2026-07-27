@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/tracking"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/tracking"
 )
 
 func setupDeliveryForTracking(t *testing.T, ctx context.Context) string {

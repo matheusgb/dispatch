@@ -8,8 +8,8 @@ leitura via tracking-projector:
 status=200
 
 === injecao: docker compose stop redis ===
- Container dispatch-redis-1  Stopping
- Container dispatch-redis-1  Stopped
+ Container lunchrush-redis-1  Stopping
+ Container lunchrush-redis-1  Stopped
 Error response from daemon: container 9f57ee78e0324ff9f590f9ee75c29c42c8370d4fc97315a78480280d87d8ba95 is not running
 
 === observacao com redis fora do ar ===
@@ -22,8 +22,8 @@ leitura via tracking-projector:
 status=200
 
 === recuperacao: docker compose start redis ===
- Container dispatch-redis-1  Starting
- Container dispatch-redis-1  Started
+ Container lunchrush-redis-1  Starting
+ Container lunchrush-redis-1  Started
 PONG
 
 === observacao pos-recuperacao ===

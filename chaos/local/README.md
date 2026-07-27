@@ -11,7 +11,7 @@ topo do próprio script, e imprime cada etapa durante a execução.
 | `redis-unavailable.sh` | Redis fora do ar, tracking cai para Postgres | `docker compose --profile app up -d --build` |
 | `kafka-paused.sh` | Redpanda pausado, outbox absorve a indisponibilidade | idem |
 | `postgres-latency-toxiproxy.sh` | latência alta no Postgres via Toxiproxy | idem, mais Docker acessível para subir o container do Toxiproxy |
-| `pod-kill.sh` | matar um pod do `delivery-api` no `kind` | `make helm-up` (cluster `kind-dispatch` com o chart instalado) |
+| `pod-kill.sh` | matar um pod do `delivery-api` no `kind` | `make helm-up` (cluster `kind-lunchrush` com o chart instalado) |
 
 Rode via `make chaos SCENARIO=<nome-sem-.sh>` (ver `Makefile`), ou
 diretamente com `bash chaos/local/<script>.sh`.
@@ -44,7 +44,7 @@ tinha capturado com essa precisão.
 nesta sessão: o primeiro por causa do bug de deadlock conhecido do
 Toxiproxy 2.12.0 sob concorrência (mitigado no script ao rodar só
 sequencial, mas não vale o risco de repetir sem necessidade); o segundo
-porque não havia cluster `kind-dispatch` no ar neste passe (só o
+porque não havia cluster `kind-lunchrush` no ar neste passe (só o
 `edge-lab`, de outro laboratório, compartilhando a mesma máquina). Os dois
 scripts foram revisados manualmente linha a linha contra os comandos reais
 já documentados em `docs/benchmarks/chaos-tier-4.md`.

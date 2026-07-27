@@ -9,9 +9,9 @@ o pacote já estava em cache de uma sessão anterior do tier 4).
 ```
 $ terraform init && terraform apply -auto-approve
 Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
-jwt_secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:dispatch/cloud-a/jwt-secret-eiZeXU"
-jwt_secret_name = "dispatch/cloud-a/jwt-secret"
-receipts_bucket_name = "dispatch-cloud-a-receipts"
+jwt_secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:lunchrush/cloud-a/jwt-secret-eiZeXU"
+jwt_secret_name = "lunchrush/cloud-a/jwt-secret"
+receipts_bucket_name = "lunchrush-cloud-a-receipts"
 ```
 
 ## cloud-b (`infra/terraform/environments/cloud-b`, LocalStack porta 14566)
@@ -19,9 +19,9 @@ receipts_bucket_name = "dispatch-cloud-a-receipts"
 ```
 $ terraform init && terraform apply -auto-approve
 Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
-jwt_secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:dispatch/cloud-b/jwt-secret-vMmlpR"
-jwt_secret_name = "dispatch/cloud-b/jwt-secret"
-receipts_bucket_name = "dispatch-cloud-b-receipts"
+jwt_secret_arn = "arn:aws:secretsmanager:us-east-1:000000000000:secret:lunchrush/cloud-b/jwt-secret-vMmlpR"
+jwt_secret_name = "lunchrush/cloud-b/jwt-secret"
+receipts_bucket_name = "lunchrush-cloud-b-receipts"
 ```
 
 Confirmado por HTTP direto que os dois buckets existem em dois LocalStack
@@ -29,10 +29,10 @@ independentes (dois containers, duas redes Docker, dois processos), não um
 único LocalStack compartilhado:
 
 ```
-$ curl -s http://localhost:4566/dispatch-cloud-a-receipts/
-<ListBucketResult ... Name>dispatch-cloud-a-receipts</Name> ...>
-$ curl -s http://localhost:14566/dispatch-cloud-b-receipts/
-<ListBucketResult ... Name>dispatch-cloud-b-receipts</Name> ...>
+$ curl -s http://localhost:4566/lunchrush-cloud-a-receipts/
+<ListBucketResult ... Name>lunchrush-cloud-a-receipts</Name> ...>
+$ curl -s http://localhost:14566/lunchrush-cloud-b-receipts/
+<ListBucketResult ... Name>lunchrush-cloud-b-receipts</Name> ...>
 ```
 
 ## Destroy e auditoria
@@ -49,7 +49,7 @@ Saídas completas dos dois `apply` (JSON de outputs, antes do destroy):
 
 ## Limitação honesta
 
-Isto prova que o padrão "um root Terraform por provedor" (dispatch.md,
+Isto prova que o padrão "um root Terraform por provedor" (lunch-rush.md,
 tier 6) funciona mecanicamente duas vezes, contra dois LocalStack
 independentes representando duas contas/projetos diferentes. Não prova:
 

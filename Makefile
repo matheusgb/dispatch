@@ -1,17 +1,17 @@
 .PHONY: bootstrap test test-race test-integration invariant-test contract-test e2e fuzz local-up migrate-up migrate-down run \
-	load-smoke load-lunchrush load-spike load-breakpoint load-soak \
+	load-smoke load-loadgen load-spike load-breakpoint load-soak \
 	compose-up compose-down kind-up kind-down helm-up keda-up tf-aws-lab-up tf-aws-lab-down \
 	chaos replay benchmark-report proto-gen \
 	cloud-plan cloud-up cloud-destroy portability-test cloud-failover
 
-DATABASE_URL ?= postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable
+DATABASE_URL ?= postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable
 KAFKA_BROKERS ?= localhost:19092
 BASE_URL ?= http://localhost:8080
 SEED ?= 20260717
 SCALE ?= 1
 DURATION ?= 5m
 PROVIDER ?= cloud-a
-TOPIC ?= dispatch.delivery-events.dlq
+TOPIC ?= lunchrush.delivery-events.dlq
 
 bootstrap:
 	go mod tidy
@@ -46,7 +46,7 @@ e2e:
 fuzz:
 	go test -fuzz=. -fuzztime=30s ./internal/delivery/...
 
-# proto-gen: gera api/proto/gen/ a partir de api/proto/dispatch/v1/*.proto,
+# proto-gen: gera api/proto/gen/ a partir de api/proto/lunchrush/v1/*.proto,
 # só como prova de forma (ver docs/adr/0025) — nada em internal/ importa o
 # resultado. Exige protoc (protocolbuffers/protobuf) e protoc-gen-go
 # (google.golang.org/protobuf/cmd/protoc-gen-go) no PATH. Saída não é
@@ -61,7 +61,7 @@ proto-gen:
 	mkdir -p api/proto/gen
 	protoc -I api/proto $(if $(PROTOC_INCLUDE),-I $(PROTOC_INCLUDE)) \
 		--go_out=api/proto/gen --go_opt=paths=source_relative \
-		api/proto/dispatch/v1/delivery_events.proto
+		api/proto/lunchrush/v1/delivery_events.proto
 
 local-up:
 	docker compose up -d postgres
@@ -79,10 +79,10 @@ run:
 load-smoke:
 	k6 run -e BASE_URL=$(BASE_URL) loadtest/k6/smoke.js
 
-load-lunchrush:
-	go run ./cmd/lunchrush -base-url $(BASE_URL) -seed $(SEED) \
+load-loadgen:
+	go run ./cmd/loadgen -base-url $(BASE_URL) -seed $(SEED) \
 		-orders $$(( 200 * $(SCALE) )) -couriers $$(( 20 * $(SCALE) )) -concurrency 20 \
-		-out lunchrush-report
+		-out loadgen-report
 
 # perfil de spike (3x): rampa até 10 VUs, sustenta, salta para 30 (3x) por
 # 10s, sustenta, volta a 0. Já existia como docs/benchmarks/tier-4-load/
@@ -98,7 +98,7 @@ load-breakpoint:
 
 # carga baixa e constante por DURATION (default 5m), procurando
 # degradação lenta. Ver docs/benchmarks/tier-5-soak/ para a corrida longa
-# equivalente já feita com o LunchRush.
+# equivalente já feita com o LoadGen.
 load-soak:
 	k6 run -e BASE_URL=$(BASE_URL) -e DURATION=$(DURATION) loadtest/k6/soak.js
 
@@ -112,7 +112,7 @@ kind-up:
 	bash scripts/kind-deploy.sh
 
 kind-down:
-	kind delete cluster --name dispatch
+	kind delete cluster --name lunchrush
 
 # Tier 4: chart Helm no lugar de Kustomize (ver docs/adr/0013), KEDA
 # escalando por lag (ver docs/adr/0014) e Terraform contra LocalStack (ver
@@ -142,7 +142,7 @@ chaos:
 # replay de uma mensagem específica de uma DLQ pelo offset, ver
 # docs/runbooks/dlq-replay.md e scripts/dlq-replay.sh.
 replay:
-	@if [ -z "$(DLQ_ID)" ]; then echo "uso: make replay TOPIC=dispatch.delivery-events.dlq DLQ_ID=<offset>"; exit 1; fi
+	@if [ -z "$(DLQ_ID)" ]; then echo "uso: make replay TOPIC=lunchrush.delivery-events.dlq DLQ_ID=<offset>"; exit 1; fi
 	bash scripts/dlq-replay.sh $(TOPIC) $(DLQ_ID)
 
 # agrega os benchmarks mais recentes de docs/benchmarks/ num resumo único.

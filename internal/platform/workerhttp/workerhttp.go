@@ -1,5 +1,5 @@
 // Package workerhttp dá a um worker sem rota de negócio (consumidores puros
-// de Kafka, como dispatch-worker e notification-worker) o mínimo que
+// de Kafka, como lunchrush-worker e notification-worker) o mínimo que
 // Kubernetes e Prometheus precisam: /healthz para liveness/readiness e
 // /metrics para scrape.
 package workerhttp

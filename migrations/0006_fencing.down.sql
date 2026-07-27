@@ -4,4 +4,4 @@ ALTER TABLE couriers DROP COLUMN courier_session_epoch;
 ALTER TABLE couriers DROP COLUMN home_cell;
 DROP TABLE assignment_history;
 DROP TABLE active_assignments;
-DROP TABLE dispatch_fences;
+DROP TABLE lunchrush_fences;

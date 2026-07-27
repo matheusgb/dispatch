@@ -1,0 +1,28 @@
+# O operador do KEDA roda no namespace "keda" (instalado separadamente, ver
+# scripts/keda-install.sh), não no namespace "lunchrush". Um cliente Kafka
+# nunca fala só com o endereço de bootstrap: depois do primeiro contato, o
+# broker devolve metadados dizendo qual endereço usar para cada partição
+# (aqui, "redpanda:9092", o nome curto que o Redpanda do docker compose
+# anuncia, ver ADR 0011), e o cliente reconecta usando *esse* nome. O nome
+# curto "redpanda" resolve via search domain só dentro do próprio
+# namespace ("redpanda.lunchrush.svc.cluster.local" vira alcançável como
+# "redpanda" só para pods no namespace "lunchrush"); um pod no namespace
+# "keda" tentando resolver "redpanda" sozinho recebia "server misbehaving"
+# do CoreDNS, o mesmo sintoma do ADR 0011, agora entre dois namespaces do
+# mesmo cluster em vez de duas redes Docker.
+#
+# Resolvido com um Service ExternalName no namespace do KEDA, apontando
+# para o FQDN completo do Service real. ExternalName aceita nome DNS (ao
+# contrário do IP usado em external-infra.yaml, que exige Endpoints
+# manuais): aqui o alvo já É um nome DNS válido dentro do cluster, então
+# ExternalName é a ferramenta certa.
+{{- if .Values.keda.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda
+  namespace: {{ .Values.keda.operatorNamespace }}
+spec:
+  type: ExternalName
+  externalName: redpanda.{{ .Values.namespace }}.svc.cluster.local
+{{- end }}

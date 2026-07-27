@@ -8,18 +8,18 @@
 #
 # Uso:
 #   scripts/dlq-replay.sh <topico-dlq> <offset>
-#   make replay TOPIC=dispatch.delivery-events.dlq DLQ_ID=<offset>
+#   make replay TOPIC=lunchrush.delivery-events.dlq DLQ_ID=<offset>
 set -euo pipefail
 
 if [ "$#" -ne 2 ]; then
   echo "uso: $0 <topico-dlq> <offset>" >&2
-  echo "exemplo: $0 dispatch.delivery-events.dlq 0" >&2
+  echo "exemplo: $0 lunchrush.delivery-events.dlq 0" >&2
   exit 1
 fi
 
 DLQ_TOPIC="$1"
 OFFSET="$2"
-REDPANDA_CONTAINER="${REDPANDA_CONTAINER:-dispatch-redpanda-1}"
+REDPANDA_CONTAINER="${REDPANDA_CONTAINER:-lunchrush-redpanda-1}"
 ORIGINAL_TOPIC="${DLQ_TOPIC%.dlq}"
 
 if [ "$ORIGINAL_TOPIC" = "$DLQ_TOPIC" ]; then

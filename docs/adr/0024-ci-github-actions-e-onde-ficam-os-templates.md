@@ -2,7 +2,7 @@
 
 ## Contexto
 
-O roadmap (`dispatch.md`) pedia CI real (lint, `go vet`, `go test -race`,
+O roadmap (`lunch-rush.md`) pedia CI real (lint, `go vet`, `go test -race`,
 build de imagem, SBOM/scan) e templates de ADR, experimento, incidente e
 benchmark. Uma auditoria encontrou `.github/` inteiramente ausente. Este
 projeto é laboratório solo (ver decisão de não usar PRs/issues/branch

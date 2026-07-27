@@ -1,6 +1,6 @@
 # O que quebra depois do tier 6 (e do roadmap inteiro)
 
-Este é o último tier do roadmap (`dispatch.md`). Este documento segue o
+Este é o último tier do roadmap (`lunch-rush.md`). Este documento segue o
 mesmo formato dos anteriores (`tier-N-what-breaks-next.md`), mas fecha
 também com uma seção sobre o que ficaria como próximo limite se o projeto
 continuasse além do roadmap original.
@@ -57,15 +57,15 @@ continuasse além do roadmap original.
 ## Achado real durante o fechamento: teste de integração é sensível ao app tier rodando ao lado
 
 Rodar `go test -tags=integration -race ./test/integration/...` contra
-`cloud-a` com `delivery-api`/`dispatch-worker` também em execução (o app
+`cloud-a` com `delivery-api`/`lunchrush-worker` também em execução (o app
 tier normal do `docker compose --profile app`) produziu uma falha
 intermitente: `TestOutbox_CrashBeforeMarkRepublishesButInboxDedupsEffect`
 esperava publicar 1 evento pendente e encontrou 0. Causa real: o
-`dispatch-worker` real, rodando ao lado, tem seu próprio relay de outbox
+`lunchrush-worker` real, rodando ao lado, tem seu próprio relay de outbox
 consumindo a mesma tabela `outbox_events` do mesmo banco que o teste usa
 — ele conseguiu marcar o evento como publicado antes do relay do teste
 rodar, então o teste (que espera encontrar o evento ainda pendente) não
-achou nada para publicar. Parar `delivery-api`/`dispatch-worker`/
+achou nada para publicar. Parar `delivery-api`/`lunchrush-worker`/
 `tracking-ingest`/`tracking-projector`/`notification-worker` antes de
 rodar a suíte de integração eliminou a flakiness (confirmado: `ok` em
 27,7s, execução limpa). Isso não é um bug do tier 6, é uma pré-condição
@@ -73,7 +73,7 @@ de isolamento que já existia desde o tier 3 (a suíte assume um banco sem
 outro consumidor do outbox competindo), só ficou visível agora porque
 esta sessão manteve o app tier rodando continuamente por mais tempo que o
 normal. Registrado aqui para não repetir a investigação numa sessão
-futura: rode `docker compose stop delivery-api dispatch-worker
+futura: rode `docker compose stop delivery-api lunchrush-worker
 tracking-ingest tracking-projector notification-worker` antes de
 `make test-integration` contra um ambiente que já tem o app tier de pé.
 
@@ -96,7 +96,7 @@ seguir", registrados para não sumir:
 
 ## Fechamento do roadmap
 
-Os seis tiers de `dispatch.md` (monólito modular → produto local operável
+Os seis tiers de `lunch-rush.md` (monólito modular → produto local operável
 → sistema distribuído com Kafka → plataforma AWS simulada em três zonas →
 células multi-região com fencing e TLA+ → portabilidade entre "clouds")
 estão implementados e taggeados (`tier-1.0.0` a `tier-6.0.0`). O que cada

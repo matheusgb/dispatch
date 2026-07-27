@@ -8,7 +8,7 @@ CREATE TABLE couriers (
 CREATE TABLE deliveries (
     id          uuid PRIMARY KEY,
     state       text NOT NULL CHECK (state IN (
-        'created', 'ready_for_dispatch', 'offered', 'assigned',
+        'created', 'ready_for_lunchrush', 'offered', 'assigned',
         'picked_up', 'delivered', 'declined', 'expired', 'canceled'
     )),
     courier_id  uuid REFERENCES couriers(id),

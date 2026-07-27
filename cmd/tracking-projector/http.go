@@ -9,11 +9,11 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/ratelimit"
-	"github.com/matheusgb/dispatch/internal/platform/sse"
-	"github.com/matheusgb/dispatch/internal/tracking"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/ratelimit"
+	"github.com/matheusgb/lunch-rush/internal/platform/sse"
+	"github.com/matheusgb/lunch-rush/internal/tracking"
 )
 
 type server struct {

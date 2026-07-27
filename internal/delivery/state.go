@@ -10,15 +10,15 @@ import (
 type State string
 
 const (
-	Created          State = "created"
-	ReadyForDispatch State = "ready_for_dispatch"
-	Offered          State = "offered"
-	Assigned         State = "assigned"
-	PickedUp         State = "picked_up"
-	Delivered        State = "delivered"
-	Declined         State = "declined"
-	Expired          State = "expired"
-	Canceled         State = "canceled"
+	Created           State = "created"
+	ReadyForLunchRush State = "ready_for_lunchrush"
+	Offered           State = "offered"
+	Assigned          State = "assigned"
+	PickedUp          State = "picked_up"
+	Delivered         State = "delivered"
+	Declined          State = "declined"
+	Expired           State = "expired"
+	Canceled          State = "canceled"
 )
 
 // ErrInvalidTransition indica uma transição fora do grafo permitido.
@@ -29,15 +29,15 @@ var ErrTerminalState = errors.New("delivery: estado terminal não transiciona")
 
 // graph replica o fluxo principal descrito em docs/requisitos-tier-1.md.
 var graph = map[State]map[State]bool{
-	Created:          {ReadyForDispatch: true, Canceled: true},
-	ReadyForDispatch: {Offered: true, Canceled: true},
-	Offered:          {Assigned: true, Declined: true, Expired: true, Canceled: true},
-	Assigned:         {PickedUp: true, Canceled: true},
-	PickedUp:         {Delivered: true},
-	Declined:         {ReadyForDispatch: true},
-	Expired:          {ReadyForDispatch: true},
-	Delivered:        {},
-	Canceled:         {},
+	Created:           {ReadyForLunchRush: true, Canceled: true},
+	ReadyForLunchRush: {Offered: true, Canceled: true},
+	Offered:           {Assigned: true, Declined: true, Expired: true, Canceled: true},
+	Assigned:          {PickedUp: true, Canceled: true},
+	PickedUp:          {Delivered: true},
+	Declined:          {ReadyForLunchRush: true},
+	Expired:           {ReadyForLunchRush: true},
+	Delivered:         {},
+	Canceled:          {},
 }
 
 // Terminal indica um estado que nunca regride (invariante 4).

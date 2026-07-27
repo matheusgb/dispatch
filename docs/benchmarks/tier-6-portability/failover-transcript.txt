@@ -176,11 +176,11 @@ EPOCH_A=1
 
 T_OUTAGE=1785107303.831736537 (2026-07-26T23:08:23Z)
 
-=== 7. interrompe a célula ativa de cloud-a (para delivery-api e dispatch-worker) ===
- Container dispatch-dispatch-worker-1  Stopping
- Container dispatch-delivery-api-1  Stopping
- Container dispatch-delivery-api-1  Stopped
- Container dispatch-dispatch-worker-1  Stopped
+=== 7. interrompe a célula ativa de cloud-a (para delivery-api e lunchrush-worker) ===
+ Container lunchrush-lunchrush-worker-1  Stopping
+ Container lunchrush-delivery-api-1  Stopping
+ Container lunchrush-delivery-api-1  Stopped
+ Container lunchrush-lunchrush-worker-1  Stopped
 
 === 8. restaura o backup T0 em cloud-b (banco separado, próprio provedor) ===
  active_assignments_restaurados 

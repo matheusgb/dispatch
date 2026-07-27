@@ -1,7 +1,7 @@
 apiVersion: 1
 providers:
-  - name: dispatch
-    folder: dispatch
+  - name: lunchrush
+    folder: lunchrush
     type: file
     updateIntervalSeconds: 30
     options:

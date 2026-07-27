@@ -1,7 +1,7 @@
 # Tier 5 passo a passo
 
 Continuação do [tier 4](tier-4.md). Aqui entram fencing multi-shard, TLA+
-real, arquitetura celular local e o LunchRush com rede/relógio virtuais.
+real, arquitetura celular local e o LoadGen com rede/relógio virtuais.
 Você precisa do que o tier 4 já pedia (`docker compose`), mais `java`
 (17+, para o TLC) e opcionalmente `syft`/`grype`/`cosign` (fecham
 pendências do tier 4, ver ADR 0016).
@@ -15,7 +15,7 @@ mkdir -p docs/tla/tools
 curl -sSfL https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar \
   -o docs/tla/tools/tla2tools.jar
 cd docs/tla
-java -jar tools/tla2tools.jar -workers 4 -config DispatchFencing.cfg DispatchFencing.tla
+java -jar tools/tla2tools.jar -workers 4 -config LunchRushFencing.cfg LunchRushFencing.tla
 ```
 
 **O que você vai ver:** `Model checking completed. No error has been
@@ -31,7 +31,7 @@ obsoleto) em cada estado, mais a propriedade de vivacidade
 ```bash
 cd mutation
 java -jar ../tools/tla2tools.jar -workers 4 \
-  -config DispatchFencing_no_epoch_guard.cfg DispatchFencing_no_epoch_guard.tla
+  -config LunchRushFencing_no_epoch_guard.cfg LunchRushFencing_no_epoch_guard.tla
 ```
 
 **O que você vai ver:** `Error: Invariant Safety is violated.`, com um
@@ -50,8 +50,8 @@ significar alguma coisa.
 
 ```bash
 docker compose --profile app up -d
-DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable" go run ./cmd/migrate up
-DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable" \
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable" go run ./cmd/migrate up
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable" \
   go test -tags=integration -race -run TestFencing ./test/integration/... -v
 ```
 
@@ -60,7 +60,7 @@ DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disab
 data race relatado.
 
 **O que roda por baixo:** `internal/fencing` (ADR 0018) cria
-`dispatch_fences`, `active_assignments` e `assignment_history`
+`lunchrush_fences`, `active_assignments` e `assignment_history`
 (migration `0006_fencing`); o primeiro teste dispara 20 tentativas de
 `CreateAssignment` com um epoch velho ao mesmo tempo que 20 tentativas com
 o epoch atual, contra o mesmo shard, e confirma no banco que zero
@@ -71,10 +71,10 @@ assignments têm o epoch velho.
 ## Passo 3: subir duas células locais e provar isolamento
 
 ```bash
-docker exec dispatch-postgres-1 psql -U dispatch -d postgres -c "CREATE DATABASE dispatch_cell_a OWNER dispatch;"
-docker exec dispatch-postgres-1 psql -U dispatch -d postgres -c "CREATE DATABASE dispatch_cell_b OWNER dispatch;"
-DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch_cell_a?sslmode=disable" go run ./cmd/migrate up
-DATABASE_URL="postgres://dispatch:dispatch@localhost:5432/dispatch_cell_b?sslmode=disable" go run ./cmd/migrate up
+docker exec lunchrush-postgres-1 psql -U lunchrush -d postgres -c "CREATE DATABASE lunchrush_cell_a OWNER lunchrush;"
+docker exec lunchrush-postgres-1 psql -U lunchrush -d postgres -c "CREATE DATABASE lunchrush_cell_b OWNER lunchrush;"
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush_cell_a?sslmode=disable" go run ./cmd/migrate up
+DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush_cell_b?sslmode=disable" go run ./cmd/migrate up
 
 docker compose -f docker-compose.yml -f deploy/compose/cells.yml \
   --profile app --profile cells up -d --build \
@@ -95,16 +95,16 @@ curl -X POST http://localhost:8096/deliveries -H "X-Cell-ID: cell-b" \
 
 **O que roda por baixo:** `cmd/cellrouter` lê `X-Cell-ID` e encaminha para
 o backend certo sem consultar banco algum (ADR 0019). Consultando
-`dispatch_cell_a` e `dispatch_cell_b` diretamente, cada entrega só existe
+`lunchrush_cell_a` e `lunchrush_cell_b` diretamente, cada entrega só existe
 no banco da sua própria célula — prova de isolamento de dados real, não
 descrita.
 
 ---
 
-## Passo 4: LunchRush com rede e relógio virtuais
+## Passo 4: LoadGen com rede e relógio virtuais
 
 ```bash
-go run ./cmd/lunchrush \
+go run ./cmd/loadgen \
   --base-url http://localhost:8083 --tracking-url http://localhost:8084 --projector-url http://localhost:8085 \
   --admin-secret compose-dev-admin-secret --seed 20260726 \
   --orders 40 --couriers 15 --concurrency 8 \
@@ -118,7 +118,7 @@ go run ./cmd/lunchrush \
 `clock_skew_tried=5 clock_skew_safe=5 couriers_crashed=7
 positions_dropped=10`.
 
-**O que roda por baixo:** `cmd/lunchrush/netfault.go` decide, a partir do
+**O que roda por baixo:** `cmd/loadgen/netfault.go` decide, a partir do
 `rand.Rand` seedado por ordem, quais posições de GPS enviar, em que
 ordem, com que atraso e com que epoch (ADR 0020). Toda perturbação vira
 uma chamada HTTP real contra `tracking-ingest`/`tracking-projector`; o
@@ -130,7 +130,7 @@ mesma seed:
 
 ```bash
 psql "$DATABASE_URL" -c "TRUNCATE idempotency_keys, delivery_transitions, tracking_positions, \
-  delivery_tracking_state, active_assignments, assignment_history, dispatch_fences, \
+  delivery_tracking_state, active_assignments, assignment_history, lunchrush_fences, \
   outbox_events, consumed_events, deliveries, couriers CASCADE;"
 # repetir o comando acima com --out /tmp/run2
 ```
@@ -152,6 +152,6 @@ docker compose -f docker-compose.yml -f deploy/compose/cells.yml --profile cells
   stop delivery-api-cell-a delivery-api-cell-b cellrouter
 docker compose -f docker-compose.yml -f deploy/compose/cells.yml --profile cells \
   rm -f delivery-api-cell-a delivery-api-cell-b cellrouter
-docker exec dispatch-postgres-1 psql -U dispatch -d postgres -c "DROP DATABASE dispatch_cell_a;"
-docker exec dispatch-postgres-1 psql -U dispatch -d postgres -c "DROP DATABASE dispatch_cell_b;"
+docker exec lunchrush-postgres-1 psql -U lunchrush -d postgres -c "DROP DATABASE lunchrush_cell_a;"
+docker exec lunchrush-postgres-1 psql -U lunchrush -d postgres -c "DROP DATABASE lunchrush_cell_b;"
 ```

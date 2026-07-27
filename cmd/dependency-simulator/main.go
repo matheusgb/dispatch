@@ -1,5 +1,5 @@
 // Comando dependency-simulator finge ser o provedor externo de
-// notificações. Existe para testar como o dispatch se comporta quando uma
+// notificações. Existe para testar como o lunchrush se comporta quando uma
 // dependência de terceiro degrada: 429, timeout e 5xx controlados, sem
 // depender de um provedor real (que o roadmap explicitamente proíbe usar
 // aqui, ver P00 do escopo: nada de dados reais de pessoas ou serviço real).

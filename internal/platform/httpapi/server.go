@@ -1,4 +1,4 @@
-// Package httpapi expõe o lifecycle e o dispatch de entregas por HTTP. Não
+// Package httpapi expõe o lifecycle e o lunchrush de entregas por HTTP. Não
 // há framework escondendo o ciclo da requisição: roteamento é o ServeMux
 // da biblioteca padrão, timeouts e deadlines são explícitos.
 //
@@ -6,7 +6,7 @@
 // diretamente: GPS vai para tracking-ingest, leitura de posição para
 // tracking-projector, e notificação para notification-worker, todos
 // reagindo a eventos publicados no outbox por este serviço (ver
-// internal/platform/outbox e cmd/dispatch-worker).
+// internal/platform/outbox e cmd/lunchrush-worker).
 package httpapi
 
 import (
@@ -19,12 +19,12 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
-	"github.com/matheusgb/dispatch/internal/platform/auth"
-	"github.com/matheusgb/dispatch/internal/platform/idempotency"
-	"github.com/matheusgb/dispatch/internal/platform/objectstore"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
+	"github.com/matheusgb/lunch-rush/internal/platform/auth"
+	"github.com/matheusgb/lunch-rush/internal/platform/idempotency"
+	"github.com/matheusgb/lunch-rush/internal/platform/objectstore"
 )
 
 const requestTimeout = 5 * time.Second
@@ -32,7 +32,7 @@ const requestTimeout = 5 * time.Second
 type Server struct {
 	deliveries  *delivery.Repository
 	couriers    *courier.Repository
-	dispatch    *dispatch.Service
+	lunchrush   *lunchrush.Service
 	issuer      *auth.Issuer
 	adminSecret string
 	logger      *slog.Logger
@@ -42,7 +42,7 @@ type Server struct {
 type Deps struct {
 	Deliveries  *delivery.Repository
 	Couriers    *courier.Repository
-	Dispatch    *dispatch.Service
+	LunchRush   *lunchrush.Service
 	Issuer      *auth.Issuer
 	AdminSecret string
 	Logger      *slog.Logger
@@ -54,7 +54,7 @@ type Deps struct {
 
 func NewServer(d Deps) http.Handler {
 	s := &Server{
-		deliveries: d.Deliveries, couriers: d.Couriers, dispatch: d.Dispatch,
+		deliveries: d.Deliveries, couriers: d.Couriers, lunchrush: d.LunchRush,
 		issuer: d.Issuer, adminSecret: d.AdminSecret, logger: d.Logger,
 		receipts: d.Receipts,
 	}
@@ -127,16 +127,16 @@ func (s *Server) handleGetDelivery(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleMarkReady e handleOfferDelivery continuam expostos para override
-// manual e para os testes: em operação normal, é o dispatch-worker quem
+// manual e para os testes: em operação normal, é o lunchrush-worker quem
 // aciona as duas, reagindo aos eventos delivery.created e
-// delivery.ready_for_dispatch (ver cmd/dispatch-worker).
+// delivery.ready_for_lunchrush (ver cmd/lunchrush-worker).
 func (s *Server) handleMarkReady(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	err := s.dispatch.MarkReadyForDispatch(r.Context(), id)
+	err := s.lunchrush.MarkReadyForLunchRush(r.Context(), id)
 	switch {
 	case err == nil:
 		w.WriteHeader(http.StatusNoContent)
-	case errors.Is(err, dispatch.ErrNotCreated):
+	case errors.Is(err, lunchrush.ErrNotCreated):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)
@@ -160,8 +160,8 @@ func (s *Server) handleOfferDelivery(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := s.dispatch.Offer(r.Context(), id, ttl); err != nil {
-		if errors.Is(err, dispatch.ErrNotReadyForDispatch) {
+	if err := s.lunchrush.Offer(r.Context(), id, ttl); err != nil {
+		if errors.Is(err, lunchrush.ErrNotReadyForLunchRush) {
 			writeError(w, http.StatusConflict, "entrega não está pronta para despacho")
 			return
 		}
@@ -185,12 +185,12 @@ func (s *Server) handleAssignDelivery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.dispatch.Assign(r.Context(), id, req.CourierID)
+	err := s.lunchrush.Assign(r.Context(), id, req.CourierID)
 	switch {
 	case err == nil:
 		deliveriesAssignedTotal.Inc()
 		w.WriteHeader(http.StatusNoContent)
-	case errors.Is(err, dispatch.ErrNotOffered), errors.Is(err, dispatch.ErrCourierAlreadyActive):
+	case errors.Is(err, lunchrush.ErrNotOffered), errors.Is(err, lunchrush.ErrCourierAlreadyActive):
 		assignmentConflictsTotal.Inc()
 		writeError(w, http.StatusConflict, err.Error())
 	default:
@@ -200,11 +200,11 @@ func (s *Server) handleAssignDelivery(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeclineDelivery(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	err := s.dispatch.Decline(r.Context(), id)
+	err := s.lunchrush.Decline(r.Context(), id)
 	switch {
 	case err == nil:
 		w.WriteHeader(http.StatusNoContent)
-	case errors.Is(err, dispatch.ErrNotOffered):
+	case errors.Is(err, lunchrush.ErrNotOffered):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)
@@ -213,11 +213,11 @@ func (s *Server) handleDeclineDelivery(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handlePickUpDelivery(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	err := s.dispatch.PickUp(r.Context(), id)
+	err := s.lunchrush.PickUp(r.Context(), id)
 	switch {
 	case err == nil:
 		w.WriteHeader(http.StatusNoContent)
-	case errors.Is(err, dispatch.ErrUnexpectedState):
+	case errors.Is(err, lunchrush.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)
@@ -226,13 +226,13 @@ func (s *Server) handlePickUpDelivery(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeliverDelivery(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	err := s.dispatch.Deliver(r.Context(), id)
+	err := s.lunchrush.Deliver(r.Context(), id)
 	switch {
 	case err == nil:
 		deliveriesCompletedTotal.Inc()
 		w.WriteHeader(http.StatusNoContent)
 		s.uploadReceiptAsync(id)
-	case errors.Is(err, dispatch.ErrUnexpectedState):
+	case errors.Is(err, lunchrush.ErrUnexpectedState):
 		writeError(w, http.StatusConflict, err.Error())
 	default:
 		s.internalError(w, err)

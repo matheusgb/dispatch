@@ -1,0 +1,74 @@
+{
+  "title": "lunchrush — RED e negócio",
+  "uid": "lunchrush-red",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "title": "Rate (req/s por rota)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (route) (rate(lunchrush_http_requests_total[1m]))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "title": "Errors (5xx e 4xx por rota)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (route, status) (rate(lunchrush_http_requests_total{status=~\"4..|5..\"}[1m]))",
+          "legendFormat": "{{route}} {{status}}"
+        }
+      ]
+    },
+    {
+      "title": "Duration p95 por rota",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (route, le) (rate(lunchrush_http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "title": "Entregas por resultado",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "rate(lunchrush_deliveries_created_total[1m])", "legendFormat": "criadas" },
+        { "expr": "rate(lunchrush_deliveries_assigned_total[1m])", "legendFormat": "atribuídas" },
+        { "expr": "rate(lunchrush_deliveries_completed_total[1m])", "legendFormat": "concluídas" },
+        { "expr": "rate(lunchrush_assignment_conflicts_total[1m])", "legendFormat": "conflitos de atribuição" }
+      ]
+    },
+    {
+      "title": "Ingestão de GPS",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "rate(lunchrush_positions_ingested_total[1m])", "legendFormat": "posições aceitas no log" },
+        { "expr": "rate(lunchrush_positions_current_total[1m])", "legendFormat": "posições que avançaram a projeção" }
+      ]
+    },
+    {
+      "title": "Notificações por resultado",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum by (kind, outcome) (rate(lunchrush_notifications_total[1m]))",
+          "legendFormat": "{{kind}} {{outcome}}"
+        }
+      ]
+    }
+  ]
+}

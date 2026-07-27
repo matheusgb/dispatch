@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-CLUSTER_NAME="dispatch"
+CLUSTER_NAME="lunchrush"
 
 if ! kind get clusters 2>/dev/null | grep -qx "$CLUSTER_NAME"; then
   echo "criando cluster kind '$CLUSTER_NAME' (um nó só, para caber no ambiente local)"
@@ -20,9 +20,9 @@ EOF
 fi
 
 echo "construindo imagens"
-for svc in delivery-api dispatch-worker tracking-ingest tracking-projector notification-worker; do
-  docker build -f "deploy/compose/Dockerfile.$svc" -t "dispatch-$svc:kind" .
-  kind load docker-image "dispatch-$svc:kind" --name "$CLUSTER_NAME"
+for svc in delivery-api lunchrush-worker tracking-ingest tracking-projector notification-worker; do
+  docker build -f "deploy/compose/Dockerfile.$svc" -t "lunchrush-$svc:kind" .
+  kind load docker-image "lunchrush-$svc:kind" --name "$CLUSTER_NAME"
 done
 
 # O nó do kind é um container Docker; para alcançar a infra publicada no
@@ -38,9 +38,9 @@ kubectl kustomize deploy/kubernetes/base \
   | kubectl --context "kind-$CLUSTER_NAME" apply -f -
 
 echo "aguardando rollout"
-for dep in delivery-api dispatch-worker tracking-ingest tracking-projector notification-worker; do
-  kubectl --context "kind-$CLUSTER_NAME" -n dispatch rollout status deployment/"$dep" --timeout=120s
+for dep in delivery-api lunchrush-worker tracking-ingest tracking-projector notification-worker; do
+  kubectl --context "kind-$CLUSTER_NAME" -n lunchrush rollout status deployment/"$dep" --timeout=120s
 done
 
 echo "pronto. port-forward de exemplo:"
-echo "  kubectl --context kind-$CLUSTER_NAME -n dispatch port-forward svc/delivery-api 8080:80"
+echo "  kubectl --context kind-$CLUSTER_NAME -n lunchrush port-forward svc/delivery-api 8080:80"

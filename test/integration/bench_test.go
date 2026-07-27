@@ -10,9 +10,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/matheusgb/dispatch/internal/courier"
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/dispatch"
+	"github.com/matheusgb/lunch-rush/internal/courier"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/lunchrush"
 )
 
 // BenchmarkDelivery_Create mede o caminho mais quente do tier 1: uma
@@ -31,15 +31,15 @@ func BenchmarkDelivery_Create(b *testing.B) {
 	}
 }
 
-// BenchmarkDispatch_Assign mede o aceite concorrente: cada iteração já parte
+// BenchmarkLunchRush_Assign mede o aceite concorrente: cada iteração já parte
 // de uma entrega em offered e um entregador disponível, para isolar o custo
 // do UPDATE condicional do custo de preparar o cenário.
-func BenchmarkDispatch_Assign(b *testing.B) {
+func BenchmarkLunchRush_Assign(b *testing.B) {
 	truncateAllBench(b)
 	ctx := context.Background()
 	deliveries := delivery.NewRepository(pool)
 	couriers := courier.NewRepository(pool)
-	svc := dispatch.NewService(pool, dispatch.FixedClock{At: time.Now()})
+	svc := lunchrush.NewService(pool, lunchrush.FixedClock{At: time.Now()})
 
 	type pair struct{ deliveryID, courierID string }
 	pairs := make([]pair, b.N)
@@ -48,8 +48,8 @@ func BenchmarkDispatch_Assign(b *testing.B) {
 		if err != nil {
 			b.Fatalf("create: %v", err)
 		}
-		if _, err := pool.Exec(ctx, `UPDATE deliveries SET state = $1 WHERE id = $2`, delivery.ReadyForDispatch, created.ID); err != nil {
-			b.Fatalf("mover para ready_for_dispatch: %v", err)
+		if _, err := pool.Exec(ctx, `UPDATE deliveries SET state = $1 WHERE id = $2`, delivery.ReadyForLunchRush, created.ID); err != nil {
+			b.Fatalf("mover para ready_for_lunchrush: %v", err)
 		}
 		if err := svc.Offer(ctx, created.ID, time.Hour); err != nil {
 			b.Fatalf("oferecer: %v", err)

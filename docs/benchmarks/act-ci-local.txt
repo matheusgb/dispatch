@@ -35,7 +35,7 @@ Comando:
 Primeira tentativa com timeout de 280s estourou (docker build de 8 imagens
 em paralelo é pesado; timeout de ferramenta, não do workflow). Repetida com
 timeout de 580s: sucesso completo, 8/8 jobs da matriz + o job pai, todos
-"Job succeeded" (delivery-api, dispatch-worker, tracking-ingest,
+"Job succeeded" (delivery-api, lunchrush-worker, tracking-ingest,
 tracking-projector, notification-worker, cellrouter,
 dependency-simulator, migrate). Cada Dockerfile.<service> em
 deploy/compose/ realmente builda dentro do runner do act via

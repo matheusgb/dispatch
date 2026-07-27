@@ -1,6 +1,6 @@
 // Comando cloudfailover é a ferramenta de operador do tier 6: reusa
 // internal/fencing (a mesma autoridade de epoch e lease do tier 5, que
-// promove entre células) para promover a autoridade de dispatch shard
+// promove entre células) para promover a autoridade de lunchrush shard
 // entre dois "provedores" (cloud-a, cloud-b), cada um com seu próprio
 // PostgreSQL, e provar que um writer com o epoch antigo é rejeitado depois
 // da promoção. Não é um protocolo novo: é o mesmo internal/fencing do
@@ -29,7 +29,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/matheusgb/dispatch/internal/fencing"
+	"github.com/matheusgb/lunch-rush/internal/fencing"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	cmd := os.Args[1]
 	fs := flag.NewFlagSet(cmd, flag.ExitOnError)
 	dbURL := fs.String("db", "", "DATABASE_URL do provedor alvo")
-	shardID := fs.String("shard", "tier6-crosscloud", "dispatch shard")
+	shardID := fs.String("shard", "tier6-crosscloud", "lunchrush shard")
 	region := fs.String("region", "", "owner_region a promover/usar")
 	lease := fs.Duration("lease", 5*time.Second, "duração da lease")
 	epoch := fs.Int64("epoch", 0, "epoch que o writer acredita ser o vigente")

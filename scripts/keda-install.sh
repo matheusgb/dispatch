@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Instala o operador do KEDA no cluster kind "dispatch" (via Helm, chart
-# oficial kedacore/keda) e liga o ScaledObject de dispatch-worker no chart
+# Instala o operador do KEDA no cluster kind "lunchrush" (via Helm, chart
+# oficial kedacore/keda) e liga o ScaledObject de lunchrush-worker no chart
 # da aplicação. Rode depois de scripts/helm-deploy.sh.
 #
 # ATENÇÃO: KEDA 2.20 (a versão do repositório oficial no momento deste
@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-CLUSTER_NAME="dispatch"
+CLUSTER_NAME="lunchrush"
 KEDA_NAMESPACE="keda"
 
 helm repo add kedacore https://kedacore.github.io/charts >/dev/null 2>&1 || true
@@ -26,12 +26,12 @@ echo "aguardando operador do KEDA"
 kubectl --context "kind-$CLUSTER_NAME" -n "$KEDA_NAMESPACE" rollout status deployment/keda-operator --timeout=90s
 kubectl --context "kind-$CLUSTER_NAME" -n "$KEDA_NAMESPACE" rollout status deployment/keda-operator-metrics-apiserver --timeout=90s
 
-echo "ligando o ScaledObject de dispatch-worker no chart da aplicação"
+echo "ligando o ScaledObject de lunchrush-worker no chart da aplicação"
 GATEWAY_IP=$(docker network inspect "kind" --format '{{ (index .IPAM.Config 0).Gateway }}')
-helm upgrade --install dispatch deploy/helm/dispatch \
+helm upgrade --install lunchrush deploy/helm/lunchrush \
   --kube-context "kind-$CLUSTER_NAME" \
   --set "externalInfra.hostGatewayIP=${GATEWAY_IP}" \
   --set keda.enabled=true
 
 echo "pronto. status do ScaledObject:"
-kubectl --context "kind-$CLUSTER_NAME" -n dispatch get scaledobject dispatch-worker
+kubectl --context "kind-$CLUSTER_NAME" -n lunchrush get scaledobject lunchrush-worker

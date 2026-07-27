@@ -1,21 +1,21 @@
 # O que quebra a seguir (tier 2)
 
-1. **Identidade de GPS compartilhada entre entregadores.** O LunchRush usa
-   um único caller (`lunchrush`) para autenticar toda a ingestão de GPS,
+1. **Identidade de GPS compartilhada entre entregadores.** O LoadGen usa
+   um único caller (`loadgen`) para autenticar toda a ingestão de GPS,
    então o rate limit por caller vira, na prática, um rate limit
    compartilhado entre "entregadores" simulados que deveriam ser
    independentes. Em produção, cada entregador teria seu próprio token, e
    o rate limit por caller faria sentido isolado por entregador. Isso não
    é um bug do rate limit: é uma simplificação do simulador que ficou
    visível assim que a concorrência subiu. Ver
-   `lunchrush-tier-2-rate-limit-compartilhado.md`.
+   `loadgen-tier-2-rate-limit-compartilhado.md`.
 2. **SSE não escala horizontalmente.** O broker é em memória, por
    processo (ver ADR 0004). Uma segunda réplica do `delivery-api` não
    compartilha assinantes com a primeira. Isso é aceitável com uma réplica
    só, que é o caso do tier 2, e vira bloqueador explícito no tier 3.
 3. **Nenhuma medição de saturação do pool de conexões sob concorrência
    real alta.** O baseline de carga usa poucos VUs (5) ou concorrência
-   moderada do LunchRush (até 15). Falta um cenário de stress ou
+   moderada do LoadGen (até 15). Falta um cenário de stress ou
    breakpoint que empurre o pool do PostgreSQL e do Redis até o limite.
 4. **Token sem revogação.** Um JWT válido continua válido até expirar (1h),
    mesmo que o segredo administrativo mude de dono ou o caller devesse

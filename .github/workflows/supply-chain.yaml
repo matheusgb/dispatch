@@ -10,7 +10,7 @@ on:
     branches: [master]
   schedule:
     - cron: "0 6 * * 1"
-  workflow_dispatch: {}
+  workflow_lunchrush: {}
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
       matrix:
         service:
           - delivery-api
-          - dispatch-worker
+          - lunchrush-worker
           - tracking-ingest
           - tracking-projector
           - notification-worker
@@ -36,7 +36,7 @@ jobs:
           file: deploy/compose/Dockerfile.${{ matrix.service }}
           push: false
           load: true
-          tags: dispatch-${{ matrix.service }}:ci
+          tags: lunchrush-${{ matrix.service }}:ci
 
       - name: instala syft
         uses: anchore/sbom-action/download-syft@v0
@@ -45,7 +45,7 @@ jobs:
 
       - name: gera SBOM (SPDX)
         run: |
-          syft dispatch-${{ matrix.service }}:ci -o spdx-json > ${{ matrix.service }}-sbom.spdx.json
+          syft lunchrush-${{ matrix.service }}:ci -o spdx-json > ${{ matrix.service }}-sbom.spdx.json
 
       - name: scan com grype
         uses: anchore/scan-action@v6

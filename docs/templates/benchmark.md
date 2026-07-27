@@ -6,7 +6,7 @@ referência.
 ## Cenário
 
 O que foi exercitado (endpoint, fluxo completo, ferramenta de carga: k6,
-LunchRush), contra qual ambiente (local, docker compose, kind).
+LoadGen), contra qual ambiente (local, docker compose, kind).
 
 ## Configuração
 

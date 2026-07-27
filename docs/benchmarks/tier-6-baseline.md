@@ -12,7 +12,7 @@ salvo indicação contrária explícita.
 ## 1. Artefato: mesmo digest nos dois stacks
 
 ```
-$ docker inspect dispatch-delivery-api-1 --format '{{.Image}}'
+$ docker inspect lunchrush-delivery-api-1 --format '{{.Image}}'
 sha256:e3c37da8c260f47e852ffc5734cf1bdf9537a1ff6282b86b476eb096addcfa43
 $ docker inspect cloudb-delivery-api-1 --format '{{.Image}}'
 sha256:e3c37da8c260f47e852ffc5734cf1bdf9537a1ff6282b86b476eb096addcfa43
@@ -94,7 +94,7 @@ distantes — ver `docs/adr/0023` para a discussão completa.
 ## 6. Dependência oculta revelada
 
 Ver `docs/benchmarks/tier-6-portability/shared-dependency-transcript.txt`:
-remover a imagem `dispatch-delivery-api` do daemon Docker local (depois de
+remover a imagem `lunchrush-delivery-api` do daemon Docker local (depois de
 parar todos os containers que a referenciavam, nos dois stacks) faz
 `cloud-b` falhar ao recriar seu container com `pull access denied`. A
 dependência oculta real desta configuração é o processo de build/registry
@@ -104,7 +104,7 @@ ou rede, que já são duplicados e isolados por stack.
 ## Ambiente
 
 - host: máquina compartilhada única (não duas máquinas/regiões reais);
-- Docker Engine local, dois projetos compose (`dispatch` = cloud-a,
+- Docker Engine local, dois projetos compose (`lunchrush` = cloud-a,
   `cloudb` = cloud-b), redes Docker separadas;
 - Postgres 17-alpine, Redis 8-alpine, Redpanda v24.3.1, LocalStack 3.8.1,
   Terraform com provider `hashicorp/aws` 5.100.0, k6 (versão do sistema),

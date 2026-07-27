@@ -11,7 +11,7 @@
    sessão futura, com a máquina livre de outras cargas simultâneas para
    isolar a variável.
 
-2. **O pool de couriers do LunchRush satura antes das entregas
+2. **O pool de couriers do LoadGen satura antes das entregas
    completarem, sob concorrência alta.** Uma tentativa de soak com 2000
    ordens, 60 couriers e concorrência 30 produziu 1521 erros "nenhum
    entregador do pool ficou livre" — não é uma dupla atribuição nem uma
@@ -23,7 +23,7 @@
    isso para "dataset, concorrência, duração" de cada cenário; fica
    registrado aqui como o número concreto que quebrou primeiro.
 
-3. **Um único dispatch shard testado, não vários.** O roadmap é
+3. **Um único lunchrush shard testado, não vários.** O roadmap é
    explícito: uma única linha de fence por célula seria hot key, e o
    número de shards por célula precisa vir de benchmark de contenção,
    não de suposição. `internal/fencing` só foi exercitado com um shard
@@ -31,19 +31,19 @@
    para dimensionar capacidade). Falta: benchmark de retries OCC e
    distribuição de carga entre N shards.
 
-4. **Failover não foi exercitado com o LunchRush gerando carga ao mesmo
+4. **Failover não foi exercitado com o LoadGen gerando carga ao mesmo
    tempo.** O teste de fencing prova a propriedade de segurança sob
    concorrência controlada em teste de integração; o runbook de
-   failover ainda não foi coordenado com uma execução do LunchRush
+   failover ainda não foi coordenado com uma execução do LoadGen
    simulando tráfego real durante a promoção — o "failover no pior
    momento possível" que o roadmap pede para o simulador.
 
-5. **Partição control plane / data plane não modelada no LunchRush.**
+5. **Partição control plane / data plane não modelada no LoadGen.**
    Implementada no TLA+ (implicitamente, via `knownTokens` permitindo
    tokens antigos) e coberta pelo teste de fencing (writer sem epoch
    atual = writer "particionado" da autoridade), mas não cabeada como
-   uma flag de rede virtual do LunchRush em si. Toxiproxy já cobre esse
-   tipo de falha nos tiers 2-4; integrá-lo ao LunchRush especificamente
+   uma flag de rede virtual do LoadGen em si. Toxiproxy já cobre esse
+   tipo de falha nos tiers 2-4; integrá-lo ao LoadGen especificamente
    para separar o tráfego de controle (fencing) do tráfego de dados
    (GPS/lifecycle) fica como extensão futura.
 

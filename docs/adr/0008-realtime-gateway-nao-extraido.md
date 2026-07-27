@@ -18,14 +18,14 @@ duas HPAs monitorando perfis diferentes.
 ## Alternativas consideradas
 
 - **Extrair já, seguindo o diagrama do roadmap ao pé da letra:** rejeitada.
-  O princípio do próprio roadmap (`dispatch.md`, "Princípio central de
+  O princípio do próprio roadmap (`lunch-rush.md`, "Princípio central de
   evolução") exige uma limitação medida ou um experimento de aprendizagem
   explícito antes de adicionar um deployable. Nenhum dos dois existe ainda
   aqui: seria copiar a arquitetura do diagrama final sem o motivo.
 
 ## Consequências
 
-- se um teste de carga futuro (LunchRush ou k6) mostrar que muitas conexões
+- se um teste de carga futuro (LoadGen ou k6) mostrar que muitas conexões
   SSE abertas degradam a latência de ingestão de posição no mesmo processo,
   isso vira o gatilho para a extração, com número e relatório, não com
   "porque o diagrama já previa";

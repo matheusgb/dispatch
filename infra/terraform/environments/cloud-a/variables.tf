@@ -7,13 +7,13 @@ variable "localstack_endpoint" {
 variable "receipts_bucket_name" {
   description = "Nome do bucket S3 de comprovantes de entrega em cloud-a."
   type        = string
-  default     = "dispatch-cloud-a-receipts"
+  default     = "lunchrush-cloud-a-receipts"
 }
 
 variable "jwt_secret_name" {
   description = "Nome do segredo do JWT no Secrets Manager de cloud-a."
   type        = string
-  default     = "dispatch/cloud-a/jwt-secret"
+  default     = "lunchrush/cloud-a/jwt-secret"
 }
 
 variable "jwt_secret_value" {

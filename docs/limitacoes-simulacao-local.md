@@ -1,7 +1,7 @@
 # Limitações da simulação local
 
 Este projeto não usa conta AWS real nem nenhum provedor de nuvem pago. A
-partir do tier 4, o roadmap original em `dispatch.md` pede EKS, MSK, Aurora
+partir do tier 4, o roadmap original em `lunch-rush.md` pede EKS, MSK, Aurora
 DSQL, DynamoDB Global Tables, AWS FIS e um segundo provedor de nuvem. Nada
 disso é criado de verdade aqui. Este documento registra, tier por tier, o
 que foi simulado localmente com bibliotecas maduras e o que não tem
@@ -26,7 +26,7 @@ cedo demais, mas porque o próprio roadmap pede Kafka e `kind` local
 | Peça do roadmap | Substituição local | Nota |
 | --- | --- | --- |
 | Kafka (backbone de eventos) | Redpanda v24.3.1 | mesmo protocolo Kafka; `kafka-go` fala com os dois sem diferença de código |
-| Kubernetes local | `kind` (cluster próprio, nome `dispatch`, para não colidir com o do edge) | idêntico ao que o tier 4 usa antes de qualquer serviço gerenciado entrar |
+| Kubernetes local | `kind` (cluster próprio, nome `lunchrush`, para não colidir com o do edge) | idêntico ao que o tier 4 usa antes de qualquer serviço gerenciado entrar |
 
 Quando o tier 4 trocar Redpanda por "MSK" e o `kind` local por "EKS", a
 diferença registrada na tabela abaixo é sobre o que o **serviço gerenciado
@@ -66,7 +66,7 @@ respondendo 200 a cada tentativa). O recurso foi removido do módulo
 O chart `kedacore/keda` instalado (KEDA 2.20) declara suporte formal a
 partir do Kubernetes 1.33; o `kind` deste laboratório roda 1.31
 (`kindest/node:v1.31.0`). O `helm install` avisa isso explicitamente e o
-`ScaledObject` funcionou corretamente na prática (escalou `dispatch-worker`
+`ScaledObject` funcionou corretamente na prática (escalou `lunchrush-worker`
 de 0 a 3 réplicas por lag real do consumer group, ver ADR 0014), mas o
 combo não é o que a documentação oficial do KEDA testa.
 
@@ -102,13 +102,13 @@ deixaram de ser pendência).
 
 | Peça do roadmap | Substituição local | O que se perde |
 | --- | --- | --- |
-| Múltiplas células, cada uma com seu próprio compute e dados | duas células lógicas no mesmo `docker compose` (`deploy/compose/cells.yml`): `delivery-api` próprio por célula, banco PostgreSQL lógico próprio (`dispatch_cell_a`/`b`), mas o **mesmo processo PostgreSQL físico** e a mesma rede Docker | isolamento lógico de dados (provado: uma entrega de uma célula nunca existe na outra), não isolamento físico de hardware, rede, processo de banco ou provedor — o teste de noisy neighbor (`docs/benchmarks/tier-5-cells/`) mediu o vazamento real (p95 de uma célula sobe ~1,7x quando a outra é saturada), não escondeu |
-| Aurora DSQL como autoridade de fencing multi-região | PostgreSQL local single-node com o mesmo desenho de `dispatch_fences` e `active_assignments` (`internal/fencing`), sem replicação geográfica (ADR 0018) | sem consistência forte entre regiões reais; sem medir latência real de OCC entre regiões; a autoridade roda em um único nó local, único ponto de falha que Aurora DSQL não teria |
+| Múltiplas células, cada uma com seu próprio compute e dados | duas células lógicas no mesmo `docker compose` (`deploy/compose/cells.yml`): `delivery-api` próprio por célula, banco PostgreSQL lógico próprio (`lunchrush_cell_a`/`b`), mas o **mesmo processo PostgreSQL físico** e a mesma rede Docker | isolamento lógico de dados (provado: uma entrega de uma célula nunca existe na outra), não isolamento físico de hardware, rede, processo de banco ou provedor — o teste de noisy neighbor (`docs/benchmarks/tier-5-cells/`) mediu o vazamento real (p95 de uma célula sobe ~1,7x quando a outra é saturada), não escondeu |
+| Aurora DSQL como autoridade de fencing multi-região | PostgreSQL local single-node com o mesmo desenho de `lunchrush_fences` e `active_assignments` (`internal/fencing`), sem replicação geográfica (ADR 0018) | sem consistência forte entre regiões reais; sem medir latência real de OCC entre regiões; a autoridade roda em um único nó local, único ponto de falha que Aurora DSQL não teria |
 | DynamoDB Global Tables como diretório de roteamento | mapa estático `cell_id -> URL` carregado de variável de ambiente no `cmd/cellrouter` (ADR 0019) | sem replicação multi-região real, sem o modelo de conflito eventual documentado pela AWS, sem descoberta dinâmica (o diretório é fixo no start, não se atualiza sozinho) |
 | MSK Replicator (Kafka cross-region) | não implementado nesta sessão: cada célula usa o mesmo Redpanda compartilhado do `docker compose`, sem replicação assíncrona entre células | nenhuma prova de replicação de log entre células/regiões; `event_id` global e deduplicação cross-region citados no roadmap não foram exercitados |
 | TLA+ e model checking | TLA+ real, executado com o TLC (2.19), mutation test real com contraexemplo capturado. Isso **não é uma simulação**: é a mesma ferramenta que seria usada contra a AWS | nenhuma perda: a especificação formal não depende de infraestrutura. Espaço de estados pequeno de propósito (2 writers, 1 shard, 1086 estados) — não modela contenção entre múltiplos shards nem N > 2 células |
 | Latência real entre regiões | não simulada com números inventados; qualquer latência citada é rotulada como Premissa, nunca como Medido | nenhum número de latência inter-região deste repositório pode ser citado como medição real |
-| Simulador determinístico com "milhões de operações" | LunchRush estendido com rede/relógio virtuais, reprodutibilidade provada (dois runs idênticos, mesma seed, relatórios byte a byte iguais), soak reduzido documentado em `docs/benchmarks/tier-5-baseline.md` com o volume real alcançado | ordens de grandeza abaixo de "mais de 100 milhões de eventos em 24 horas" (meta original do roadmap para AWS real); a redução e o número real estão declarados, nunca extrapolados |
+| Simulador determinístico com "milhões de operações" | LoadGen estendido com rede/relógio virtuais, reprodutibilidade provada (dois runs idênticos, mesma seed, relatórios byte a byte iguais), soak reduzido documentado em `docs/benchmarks/tier-5-baseline.md` com o volume real alcançado | ordens de grandeza abaixo de "mais de 100 milhões de eventos em 24 horas" (meta original do roadmap para AWS real); a redução e o número real estão declarados, nunca extrapolados |
 | Soak de 24h / 100M eventos | soak reduzido nesta máquina compartilhada, duração e volume documentados como medidos, não como a meta original | RPO/RTO/throughput sob 24h contínuas de carga real nunca foram observados; qualquer extrapolação linear seria uma alegação não testada |
 
 ## Tier 6: portabilidade entre provedores
@@ -119,7 +119,7 @@ deixaram de ser pendência).
 | Egress, custo de transferência entre clouds | não medido; qualquer valor citado é rotulado como Premissa | nenhum custo real de rede entre provedores é produzido aqui |
 | Matriz de portabilidade | preenchida com evidência de contrato real nos dois stacks: mesmo digest, `k6 run loadtest/k6/smoke.js` com 0% de erro nos dois, `go test -tags=integration -race` completo passando nos dois bancos, `pg_dump`/`pg_restore` real entre os dois Postgres, dois roots Terraform aplicados e destruídos contra dois LocalStack independentes — ver `docs/tier-6-matriz-portabilidade.md` | prova portabilidade de contrato e formato, não prova portabilidade de infraestrutura gerenciada real; a linha de Kafka da matriz continua sem prova de replicação cross-stack (cada Redpanda foi populado de forma independente, não por cópia real de um para o outro) |
 | Autoridade de fencing multi-região (Aurora DSQL) promovendo entre provedores | o mesmo `internal/fencing` do tier 5, sem alteração de protocolo, promovendo entre dois Postgres **fisicamente separados** (um por stack), via `cmd/cloudfailover` e um `pg_dump`/`pg_restore` real orquestrando a transferência de dados entre eles | RTO (~11,5s nesta execução) e RPO (5 assignments perdidos numa janela de 0,58s) medidos, não estimados, mas dominados por overhead de laboratório (banco pequeno, processo manual), não generalizáveis para um banco de produção real nem para latência real entre provedores geograficamente distantes; a promoção depende de um backup ter sido tirado a tempo, não de replicação contínua — ver ADR 0023 |
-| Dependência compartilhada oculta entre "clouds" | testada de verdade: remover a imagem `dispatch-delivery-api` do daemon Docker (depois de parar todos os containers que a referenciavam nos dois stacks) faz `cloud-b` falhar ao recriar seu container com `pull access denied` | a dependência real revelada não é rede, banco ou Kafka (já duplicados e isolados por stack) — é o processo de build/registry de imagem, único no laboratório. Não testado: uma configuração com registry por provedor, que eliminaria esse acoplamento |
+| Dependência compartilhada oculta entre "clouds" | testada de verdade: remover a imagem `lunchrush-delivery-api` do daemon Docker (depois de parar todos os containers que a referenciavam nos dois stacks) faz `cloud-b` falhar ao recriar seu container com `pull access denied` | a dependência real revelada não é rede, banco ou Kafka (já duplicados e isolados por stack) — é o processo de build/registry de imagem, único no laboratório. Não testado: uma configuração com registry por provedor, que eliminaria esse acoplamento |
 | Terraform separado por provedor | dois roots (`infra/terraform/environments/cloud-a`, `.../cloud-b`), cada um com `.tfstate` próprio, aplicados contra dois LocalStack independentes (portas 4566 e 14566) e destruídos com sucesso | mesma limitação de LocalStack community do tier 4 (ADR 0012): só S3 e Secrets Manager/KMS, nenhum módulo para EKS/MSK/RDS/ElastiCache |
 
 ## O que continua sendo prova real, mesmo local
@@ -130,7 +130,7 @@ deixaram de ser pendência).
 - Kubernetes via `kind` usa o mesmo `kubectl` e os mesmos manifests que um
   EKS real aceitaria; probes, HPA, NetworkPolicy e rollout são exercitados
   de verdade, só o control plane gerenciado é que não existe;
-- a especificação TLA+ e o simulador determinístico (LunchRush) não perdem
+- a especificação TLA+ e o simulador determinístico (LoadGen) não perdem
   nada por serem locais: são ferramentas de verificação, não de
   infraestrutura;
 - o protocolo de fencing promovendo entre dois bancos PostgreSQL

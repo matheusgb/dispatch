@@ -6,7 +6,7 @@ Ver `docs/adr/0019-arquitetura-celular-local.md` para a decisão. Ambiente:
 delivery-api-cell-b cellrouter` (`cmd/cellrouter`), duas células lógicas
 (`cell-a` na porta 8094, `cell-b` na porta 8095, roteador em 8096), cada
 uma com seu próprio `delivery-api` e seu próprio banco
-(`dispatch_cell_a`/`dispatch_cell_b`) no mesmo container PostgreSQL do
+(`lunchrush_cell_a`/`lunchrush_cell_b`) no mesmo container PostgreSQL do
 resto do laboratório.
 
 ## 1. Roteamento sem full-scan (Medido)
@@ -30,11 +30,11 @@ referência completa fica documentada, não fingida, ver
 ## 2. Isolamento de dados real (Medido, não descrito)
 
 ```sql
--- banco dispatch_cell_a
+-- banco lunchrush_cell_a
 select count(*) from deliveries where id = '28d82676-...' /* criada em cell-b */;
 --  0
 
--- banco dispatch_cell_b
+-- banco lunchrush_cell_b
 select count(*) from deliveries where id = '76e40624-...' /* criada em cell-a */;
 --  0
 ```
@@ -42,7 +42,7 @@ select count(*) from deliveries where id = '76e40624-...' /* criada em cell-a */
 Cada entrega existe fisicamente em uma única tabela `deliveries`, de um
 único banco, nunca nos dois: não é uma coluna `cell_id` filtrando uma
 tabela compartilhada, são bancos PostgreSQL distintos (`CREATE DATABASE
-dispatch_cell_a`, `dispatch_cell_b`), cada um migrado e operado pelo seu
+lunchrush_cell_a`, `lunchrush_cell_b`), cada um migrado e operado pelo seu
 próprio processo `delivery-api`.
 
 ## 3. Noisy neighbor (Medido)

@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/matheusgb/dispatch/internal/fencing"
+	"github.com/matheusgb/lunch-rush/internal/fencing"
 )
 
-// Invariante do tier 5/6: "epoch nunca regride" (ver docs/tla/DispatchFencing.tla
+// Invariante do tier 5/6: "epoch nunca regride" (ver docs/tla/LunchRushFencing.tla
 // e docs/adr/0018-fencing-lease-e-epoch.md). test/integration/fencing_test.go
 // cobre a rejeição do writer com epoch velho (TestFencing_StaleEpochWriterNeverWrites)
 // e a disputa concorrente por promoção (TestFencing_TwoConcurrentPromotesOnlyOneEpochWins);

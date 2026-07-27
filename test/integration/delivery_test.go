@@ -7,8 +7,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/matheusgb/dispatch/internal/delivery"
-	"github.com/matheusgb/dispatch/internal/platform/idempotency"
+	"github.com/matheusgb/lunch-rush/internal/delivery"
+	"github.com/matheusgb/lunch-rush/internal/platform/idempotency"
 )
 
 func TestDelivery_CreateIsIdempotent(t *testing.T) {

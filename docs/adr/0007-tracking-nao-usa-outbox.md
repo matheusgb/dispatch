@@ -5,13 +5,13 @@
 O outbox garante que um evento só existe se o efeito de domínio que ele
 descreve foi commitado no PostgreSQL primeiro. Isso tem um custo: uma
 escrita no banco antes de qualquer publicação. GPS é o caminho de escrita
-mais quente do sistema (dispatch.md, roadmap do tier 3), e cada ponto de
+mais quente do sistema (lunch-rush.md, roadmap do tier 3), e cada ponto de
 GPS não é, por si só, uma decisão de negócio que precise de durabilidade
 transacional imediata como uma atribuição precisa.
 
 ## Decisão
 
-`tracking-ingest` publica direto no Kafka (`dispatch.tracking-positions`),
+`tracking-ingest` publica direto no Kafka (`lunchrush.tracking-positions`),
 sem escrever no PostgreSQL e sem outbox. A confirmação ao cliente
 (`202 Accepted`) só acontece depois do ack durável do Kafka
 (`RequiredAcks: all` em `internal/platform/kafka.Producer`). Se o broker

@@ -4,7 +4,7 @@
 # roots Terraform separados, cada um com seu próprio estado local
 # (terraform.tfstate neste diretório, não compartilhado com cloud-a) —
 # "cada provedor terá bootstrap, estado Terraform, módulos e ambiente
-# efêmero próprios" (dispatch.md, tier 6).
+# efêmero próprios" (lunch-rush.md, tier 6).
 
 terraform {
   required_version = ">= 1.9"

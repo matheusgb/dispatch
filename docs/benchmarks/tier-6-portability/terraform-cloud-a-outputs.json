@@ -2,16 +2,16 @@
   "jwt_secret_arn": {
     "sensitive": false,
     "type": "string",
-    "value": "arn:aws:secretsmanager:us-east-1:000000000000:secret:dispatch/cloud-a/jwt-secret-eiZeXU"
+    "value": "arn:aws:secretsmanager:us-east-1:000000000000:secret:lunchrush/cloud-a/jwt-secret-eiZeXU"
   },
   "jwt_secret_name": {
     "sensitive": false,
     "type": "string",
-    "value": "dispatch/cloud-a/jwt-secret"
+    "value": "lunchrush/cloud-a/jwt-secret"
   },
   "receipts_bucket_name": {
     "sensitive": false,
     "type": "string",
-    "value": "dispatch-cloud-a-receipts"
+    "value": "lunchrush-cloud-a-receipts"
   }
 }

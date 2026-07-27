@@ -1,4 +1,4 @@
-# dispatch
+# lunch-rush
 
 Uma plataforma de última milha precisa encontrar um entregador, acompanhar o
 deslocamento e manter cliente e operação informados mesmo sob disputa
@@ -13,7 +13,7 @@ simulado com ferramentas locais maduras e o que não tem equivalente honesto.
 
 ```text
 roadmap completo: tiers 1-6, tag tier-6.0.0
-Clientes -> delivery-api ---------> outbox -> Kafka -> dispatch-worker (escala por lag via KEDA)
+Clientes -> delivery-api ---------> outbox -> Kafka -> lunchrush-worker (escala por lag via KEDA)
                                                      -> notification-worker
 Entregador -> tracking-ingest ----> Kafka -> tracking-projector -> Postgres + Redis
 delivery-api -> S3 (comprovante) e Secrets Manager (JWT), via Terraform contra LocalStack
@@ -21,8 +21,8 @@ delivery-api -> S3 (comprovante) e Secrets Manager (JWT), via Terraform contra L
 Tier 5: Global entry -> cellrouter (X-Cell-ID, sem consultar banco)
                             +-- cell-a: delivery-api próprio, banco lógico próprio
                             +-- cell-b: delivery-api próprio, banco lógico próprio
-        internal/fencing: dispatch_fences (epoch/lease) + active_assignments,
-        verificado formalmente em docs/tla/DispatchFencing.tla (TLC real)
+        internal/fencing: lunchrush_fences (epoch/lease) + active_assignments,
+        verificado formalmente em docs/tla/LunchRushFencing.tla (TLC real)
 
 Tier 6: cloud-a (docker-compose.yml) e cloud-b (docker-compose.cloud-b.yml),
         dois stacks independentes, mesmo digest de imagem OCI nos dois,
@@ -48,7 +48,7 @@ Tier 6: cloud-a (docker-compose.yml) e cloud-b (docker-compose.cloud-b.yml),
    pendente.
 10. Durante dúvida de ownership entre células, uma nova atribuição falha
     de forma segura — agora verificado formalmente (TLA+/TLC,
-    `docs/tla/DispatchFencing.tla`) e em código
+    `docs/tla/LunchRushFencing.tla`) e em código
     (`internal/fencing`, ADR 0018).
 
 Detalhes e a partir de qual tier cada invariante entra:
@@ -62,8 +62,8 @@ Detalhes e a partir de qual tier cada invariante entra:
 | outbox: crash simulado entre ack e marca      | republica; inbox deduplica o efeito | `docs/adr/0009-latencia-do-outbox-relay.md` |
 | poison pill                                   | vai para a DLQ, partição não trava | `docs/benchmarks/chaos-tier-3.md` |
 | réplicas de consumer além das partições       | ociosas, confirmado com 5 membros/3 atribuídos | `docs/adr/0010-consumer-replicas-limitadas-por-particoes.md` |
-| LunchRush distribuído, golden path            | 0 erros, 19/20 concluídas, GPS ponta a ponta | `docs/benchmarks/lunchrush-tier-3-golden.md` |
-| validação via docker compose                  | 0 erros, mesma lógica em container | `docs/benchmarks/lunchrush-tier-3-docker-compose.md` |
+| LoadGen distribuído, golden path            | 0 erros, 19/20 concluídas, GPS ponta a ponta | `docs/benchmarks/loadgen-tier-3-golden.md` |
+| validação via docker compose                  | 0 erros, mesma lógica em container | `docs/benchmarks/loadgen-tier-3-docker-compose.md` |
 | validação via kind (Kubernetes real)          | jornada completa + GPS via port-forward | `docs/passo-a-passo/tier-3.md` |
 | latência `created -> offered` isolada         | ~3,8s (dois hops pelo relay do outbox) | `docs/adr/0009-latencia-do-outbox-relay.md` |
 | chaos: Redis fora do ar                       | 0 falhas de leitura, latência maior | `docs/benchmarks/chaos-tier-2.md` |
@@ -81,7 +81,7 @@ Detalhes e a partir de qual tier cada invariante entra:
 | TLA+ real (TLC) do protocolo de fencing       | 0 violação em 1086 estados; mutation test acha contraexemplo em 4 passos | `docs/adr/0017-tla-real-para-o-protocolo-de-fencing.md` |
 | fencing multi-shard: writer com epoch velho   | 20 tentativas concorrentes, 0 sucessos, 20 rejeições | `docs/adr/0018-fencing-lease-e-epoch.md` |
 | arquitetura celular local + noisy neighbor    | isolamento de dados provado; p95 sobe 14ms→24ms sob célula vizinha saturada | `docs/benchmarks/tier-5-cells/README.md` |
-| LunchRush com rede/relógio virtuais           | 2 execuções, mesma seed, relatórios idênticos; 171/171 clock skew seguros | `docs/benchmarks/tier-5-lunchrush-netfault/README.md` |
+| LoadGen com rede/relógio virtuais           | 2 execuções, mesma seed, relatórios idênticos; 171/171 clock skew seguros | `docs/benchmarks/tier-5-loadgen-netfault/README.md` |
 | soak reduzido (tier 5)                        | 2000 ordens, 1800 concluídas, 5295 posições de GPS, 0 violação | `docs/benchmarks/tier-5-baseline.md` |
 | mesmo digest OCI em cloud-a e cloud-b          | confirmado por `docker inspect`, sem rebuild em cloud-b | `docs/adr/0021-objetivo-e-limites-da-estrategia-multi-cloud.md` |
 | contrato HTTP/dados nos dois provedores        | k6 smoke 0% erro e `go test -race` de integração `ok` nos dois bancos | `docs/tier-6-matriz-portabilidade.md` |
@@ -100,7 +100,7 @@ docker compose --profile app --profile observability up -d --build
 ```
 
 Sobe PostgreSQL, Redis, Redpanda, `dependency-simulator`, os cinco
-serviços (`delivery-api`, `dispatch-worker`, `tracking-ingest`,
+serviços (`delivery-api`, `lunchrush-worker`, `tracking-ingest`,
 `tracking-projector`, `notification-worker`), Prometheus e Grafana
 (`http://localhost:3000`, login anônimo local). Portas publicadas fora do
 padrão (`8083`, `8084`, `8085`, `8092`) evitam colidir com outro laboratório
@@ -111,8 +111,8 @@ o Kustomize do tier 3, que continua em `deploy/kubernetes/` como
 histórico congelado):
 
 ```bash
-make helm-up   # cria o cluster kind "dispatch", builda as imagens e instala o chart Helm
-make keda-up   # instala o KEDA e liga o ScaledObject de dispatch-worker (escala por lag)
+make helm-up   # cria o cluster kind "lunchrush", builda as imagens e instala o chart Helm
+make keda-up   # instala o KEDA e liga o ScaledObject de lunchrush-worker (escala por lag)
 make kind-down # destrói o cluster
 ```
 
@@ -131,7 +131,7 @@ make test              # unitários
 make test-race         # com o detector de corrida
 make test-integration  # requer Postgres, Redis e Redpanda locais, já migrados
 make load-smoke        # k6, requer o delivery-api no ar
-make load-lunchrush    # LunchRush, requer o delivery-api no ar
+make load-loadgen    # LoadGen, requer o delivery-api no ar
 ```
 
 Para o TLA+ real (tier 5, ver ADR 0017):
@@ -140,7 +140,7 @@ Para o TLA+ real (tier 5, ver ADR 0017):
 curl -sSfL https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar \
   -o docs/tla/tools/tla2tools.jar
 java -jar docs/tla/tools/tla2tools.jar -workers 4 \
-  -config docs/tla/DispatchFencing.cfg docs/tla/DispatchFencing.tla
+  -config docs/tla/LunchRushFencing.cfg docs/tla/LunchRushFencing.tla
 ```
 
 Para a arquitetura celular local (tier 5, ver ADR 0019):
@@ -159,7 +159,7 @@ docker compose --profile app build
 docker compose --profile app up -d
 docker compose -f docker-compose.cloud-b.yml --profile app up -d
 # confirma o mesmo digest:
-docker inspect dispatch-delivery-api-1 --format '{{.Image}}'
+docker inspect lunchrush-delivery-api-1 --format '{{.Image}}'
 docker inspect cloudb-delivery-api-1 --format '{{.Image}}'
 ```
 
@@ -180,7 +180,7 @@ Tier 4 com os itens A-D do escopo concluídos, com evidência real (ver
 - **Helm no lugar de Kustomize** (ADR 0013): um chart parametrizado
   substitui os cinco manifests quase idênticos do tier 3, validado com
   `helm lint` e deploy real no `kind`;
-- **KEDA por lag de consumer group** (ADR 0014): `dispatch-worker` escala
+- **KEDA por lag de consumer group** (ADR 0014): `lunchrush-worker` escala
   de 0 a 6 réplicas por lag real do Kafka, não por CPU;
 - **Chaos reduzido** (`docs/benchmarks/chaos-tier-4.md`): quatro
   cenários contra infraestrutura real (pod kill, falha do Redis,
@@ -211,7 +211,7 @@ correspondente, estão documentados com honestidade em
 
 Concluído com evidência real (ver `docs/benchmarks/tier-5-baseline.md`):
 
-- **TLA+ real** (ADR 0017): `docs/tla/DispatchFencing.tla`, TLC 2.19,
+- **TLA+ real** (ADR 0017): `docs/tla/LunchRushFencing.tla`, TLC 2.19,
   0 violação em 1086 estados; mutation test remove a guarda de epoch e o
   TLC acha um contraexemplo real em 4 passos (writer auto-recuperado
   escreve com token obsoleto);
@@ -222,7 +222,7 @@ Concluído com evidência real (ver `docs/benchmarks/tier-5-baseline.md`):
   `X-Cell-ID` sem consultar banco; duas células com isolamento de dados
   real provado; noisy neighbor medido (p95 14ms → 24ms sob célula vizinha
   saturada), rotulado como isolamento lógico, não físico;
-- **LunchRush com rede/relógio virtuais** (ADR 0020): drop, atraso,
+- **LoadGen com rede/relógio virtuais** (ADR 0020): drop, atraso,
   duplicação, reorder, crash de sessão e clock skew, reaproveitando os
   handlers reais do domínio; reprodutibilidade provada (duas execuções,
   mesma seed, relatórios idênticos); soak reduzido de 2000 ordens sem
@@ -230,9 +230,9 @@ Concluído com evidência real (ver `docs/benchmarks/tier-5-baseline.md`):
 
 Não entregue neste tier, por escolha de escopo, não esquecimento (mapa
 completo: `docs/benchmarks/tier-5-what-breaks-next.md`): benchmark de
-contenção entre múltiplos dispatch shards, failover coordenado com carga
-do LunchRush ao mesmo tempo, partição control/data plane cabeada como
-flag do LunchRush, e qualquer coisa que dependa de multi-região AWS real
+contenção entre múltiplos lunchrush shards, failover coordenado com carga
+do LoadGen ao mesmo tempo, partição control/data plane cabeada como
+flag do LoadGen, e qualquer coisa que dependa de multi-região AWS real
 (Aurora DSQL, MSK Replicator, latência entre regiões reais, soak de
 24h/100M eventos).
 
@@ -280,7 +280,7 @@ contas reais, RPO próximo de zero contra infraestrutura gerenciada real).
 
 ## Roadmap fechado: o que este projeto prova, e o que fica como limite conhecido
 
-Os seis tiers de `dispatch.md` (monólito modular → produto local operável
+Os seis tiers de `lunch-rush.md` (monólito modular → produto local operável
 → sistema distribuído com Kafka → plataforma "AWS" simulada em três zonas
 → células multi-região com fencing e TLA+ → portabilidade entre "clouds")
 estão implementados, testados e taggeados (`tier-1.0.0` a `tier-6.0.0`).

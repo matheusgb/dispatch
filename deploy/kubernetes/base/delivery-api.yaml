@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: delivery-api
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   replicas: 2
   selector:
@@ -13,7 +13,7 @@ spec:
       labels:
         app: delivery-api
     spec:
-      serviceAccountName: dispatch-workload
+      serviceAccountName: lunchrush-workload
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
@@ -29,16 +29,16 @@ spec:
               app: delivery-api
       containers:
         - name: delivery-api
-          image: dispatch-delivery-api:kind
+          image: lunchrush-delivery-api:kind
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
               name: http
           envFrom:
             - configMapRef:
-                name: dispatch-config
+                name: lunchrush-config
             - secretRef:
-                name: dispatch-secrets
+                name: lunchrush-secrets
           env:
             - name: HTTP_ADDR
               value: ":8080"
@@ -71,7 +71,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: delivery-api
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   selector:
     app: delivery-api
@@ -84,7 +84,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: delivery-api
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   minAvailable: 1
   selector:
@@ -95,7 +95,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: delivery-api
-  namespace: dispatch
+  namespace: lunchrush
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

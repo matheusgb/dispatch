@@ -15,10 +15,10 @@ pool de conexões `pgxpool` sem `MaxConns` explícito.
   (~596 mil/s), nenhuma falha, nenhum panic.
 - `go test -race ./...` e `go test -tags=integration -race ./test/integration/...`:
   sem data race relatada.
-- `TestDispatch_TwentyConcurrentAssignsProduceExactlyOne`: 20 tentativas
+- `TestLunchRush_TwentyConcurrentAssignsProduceExactlyOne`: 20 tentativas
   concorrentes de aceite para a mesma entrega e o mesmo entregador produzem
   exatamente 1 atribuição, sempre, em execução repetida.
-- `TestDispatch_CourierCannotHoldTwoActiveDeliveries`: a constraint única de
+- `TestLunchRush_CourierCannotHoldTwoActiveDeliveries`: a constraint única de
   `deliveries.courier_id` impede a segunda atribuição ativa ao mesmo
   entregador.
 
@@ -34,7 +34,7 @@ pool de conexões `pgxpool` sem `MaxConns` explícito.
 | Benchmark | Resultado | Alocações |
 | --- | --- | --- |
 | `BenchmarkDelivery_Create` (criação idempotente completa) | 1,098 ms/op | 1748 B/op, 42 allocs/op |
-| `BenchmarkDispatch_Assign` (aceite condicional) | 0,970 ms/op | 570 B/op, 17 allocs/op |
+| `BenchmarkLunchRush_Assign` (aceite condicional) | 0,970 ms/op | 570 B/op, 17 allocs/op |
 
 ## Gargalo localizado
 
@@ -53,15 +53,15 @@ configurado no benchmark. Isso é esperado e coerente com a decisão do ADR
 medida. O próximo limite conhecido está descrito em
 `tier-1-what-breaks-next.md`.
 
-## LunchRush (carga semântica de caixa preta)
+## LoadGen (carga semântica de caixa preta)
 
-`go run ./cmd/lunchrush` contra o `delivery-api` real, com jornada completa
+`go run ./cmd/loadgen` contra o `delivery-api` real, com jornada completa
 (criar, marcar pronta, oferecer, aceitar/recusar/expirar, coletar, concluir):
 
-- `lunchrush-tier-1.md`: 200 ordens, pool de 20 entregadores, concorrência 20.
+- `loadgen-tier-1.md`: 200 ordens, pool de 20 entregadores, concorrência 20.
   161 concluídas, 20 recusadas, 19 expiradas, **0 erros**. 40 repetições de
   chave de idempotência testadas, todas devolveram o mesmo ID.
-- `lunchrush-tier-1-pool-escasso.md`: mesmo cenário com pool de apenas 5
+- `loadgen-tier-1-pool-escasso.md`: mesmo cenário com pool de apenas 5
   entregadores para 150 ordens em concorrência 30, para forçar disputa real.
   240 tentativas de atribuição rejeitadas por entregador ocupado, todas
   absorvidas por retry no pool; 22 ordens esgotaram o pool de retry sem
