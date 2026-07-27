@@ -27,7 +27,7 @@ jobs:
           - tracking-projector
           - notification-worker
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: build imagem local
         uses: docker/build-push-action@v6

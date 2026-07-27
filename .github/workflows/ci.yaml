@@ -17,7 +17,7 @@ jobs:
   lint-vet-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-go@v5
         with:
@@ -57,7 +57,7 @@ jobs:
           - dependency-simulator
           - migrate
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: build image (sem push, só valida o Dockerfile)
         uses: docker/build-push-action@v6
