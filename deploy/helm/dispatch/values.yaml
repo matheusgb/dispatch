@@ -78,6 +78,10 @@ workloads:
     # era feito em deploy/kubernetes/base.
     readinessPath: /readyz
     pdb: true
+    priorityClass: dispatch-critical
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
     resources:
       requests: { cpu: 50m, memory: 32Mi }
       limits: { memory: 64Mi }
@@ -96,6 +100,10 @@ workloads:
     envSecret: false
     readinessProbe: false
     pdb: false
+    priorityClass: dispatch-critical
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
     resources:
       requests: { cpu: 50m, memory: 32Mi }
       limits: { memory: 64Mi }
@@ -109,6 +117,10 @@ workloads:
     envSecret: true
     readinessProbe: true
     pdb: false
+    priorityClass: dispatch-critical
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
     resources:
       requests: { cpu: 50m, memory: 32Mi }
       limits: { memory: 64Mi }
@@ -124,6 +136,10 @@ workloads:
     envSecret: true
     readinessProbe: true
     pdb: true
+    priorityClass: dispatch-critical
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
     resources:
       requests: { cpu: 50m, memory: 32Mi }
       limits: { memory: 64Mi }
@@ -136,6 +152,10 @@ workloads:
     envSecret: false
     readinessProbe: false
     pdb: false
+    priorityClass: dispatch-standard
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
     resources:
       requests: { cpu: 25m, memory: 32Mi }
       limits: { memory: 64Mi }

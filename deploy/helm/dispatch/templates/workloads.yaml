@@ -11,6 +11,18 @@ metadata:
     {{- include "dispatch.labels" $root | nindent 4 }}
 spec:
   replicas: {{ $wl.replicas }}
+  # maxSurge/maxUnavailable deliberados (não o default implícito 25%/25%):
+  # zero indisponibilidade durante rollout normal para os workloads com
+  # readinessProbe real (um pod novo só entra no Service quando pronto,
+  # maxUnavailable 0 garante que nenhum pod saudável sai antes disso);
+  # dispatch-worker/notification-worker (sem readinessProbe de negócio,
+  # só reagem a evento) toleram uma indisponibilidade temporária maior em
+  # troca de um rollout mais rápido. Ver docs/runbooks/rollout-e-rollback.md.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ $wl.rollingUpdate.maxSurge | default "1" }}
+      maxUnavailable: {{ $wl.rollingUpdate.maxUnavailable | default "0" }}
   selector:
     matchLabels:
       app: {{ $name }}
@@ -21,6 +33,7 @@ spec:
     spec:
       serviceAccountName: {{ $root.Values.serviceAccount.name }}
       automountServiceAccountToken: false
+      priorityClassName: {{ $wl.priorityClass | default "dispatch-standard" }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
