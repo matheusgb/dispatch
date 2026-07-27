@@ -1,9 +1,9 @@
 # Runbook: rollout progressivo e rollback (Helm/kind)
 
 Fecha a lacuna de "deploy de versão com regressão controlada" do roadmap
-de forma proporcional: em vez de instalar ArgoCD/Flux completo
-(desproporcional para este laboratório, ver seção final), este runbook
-demonstra rollout progressivo real do `Deployment` do Kubernetes, com
+com o mecanismo que sustenta rollout/rollback com ou sem GitOps por cima
+(ver seção final para a evidência real de ArgoCD, provada à parte): este
+runbook demonstra rollout progressivo real do `Deployment` do Kubernetes, com
 `maxSurge`/`maxUnavailable` deliberados no chart Helm
 (`deploy/helm/dispatch/templates/workloads.yaml`, ver
 `docs/adr` relacionado às PriorityClass no mesmo commit), e um rollback
@@ -141,16 +141,16 @@ originais nunca saíram do `Service` porque `maxUnavailable: 0` proíbe
 isso, e o `rollout undo` recuperou o `Deployment` para a revisão anterior
 sem intervenção manual além do comando em si.
 
-## GitOps completo (ArgoCD/Flux): fora de alcance deste passe
+## GitOps completo (ArgoCD): provado à parte
 
-Instalar o operador do ArgoCD de verdade neste cluster `kind` de um nó
-só, compartilhado com outro laboratório (`edge-lab`) na mesma máquina, foi
-avaliado e descartado por tempo/memória disponível nesta sessão — não por
-ser sobre AWS ou custo de nuvem (ArgoCD roda em qualquer cluster, inclusive
-local). O ArgoCD acrescentaria: sincronização automática a partir de um
-repositório Git (este drill foi acionado manualmente via `kubectl`),
-histórico de sync visível numa UI, e reversão automática por health check
-declarado. O mecanismo de rollback em si (`Deployment` + `ReplicaSet` do
-Kubernetes) é o mesmo por baixo, com ou sem ArgoCD — o que este runbook
-prova (rollout seguro, rollback funcional, `PriorityClass` real) continua
-valendo com ou sem GitOps por cima.
+Uma rodada anterior descartou instalar o ArgoCD de verdade "por
+tempo/memória". Sessão seguinte tentou até o fim: ArgoCD real instalado
+no cluster `kind` "dispatch", sincronizando `deploy/helm/dispatch` a
+partir do repositório Git público, com sync e correção de drift reais
+provados por comando (não só descritos). Ver `docs/adr/0026-gitops-com-argocd-real.md`
+e `docs/runbooks/gitops-argocd.md`. O mecanismo de rollback em si
+(`Deployment` + `ReplicaSet` do Kubernetes) é o mesmo por baixo, com ou
+sem ArgoCD — o que este runbook prova (rollout seguro, rollback
+funcional, `PriorityClass` real) continua valendo com ou sem GitOps por
+cima; ArgoCD não substitui `scripts/helm-deploy.sh` como caminho padrão
+de deploy deste laboratório (ver ADR 0026 para o porquê).
