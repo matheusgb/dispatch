@@ -1,0 +1,79 @@
+name: supply-chain
+
+# SBOM (syft), scan de vulnerabilidades (grype) e assinatura local (cosign)
+# das imagens de cmd/. Reaproveita os mesmos comandos já validados
+# manualmente no tier 4 (ver docs/adr/0016-sbom-scan-e-assinatura-de-imagem.md
+# e docs/benchmarks/supply-chain/). Roda no push para master e uma vez por
+# semana para pegar CVE novo em dependência que não mudou.
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  sbom-and-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - delivery-api
+          - dispatch-worker
+          - tracking-ingest
+          - tracking-projector
+          - notification-worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build imagem local
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/compose/Dockerfile.${{ matrix.service }}
+          push: false
+          load: true
+          tags: dispatch-${{ matrix.service }}:ci
+
+      - name: instala syft
+        uses: anchore/sbom-action/download-syft@v0
+        with:
+          syft-version: v1.49.0
+
+      - name: gera SBOM (SPDX)
+        run: |
+          syft dispatch-${{ matrix.service }}:ci -o spdx-json > ${{ matrix.service }}-sbom.spdx.json
+
+      - name: scan com grype
+        uses: anchore/scan-action@v6
+        id: grype
+        with:
+          sbom: ${{ matrix.service }}-sbom.spdx.json
+          fail-build: false
+          severity-cutoff: critical
+
+      - name: upload SBOM e relatório
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-${{ matrix.service }}
+          path: |
+            ${{ matrix.service }}-sbom.spdx.json
+            ${{ steps.grype.outputs.sarif }}
+          retention-days: 30
+
+  cosign-sign:
+    runs-on: ubuntu-latest
+    needs: sbom-and-scan
+    # A assinatura com chave keyless real (OIDC do GitHub Actions) só faz
+    # sentido contra um registry real (ECR, GHCR); este laboratório não
+    # publica imagem em nenhum registry público a partir do CI. O fluxo de
+    # assinatura com chave local já foi provado manualmente (ADR 0016); este
+    # job fica como documentação executável do próximo passo quando houver
+    # um registry real, sem rodar de fato (evita gerar entrada real no
+    # transparency log público do Rekor a partir de CI automático).
+    if: false
+    steps:
+      - run: echo "cosign sign fica documentado no ADR 0016, não executado em CI ainda"
