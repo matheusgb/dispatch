@@ -10,6 +10,16 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// cacheOpTimeout limita cada chamada ao Redis, independente do contexto do
+// chamador. Achado real via chaos/local/redis-unavailable.sh (docs/adr/0003):
+// com o hostname "redis" impossível de resolver (container parado), o pool
+// de conexões do go-redis tentava discar 5 vezes com backoff crescente,
+// travando a requisição HTTP por ~10s até o WriteTimeout do servidor matar
+// a conexão sem nunca responder ao cliente — pior que um 500 rápido, e
+// justamente o oposto do que o fallback para PostgreSQL promete. Um teto
+// curto por operação garante que o fallback é rápido de verdade.
+const cacheOpTimeout = 750 * time.Millisecond
+
 // Cache é a projeção descartável da última posição em Redis: cache-aside na
 // leitura, escrita best-effort depois de um commit confirmado no
 // PostgreSQL. O PostgreSQL continua sendo a única fonte de verdade; perder
@@ -35,7 +45,9 @@ func cacheKey(deliveryID string) string {
 // propagar o erro do cache para o chamador: o cache é acelerador, não
 // dependência dura.
 func (c *Cache) CurrentPosition(ctx context.Context, deliveryID string) (Position, error) {
-	raw, err := c.rdb.Get(ctx, cacheKey(deliveryID)).Result()
+	getCtx, cancel := context.WithTimeout(ctx, cacheOpTimeout)
+	raw, err := c.rdb.Get(getCtx, cacheKey(deliveryID)).Result()
+	cancel()
 	switch {
 	case err == nil:
 		var p Position
@@ -77,7 +89,9 @@ func (c *Cache) populate(ctx context.Context, p Position) {
 	if err != nil {
 		return
 	}
-	if err := c.rdb.Set(ctx, cacheKey(p.DeliveryID), b, c.ttl).Err(); err != nil {
+	setCtx, cancel := context.WithTimeout(ctx, cacheOpTimeout)
+	defer cancel()
+	if err := c.rdb.Set(setCtx, cacheKey(p.DeliveryID), b, c.ttl).Err(); err != nil {
 		c.logger.Warn("redis indisponível para atualizar cache de tracking", "error", err)
 	}
 }
