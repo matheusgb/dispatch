@@ -3,7 +3,7 @@ name: ci
 # Lint, vet, testes de unidade com corrida de dados e build de todos os
 # binários de cmd/. Não sobe Postgres/Kafka: os testes de integração (que
 # exigem docker compose) rodam só localmente por enquanto, ver
-# docs/adr/0024-ci-sem-testes-de-integracao-em-github-actions.md.
+# docs/adr/0024-ci-github-actions-e-onde-ficam-os-templates.md.
 on:
   push:
     branches: [master]

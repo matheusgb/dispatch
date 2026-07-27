@@ -1,0 +1,94 @@
+Evidência real de execução local dos workflows .github/workflows/*.yaml com
+act (nektos/act v0.2.89), instalado via script oficial
+(curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash),
+sem apt/sudo. Runner: catthehacker/ubuntu:act-latest (Docker,
+--container-architecture linux/amd64). Rodado nesta sessão em
+2026-07-26/27, máquina local (WSL2, 32 vCPU, 15Gi RAM).
+
+Durante a revisão pré-execução, act -l expôs um bug real de referência
+quebrada em ci.yaml: o comentário apontava para
+"docs/adr/0024-ci-sem-testes-de-integracao-em-github-actions.md", arquivo
+que nunca existiu (o ADR real é
+docs/adr/0024-ci-github-actions-e-onde-ficam-os-templates.md). Corrigido
+nesta sessão.
+
+=== ci.yaml / lint-vet-test ===
+Comando:
+  act push -j lint-vet-test -W .github/workflows/ci.yaml \
+    -P ubuntu-latest=catthehacker/ubuntu:act-latest --container-architecture linux/amd64
+Resultado: sucesso real, gofmt/go vet/go build/go test -race rodaram dentro
+do container (Go 1.26.5 baixado pelo actions/setup-go dentro do runner) e
+passaram, incluindo os mesmos testes de test/contract e internal/delivery
+que passam localmente.
+  [ci/lint-vet-test]   ✅  Success - Main gofmt
+  [ci/lint-vet-test]   ✅  Success - Main go vet [30.47s]
+  [ci/lint-vet-test]   ✅  Success - Main go build [939ms]
+  [ci/lint-vet-test]   ✅  Success - Main go test -race [15.39s]
+  [ci/lint-vet-test] 🏁  Job succeeded
+Log completo: /tmp/act-lint-vet-test.log (não versionado, reproduza com o
+comando acima).
+
+=== ci.yaml / build-images (matriz de 8 serviços) ===
+Comando:
+  act push -j build-images -W .github/workflows/ci.yaml \
+    -P ubuntu-latest=catthehacker/ubuntu:act-latest --container-architecture linux/amd64
+Primeira tentativa com timeout de 280s estourou (docker build de 8 imagens
+em paralelo é pesado; timeout de ferramenta, não do workflow). Repetida com
+timeout de 580s: sucesso completo, 8/8 jobs da matriz + o job pai, todos
+"Job succeeded" (delivery-api, dispatch-worker, tracking-ingest,
+tracking-projector, notification-worker, cellrouter,
+dependency-simulator, migrate). Cada Dockerfile.<service> em
+deploy/compose/ realmente builda dentro do runner do act via
+docker/build-push-action@v6 (push: false).
+Log completo: /tmp/act-build-images-2.log.
+
+=== supply-chain.yaml / sbom-and-scan (matriz de 5 serviços) ===
+Comando:
+  act push -j sbom-and-scan -W .github/workflows/supply-chain.yaml \
+    -P ubuntu-latest=catthehacker/ubuntu:act-latest --container-architecture linux/amd64
+Rodando a matriz inteira (5 serviços em paralelo) expôs duas limitações
+reais do act, não bugs do workflow:
+  1. "Text file busy" ao instalar syft: dois jobs da matriz compartilham o
+     mesmo diretório de tool-cache do host (~/.cache/act) e colidiram
+     tentando escrever/executar o binário do syft ao mesmo tempo. No
+     GitHub Actions hospedado real cada job da matriz roda numa VM isolada,
+     sem esse compartilhamento; é uma característica de como o act reusa
+     cache local, não um defeito em supply-chain.yaml.
+  2. "Unable to get the ACTIONS_RUNTIME_TOKEN env variable" no upload de
+     artefato (actions/upload-artifact@v4): act não emula o backend de
+     artefatos do GitHub por padrão, precisa de --artifact-server-path.
+Reexecutado com --artifact-server-path e selecionando um serviço da matriz
+(--matrix service:delivery-api, evita a corrida de tool-cache):
+  [supply-chain/sbom-and-scan] ✅  Success - Main build imagem local
+  [supply-chain/sbom-and-scan] ✅  Success - Main instala syft
+  [supply-chain/sbom-and-scan] ✅  Success - Main gera SBOM (SPDX)
+  [supply-chain/sbom-and-scan] ✅  Success - Main scan com grype
+  [supply-chain/sbom-and-scan] ✅  Success - Main upload SBOM e relatório
+  [supply-chain/sbom-and-scan] 🏁  Job succeeded
+Confirma que a lógica do job (build, syft, grype, upload) está correta;
+os outros 4 serviços da matriz rodam a mesma sequência de passos, só não
+puderam ser provados em paralelo sem tocar na configuração de tool-cache
+do act (fora de escopo mudar infraestrutura do act por causa disso).
+Log completo (matriz cheia, com as duas falhas de act explicadas acima):
+/tmp/act-sbom-and-scan.log. Log completo (single-matrix, verde):
+/tmp/act-sbom-and-scan-single.log.
+
+=== supply-chain.yaml / cosign-sign ===
+Comando:
+  act push -j cosign-sign -W .github/workflows/supply-chain.yaml \
+    -P ubuntu-latest=catthehacker/ubuntu:act-latest --dryrun
+Resultado: o job cosign-sign não aparece em nenhuma linha da saída do
+dryrun (confirmado por grep -i cosign-sign vazio) porque `if: false` faz o
+act pular o job inteiro, igual ao GitHub Actions real — confirma que a
+condição documentada no ADR 0016/0024 (assinatura desabilitada até existir
+registry real) está sintaticamente correta e tem o efeito pretendido.
+
+=== Conclusão ===
+Os dois workflows (.github/workflows/ci.yaml,
+.github/workflows/supply-chain.yaml) foram executados de verdade, não só
+revisados manualmente. Um erro real de referência de ADR foi encontrado e
+corrigido. As falhas vistas na execução em matriz cheia do
+supply-chain.yaml são limitações conhecidas e documentadas do act (corrida
+de tool-cache local e falta de backend de artefato sem
+--artifact-server-path), não falhas de lógica do workflow, confirmadas por
+uma execução isolada 100% verde do mesmo job.

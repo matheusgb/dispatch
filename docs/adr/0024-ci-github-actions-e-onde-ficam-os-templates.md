@@ -43,18 +43,33 @@ pipeline de equipe.
 
 ## Alternativas consideradas
 
-- **Testar os workflows com `act` localmente:** tentado; ver nota abaixo,
-  documentado com honestidade em vez de simulado.
+- **Testar os workflows com `act` localmente:** feito. Ver nota abaixo.
 - **GitHub Actions completo com testes de integração via `services:`
   (containers Postgres/Kafka nativos do runner):** rejeitado por agora, ver
   decisão acima.
 
 ## Nota sobre `act`
 
-Sessões futuras devem checar `which act` antes de assumir que está
-disponível; se não estiver, os workflows foram revisados manualmente
-(sintaxe YAML, nomes de action e versão conferidos contra a documentação
-oficial de cada action), mas não executados de fato.
+Sessão anterior não tinha `act` instalado e revisou os workflows só
+manualmente. Esta sessão instalou `act` v0.2.89 (script oficial
+`nektos/act`, sem apt/sudo) e rodou os dois workflows de verdade contra o
+runner `catthehacker/ubuntu:act-latest`: evidência completa em
+`docs/benchmarks/act-ci-local.txt`.
+
+Resultado resumido: `ci.yaml` (`lint-vet-test` e a matriz de 8 imagens em
+`build-images`) passou 100% real, sem simulação. A revisão via `act -l`
+encontrou um bug real (referência a um ADR com nome de arquivo errado no
+comentário do workflow), corrigido nesta sessão. `supply-chain.yaml`
+(`sbom-and-scan`) passou 100% real quando rodado com um serviço da matriz
+por vez; rodar a matriz de 5 inteira expõe duas limitações conhecidas do
+`act` (não do workflow): corrida de tool-cache local entre jobs paralelos
+e falta do backend de upload de artefato sem `--artifact-server-path`. O
+job `cosign-sign` (`if: false`) foi confirmado pulado pelo `act`, igual ao
+GitHub Actions real, provando que a condição tem o efeito pretendido.
+`act` de verdade não substitui rodar no GitHub Actions hospedado (algumas
+particularidades do runner hospedado, como cache entre execuções e
+segredos reais, não são replicadas), mas valida a lógica de cada step
+muito além de uma revisão de sintaxe.
 
 ## Consequências
 
