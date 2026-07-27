@@ -11,6 +11,10 @@
 //
 // Requer DATABASE_URL apontando para um banco já migrado, igual a
 // test/integration/ (ver `make invariant-test`).
+//
+// Compartilha banco/tabelas com test/integration/ e test/contract/: não
+// rode os três na mesma invocação de `go test` sem `-p 1`, ver o
+// comentário equivalente em test/integration/main_test.go.
 package invariant
 
 import (

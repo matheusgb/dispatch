@@ -8,6 +8,10 @@
 //
 // Requer DATABASE_URL apontando para um banco já migrado (ver
 // `make contract-test`).
+//
+// Compartilha banco/tabelas com test/integration/ e test/invariant/: não
+// rode os três na mesma invocação de `go test` sem `-p 1`, ver o
+// comentário equivalente em test/integration/main_test.go.
 package contract
 
 import (

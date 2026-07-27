@@ -3,6 +3,16 @@
 // Package integration testa os repositórios e serviços contra um PostgreSQL
 // real. Requer DATABASE_URL apontando para um banco já migrado (ver
 // docker-compose.yml e cmd/migrate, ou `make test-integration`).
+//
+// Importante: este pacote compartilha o mesmo banco (e as mesmas tabelas
+// truncadas em cada teste) com test/invariant/ e test/contract/. Rodar
+// `go test` com os três na mesma invocação (ex: `./test/...`) faz o Go
+// testar os pacotes em paralelo por padrão, e um pacote truncando a tabela
+// no meio do teste de outro produz falhas espúrias (constraint violation,
+// "no rows", contagem errada) que não são bug de produto. Rode cada
+// suite na sua própria invocação de `go test` (é o que `make
+// test-integration`, `make invariant-test` e `make contract-test` já
+// fazem) ou com `go test -p 1` se precisar rodar as três juntas.
 package integration
 
 import (
