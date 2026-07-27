@@ -13,7 +13,7 @@ checker de verdade, não só escrever a especificação como texto.
 Especificação em `docs/tla/LunchRushFencing.tla` (constantes: `Writers`,
 `Deliveries`, `Couriers`, `MaxEpoch`), TLC real (`tla2tools.jar` 2.19,
 baixado localmente, `docs/tla/tools/`, fora do controle de versão por ser
-um binário de terceiros de 2,2MB — ver `.gitignore`), executado com
+um binário de terceiros de 2,2MB, ver `.gitignore`), executado com
 `java -jar tla2tools.jar -workers 4 -config LunchRushFencing.cfg
 LunchRushFencing.tla`.
 
@@ -24,7 +24,7 @@ LunchRushFencing.tla`.
   `owner_region`, `lease_until`);
 - **`knownTokens`**: o conjunto de pares `<<writer, epoch>>` que cada
   writer já teve alguma vez. Cresce a cada `Promote`, mas tokens antigos
-  nunca são removidos — isso modela mensagem atrasada, retry com estado
+  nunca são removidos: isso modela mensagem atrasada, retry com estado
   velho e principalmente **auto-recuperação**: o mesmo writer perde a
   lease e volta a ser dono com um epoch maior, mas ainda pode ter uma
   escrita em trânsito com o epoch anterior;
@@ -46,7 +46,7 @@ LunchRushFencing.tla`.
   cai, o sistema volta a ter lease válida, **sob duas premissas
   explícitas** documentadas no próprio módulo: fairness fraca de `Promote`
   por writer, e capacidade de promoção não esgotada (`epoch < MaxEpoch`,
-  um teto artificial deste modelo finito — o `epoch` real do banco é um
+  um teto artificial deste modelo finito: o `epoch` real do banco é um
   `bigint`, nunca esgota).
 
 ### Evidência real
@@ -82,7 +82,7 @@ antiga em trânsito.
 ## O que o modelo não cobre
 
 - múltiplos shards simultâneos (contenção entre shards é medida no
-  benchmark de código, não aqui — um shard já basta para as propriedades
+  benchmark de código, não aqui: um shard já basta para as propriedades
   de segurança do protocolo);
 - o conteúdo do evento de outbox (fora do escopo do protocolo de
   ownership);
@@ -117,7 +117,7 @@ antiga em trânsito.
 - o espaço de estados é pequeno de propósito (2 writers, 2 entregas, 2
   couriers, `MaxEpoch = 4`, 1086 estados) para caber nesta máquina
   compartilhada em segundos; não prova nada sobre 3+ shards, cardinalidade
-  maior de couriers/entregas, ou tempos reais de lease — isso é papel do
+  maior de couriers/entregas, ou tempos reais de lease: isso é papel do
   simulador determinístico (ADR do LoadGen estendido) e do benchmark de
   código (`internal/fencing`).
 

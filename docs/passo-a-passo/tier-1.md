@@ -28,7 +28,7 @@ lunchrush-postgres-1   postgres:17-alpine   Up (healthy)
 ```
 
 **O que roda por baixo:** [docker-compose.yml](../../docker-compose.yml) sobe
-um único PostgreSQL, sem réplica e sem limite de recursos: o tier 1 não
+um único PostgreSQL, sem réplica e sem limite de recursos. O tier 1 não
 distribui nada ainda.
 
 ---
@@ -71,9 +71,9 @@ ok  	github.com/matheusgb/lunch-rush/internal/delivery	0.03s
 [internal/delivery/state.go](../../internal/delivery/state.go) declara o
 grafo de transições permitidas. O teste em
 [state_test.go](../../internal/delivery/state_test.go) gera 100 mil
-sequências aleatórias de 8 passos cada e verifica que nenhuma transição fora
-do grafo é aceita, e que nenhum estado terminal (`delivered`, `canceled`)
-regride.
+sequências aleatórias de 8 passos cada e verifica duas coisas: que nenhuma
+transição fora do grafo é aceita, e que nenhum estado terminal (`delivered`,
+`canceled`) regride.
 
 ---
 
@@ -94,13 +94,13 @@ ok  	github.com/matheusgb/lunch-rush/test/integration	0.12s
 **O que roda por baixo:** o teste dispara 20 goroutines chamando
 `lunchrush.Service.Assign` para a mesma entrega e o mesmo entregador ao mesmo
 tempo. Cada chamada executa um `UPDATE ... WHERE state = 'offered'`
-([internal/lunchrush/lunchrush.go](../../internal/lunchrush/lunchrush.go)): a
-primeira transação a comitar move a linha para fora de `offered`, e todas as
-outras encontram zero linhas para atualizar. Não existe lock explícito, o
+([internal/lunchrush/lunchrush.go](../../internal/lunchrush/lunchrush.go)).
+A primeira transação a comitar move a linha para fora de `offered`, e todas
+as outras encontram zero linhas para atualizar. Não existe lock explícito, o
 próprio PostgreSQL serializa a disputa.
 
-Rode com `-race` para confirmar a ausência de corrida na aplicação (o banco
-já cobre a corrida de dados; o `-race` cobre o código Go em volta):
+Rode com `-race` para confirmar a ausência de corrida na aplicação. O banco
+já cobre a corrida de dados, o `-race` cobre o código Go em volta:
 
 ```bash
 export DATABASE_URL="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable"
@@ -154,7 +154,7 @@ criar uma segunda entrega.
 [internal/platform/idempotency/idempotency.go](../../internal/platform/idempotency/idempotency.go)
 procura a chave `(order-service, create_delivery, pedido-1)` no ledger antes
 de inserir a entrega. Se já existir com o mesmo hash de payload, devolve a
-resposta gravada; se existir com outro hash, devolve conflito (`409`) sem
+resposta gravada. Se existir com outro hash, devolve conflito (`409`) sem
 tocar no estado.
 
 ---
@@ -180,9 +180,9 @@ curl -s -X POST http://localhost:8080/couriers/<COURIER_ID>/availability \
 
 ## Passo 8: oferecer e atribuir a entrega
 
-O tier 1 ainda não tem o `lunchrush-worker` que move `created` para
-`ready_for_lunchrush` automaticamente; isso é feito manualmente aqui para
-observar o fluxo.
+O tier 1 ainda não tem o `lunchrush-worker`, que move `created` para
+`ready_for_lunchrush` automaticamente. Por isso esse passo é feito à mão
+aqui, só para observar o fluxo.
 
 ```bash
 psql "$DATABASE_URL" -c "UPDATE deliveries SET state='ready_for_lunchrush' WHERE id='<DELIVERY_ID>'"
@@ -230,10 +230,10 @@ go tool pprof -top -nodecount=12 /tmp/lunchrush-cpu.pprof
 ```
 
 **O que você vai ver:** os números reproduzidos em
-[docs/benchmarks/tier-1-baseline.md](../benchmarks/tier-1-baseline.md), e no
-`pprof`, a maior parte do tempo em `runtime.futex` e chamadas de syscall do
-protocolo do PostgreSQL, não em código da aplicação: o gargalo é o round
-trip de rede, não CPU.
+[docs/benchmarks/tier-1-baseline.md](../benchmarks/tier-1-baseline.md). No
+`pprof`, a maior parte do tempo aparece em `runtime.futex` e em chamadas de
+syscall do protocolo do PostgreSQL, não em código da aplicação. O gargalo é
+o round trip de rede, não CPU.
 
 ---
 
@@ -282,9 +282,9 @@ go run ./cmd/loadgen -base-url http://localhost:8080 \
   -orders 150 -couriers 5 -concurrency 30 -seed 999 -out loadgen-contencao
 ```
 
-Os `erros` desse segundo cenário não são bug: são o pool de retry se
-esgotando porque a demanda passou a oferta, o que é o comportamento
-correto sob a invariante 2. Ver
+Os `erros` desse segundo cenário não são bug. São o pool de retry se
+esgotando porque a demanda passou a oferta. Esse é o comportamento correto
+sob a invariante 2. Ver
 [docs/benchmarks/loadgen-tier-1-pool-escasso.md](../benchmarks/loadgen-tier-1-pool-escasso.md).
 
 ---
@@ -294,6 +294,6 @@ correto sob a invariante 2. Ver
 O tier 1 prova uma coisa difícil e pequena: vinte tentativas concorrentes
 para o mesmo entregador resultam em exatamente uma atribuição, sem lock
 explícito, só com um `UPDATE` condicional e uma constraint única do
-PostgreSQL. A idempotência usa a mesma ideia, um ledger dentro da mesma
-transação do efeito. Nada disso precisou de Kafka, Redis ou orquestração:
-o modelo relacional, bem usado, já resolve a disputa que importa neste tier.
+PostgreSQL. A idempotência usa a mesma ideia: um ledger dentro da mesma
+transação do efeito. Nada disso precisou de Kafka, Redis ou orquestração.
+O modelo relacional, bem usado, já resolve a disputa que importa neste tier.

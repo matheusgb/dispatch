@@ -23,7 +23,7 @@ O `cellrouter` decide o backend só pelo cabeçalho `X-Cell-ID`, sem
 consultar nenhum banco (`cmd/cellrouter/main.go`): é um mapa estático
 `cell_id -> URL` carregado de variável de ambiente no start, exatamente o
 "diretório pequeno" que o roadmap descreve (aqui sem DynamoDB Global
-Tables, que está fora de alcance sem AWS real — a implementação de
+Tables, que está fora de alcance sem AWS real: a implementação de
 referência completa fica documentada, não fingida, ver
 `docs/limitacoes-simulacao-local.md`).
 
@@ -61,7 +61,7 @@ o p99 da célula B, já que cada célula tem seu próprio processo
 | máx | 20 |
 
 **Durante a sobrecarga (k6, 40 VUs batendo só em cell-a por 22s, 77.568
-requisições, 3.320 req/s, 31,68% de erro — cell-a saturada de propósito):**
+requisições, 3.320 req/s, 31,68% de erro, cell-a saturada de propósito):**
 
 `cell-b`, mesma sonda de 40 requisições sequenciais, rodando ao mesmo
 tempo:
@@ -87,7 +87,7 @@ lógico, não isolamento físico de hardware, rede ou provedor". A prova aqui
 
 - isolamento de rede (as duas células compartilham a mesma rede Docker);
 - isolamento de banco físico (mesmo processo PostgreSQL, bancos lógicos
-  diferentes — um `pg_dump`/restore de uma célula nunca inclui dados da
+  diferentes: um `pg_dump`/restore de uma célula nunca inclui dados da
   outra, mas as duas competem pelo mesmo `shared_buffers` e pela mesma
   CPU);
 - comportamento sob falha total de uma célula (isso é o runbook de

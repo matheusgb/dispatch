@@ -22,13 +22,13 @@ visível e mensurável em vez de mascarada.
 
 ## Alternativas consideradas
 
-- **Reduzir o intervalo do relay para closer a 0 (polling agressivo):**
+- **Reduzir o intervalo do relay para próximo de 0 (polling agressivo):**
   rejeitada por agora. Aumentaria a carga de `SELECT ... FOR UPDATE`-like no
   PostgreSQL proporcionalmente, sem evidência de que a latência atual
   importa para algum SLO real deste laboratório.
 - **Publicar de forma síncrona, no mesmo request que grava o efeito:**
   rejeitada. Isso é exatamente o que o outbox existe para evitar: acoplar a
-  confirmação ao cliente à disponibilidade do broker no meço a operação.
+  confirmação ao cliente à disponibilidade do broker no meio da operação.
 - **LISTEN/NOTIFY do PostgreSQL para acordar o relay sem polling:**
   considerada como melhoria futura, não implementada neste tier por não
   haver evidência de que o polling de 1s seja o gargalo real sob a carga
@@ -36,7 +36,7 @@ visível e mensurável em vez de mascarada.
 
 ## Consequências
 
-- toda automação que dependa do lunchrush-worder avançar uma entrega
+- toda automação que dependa do lunchrush-worker avançar uma entrega
   precisa esperar, não assumir imediatismo: testes e LoadGen fazem polling
   com prazo generoso, nunca uma chamada única seguida de asserção;
 - a latência composta (dois hops de relay) é maior que a latência de um

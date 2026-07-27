@@ -14,7 +14,7 @@ compose; `delivery-api`, `lunchrush-worker`, `tracking-ingest`,
   `TestOutbox_CrashBeforeMarkRepublishesButInboxDedupsEffect`,
   `TestInbox_DedupesRepeatedEventID`: outbox transacional, relay,
   republicação depois de uma falha simulada entre o ack do Kafka e a marca
-  de publicado, e dedup do efeito de negócio pelo inbox — contra um
+  de publicado, e dedup do efeito de negócio pelo inbox, contra um
   Redpanda real, com `-race` limpo.
 - Poison pill: uma mensagem JSON malformada publicada direto no tópico foi
   para `lunchrush.delivery-events.dlq` sem travar a partição; o consumidor

@@ -17,19 +17,19 @@ Implementar o protocolo completo em `internal/fencing`
 serve todo o resto do projeto, não Aurora DSQL. O próprio roadmap já prevê
 essa saída: "se os limites reais do Aurora DSQL não atenderem à
 invariante, o ADR deverá escolher outro store baseado em consenso ou um
-desenho single-primary" — aqui o motivo não é limite técnico do DSQL (que
+desenho single-primary": aqui o motivo não é limite técnico do DSQL (que
 nunca foi testado, por não haver AWS real disponível), é a regra central
 do projeto de nunca usar conta AWS real.
 
 ### Por que isso não enfraquece a prova
 
-A propriedade que importa — um writer com epoch desatualizado nunca
-escreve — não depende de o store ser distribuído entre regiões. Ela
+A propriedade que importa, um writer com epoch desatualizado nunca
+escreve, não depende de o store ser distribuído entre regiões. Ela
 depende de:
 
 1. uma condição atômica de leitura-antes-de-escrita (`WHERE epoch = ? AND
    owner_region = ? AND lease_until > now()`) que só o dono do banco pode
-   satisfazer sem correr risco de leitura suja — PostgreSQL com
+   satisfazer sem correr risco de leitura suja: PostgreSQL com
    `READ COMMITTED` (padrão) já garante isso dentro de uma transação com
    `UPDATE` seguido de `INSERT`, porque o `UPDATE` adquire um lock de linha
    que serializa concorrentes;
@@ -38,7 +38,7 @@ depende de:
 
 Um Aurora DSQL real testaria adicionalmente: latência entre regiões,
 conflitos de OCC entre regiões, e o comportamento do serviço gerenciado
-sob partição de rede real — nenhuma dessas três coisas é o que este ADR
+sob partição de rede real. Nenhuma dessas três coisas é o que este ADR
 está decidindo. Elas ficam registradas como não testadas em
 `docs/limitacoes-simulacao-local.md`, não escondidas.
 
@@ -47,17 +47,17 @@ está decidindo. Elas ficam registradas como não testadas em
 - `lunchrush_fences(shard_id PK, epoch, owner_region, lease_until,
   last_write_token)`: uma linha por lunchrush shard (um shard é um
   subconjunto pequeno de entregas+couriers dentro de uma célula, não a
-  célula inteira — o roadmap é explícito sobre isso para evitar hot key;
+  célula inteira, o roadmap é explícito sobre isso para evitar hot key;
   este laboratório usa um shard só por experimento, o benchmark de
   contenção fica para uma sessão futura com mais shards);
 - `Promote`: só grava por cima de uma lease já expirada (`lease_until <
-  now()`), nunca por cima de uma lease válida — a mesma regra que
+  now()`), nunca por cima de uma lease válida, a mesma regra que
   `docs/tla/LunchRushFencing.tla` chama de `LeaseExpire -> Promote`;
 - `CreateAssignment`: `UPDATE lunchrush_fences SET last_write_token = ...
   WHERE shard_id = ? AND epoch = ? AND owner_region = ? AND lease_until >
   now()` (deve afetar exatamente 1 linha, senão `ErrStaleFence`), depois
   `INSERT INTO active_assignments` (protegido pelas duas unique
-  constraints), depois o evento de outbox, tudo na mesma transação —
+  constraints), depois o evento de outbox, tudo na mesma transação,
   exatamente a sequência do roadmap;
 - `FinishAssignment`: `DELETE ... RETURNING` de `active_assignments` e
   `INSERT` em `assignment_history`, mesma transação.
@@ -93,7 +93,7 @@ está decidindo. Elas ficam registradas como não testadas em
   do projeto).
 - **DynamoDB Global Tables (modo eventual) como autoridade**: rejeitada
   pelo próprio roadmap ("conditional writes são regionais e conflitos
-  convergem depois" — não serve como autoridade forte).
+  convergem depois", não serve como autoridade forte).
 - **Redis com `SETNX`/Redlock como fencing**: não escolhido porque o
   projeto já tem PostgreSQL como fonte de verdade transacional desde o
   tier 1, e introduzir uma segunda tecnologia só para o fencing
@@ -109,7 +109,7 @@ está decidindo. Elas ficam registradas como não testadas em
   limitação central de multi-região documentada em
   `docs/limitacoes-simulacao-local.md`;
 - o dimensionamento de quantos lunchrush shards por célula (para evitar hot
-  key) não foi medido nesta sessão — candidato de
+  key) não foi medido nesta sessão: candidato de
   `docs/benchmarks/tier-5-what-breaks-next.md`.
 
 ## Status

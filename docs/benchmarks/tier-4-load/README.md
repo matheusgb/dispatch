@@ -61,7 +61,7 @@ Kafka usado pelo LoadGen em `--distributed`. Uma tentativa de rodar o
 LoadGen distribuído com 200 ordens/20 de concorrência nesta mesma janela
 mostrou o relay do outbox publicando em lotes de ~100 eventos a cada
 ~1min45s sob a carga combinada com o restante do trabalho desta sessão
-(TLC, SBOM, scans rodando em paralelo na mesma máquina) — sinal de
+(TLC, SBOM, scans rodando em paralelo na mesma máquina): sinal de
 contenção de CPU compartilhada, não do desenho do outbox em si (o mesmo
 padrão já foi provado saudável em isolamento no tier 3/4). Não
 reproduzimos esse número como medição formal porque a máquina estava

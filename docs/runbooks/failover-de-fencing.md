@@ -3,7 +3,7 @@
 Complementa o runbook de backup/recuperação (tier 4) com o failover
 específico da autoridade de ownership do tier 5 (`internal/fencing`, ADR
 0018). Escopo: failover de um lunchrush shard local (PostgreSQL
-single-node), não failover entre regiões AWS reais — ver
+single-node), não failover entre regiões AWS reais: ver
 `docs/limitacoes-simulacao-local.md`.
 
 ## Quando executar
@@ -49,14 +49,14 @@ WHERE shard_id = 'shard-test-1' AND lease_until < now()
 `TestFencing_TwoConcurrentPromotesOnlyOneEpochWins`): 20 tentativas
 concorrentes de promoção no mesmo shard produzem exatamente 1 vencedora,
 sem exceção, sob `-race`. O RTO da promoção em si (tempo entre a UPDATE
-disparar e retornar) é o tempo de uma transação PostgreSQL local — não
+disparar e retornar) é o tempo de uma transação PostgreSQL local, não
 medido separadamente aqui porque é dominado pela latência de rede
 loopback, não pela lógica do protocolo.
 
 ### 4. Writer antigo é rejeitado
 
 Qualquer tentativa de `CreateAssignment` vinda de `region-a` com o epoch
-antigo falha com `ErrStaleFence` antes de qualquer efeito no banco —
+antigo falha com `ErrStaleFence` antes de qualquer efeito no banco:
 **medido**, `TestFencing_StaleEpochWriterNeverWrites`: 20 tentativas
 concorrentes do writer antigo, 0 sucessos, 20 rejeições, confirmado por
 query direta em `active_assignments` (0 linhas com o epoch velho).
@@ -74,11 +74,11 @@ de qual epoch/writer depois do fato.
 | Etapa | RTO |
 | --- | --- |
 | detecção de lease expirada até promoção bem-sucedida | domina o tempo de uma transação PostgreSQL local (sub-milissegundo em loopback); não é o gargalo real |
-| writer antigo rejeitado após a promoção | imediato — a primeira tentativa pós-promoção já falha, não há janela de dupla escrita observada nos testes |
+| writer antigo rejeitado após a promoção | imediato: a primeira tentativa pós-promoção já falha, não há janela de dupla escrita observada nos testes |
 
 Estes números refletem uma autoridade single-node local. Um failover
 real entre regiões AWS somaria a latência de rede entre regiões e a
-convergência do diretório de roteamento — nenhuma das duas está presente
+convergência do diretório de roteamento, nenhuma das duas está presente
 aqui, e nenhum número deste runbook deve ser lido como RTO cross-region.
 
 ## O que este runbook não cobre

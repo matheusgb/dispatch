@@ -13,7 +13,7 @@ pergunta em aberto que este ADR responde antes de qualquer código: dado que
 O próprio roadmap prevê essa saída na seção "O que não entra" do tier 6:
 não promete "equivalência perfeita entre serviços gerenciados" nem "terceiro
 provedor". Só que, no caso deste laboratório, nem o **segundo** provedor
-pode ser uma cloud paga de verdade — é uma restrição adicional deste
+pode ser uma cloud paga de verdade: é uma restrição adicional deste
 projeto, mais rígida que a do roadmap original, e por isso precisa de uma
 decisão explícita, não um desvio silencioso.
 
@@ -28,7 +28,7 @@ principal já existente (`docker-compose.yml`), sem renomear nada dele.
 O objetivo real que essa escolha ainda ensina, dos cinco listados no
 roadmap, é o único que não depende de infraestrutura gerenciada real:
 
-> aprendizado de portabilidade — provar que o mesmo artefato (imagem OCI
+> aprendizado de portabilidade: provar que o mesmo artefato (imagem OCI
 > pelo mesmo digest), os mesmos contratos (schema, migrations, API, eventos)
 > e o mesmo protocolo de autoridade (fencing) funcionam sem alteração
 > quando apontados para um ambiente de execução diferente.
@@ -38,7 +38,7 @@ recuperação diante de indisponibilidade prolongada de um provedor real,
 requisito de residência regional, comparação de custo e capacidade entre
 provedores reais) **não** são o que este laboratório prova. Citá-los como
 prova seria exatamente o "multi-cloud apenas nominal" que a tabela de
-riscos do `lunch-rush.md` already lista como risco a evitar.
+riscos do `lunch-rush.md` já lista como risco a evitar.
 
 ### Por que não é o mesmo experimento do tier 5
 
@@ -48,12 +48,12 @@ muda uma variável que o tier 5 não mudou: duas bases de dados **fisicamente
 separadas**, cada uma no seu próprio container Postgres, sem nenhum
 processo compartilhado entre `cloud-a` e `cloud-b`. Isso é estritamente
 mais realista que o tier 5 no que diz respeito a isolamento físico, mesmo
-sem ser uma cloud real — ver ADR 0023 para o detalhe do failover.
+sem ser uma cloud real. Ver ADR 0023 para o detalhe do failover.
 
 ## Evidência real
 
 - `docker-compose.cloud-b.yml`, serviços sem `build:`, todos usando
-  `image: lunchrush-<serviço>` — o mesmo nome de imagem que
+  `image: lunchrush-<serviço>`, o mesmo nome de imagem que
   `docker compose --profile app build` já produziu para `cloud-a`;
 - confirmado por `docker inspect --format '{{.Image}}'` que o container
   `lunchrush-delivery-api-1` (cloud-a) e `cloudb-delivery-api-1` (cloud-b)
@@ -62,12 +62,12 @@ sem ser uma cloud real — ver ADR 0023 para o detalhe do failover.
   nesta execução), sem rebuild entre os dois;
 - `k6 run loadtest/k6/smoke.js` contra os dois (`BASE_URL=:8083` e
   `BASE_URL=:18083`): 0% de erro nos dois, mesmo cenário, mesma seed de
-  requisição — `docs/benchmarks/tier-6-portability/k6-smoke-cloud-a.json`
+  requisição: `docs/benchmarks/tier-6-portability/k6-smoke-cloud-a.json`
   e `k6-smoke-cloud-b.json`;
 - `go test -tags=integration -race ./test/integration/...` passou
   integralmente contra os dois bancos (`localhost:5432` e `localhost:15432`)
   e os dois brokers Kafka (`localhost:19092` e `localhost:29093`), sem
-  nenhuma alteração de código entre as duas execuções — só a variável de
+  nenhuma alteração de código entre as duas execuções, só a variável de
   ambiente `DATABASE_URL`/`KAFKA_BROKERS` mudou.
 
 ## Alternativas consideradas
@@ -80,7 +80,7 @@ sem ser uma cloud real — ver ADR 0023 para o detalhe do failover.
   rejeitada porque o usuário pediu explicitamente para cobrir o que for
   genuinamente possível, e a maior parte do tier 6 (contratos, matriz,
   fencing cross-provedor, Terraform por provedor) não depende de uma cloud
-  paga de verdade — só a comparação de custo real entre provedores depende,
+  paga de verdade, só a comparação de custo real entre provedores depende,
   e essa parte fica documentada como limitação, não como pretexto para não
   fazer o resto.
 - **Simular `cloud-b` só com Terraform, sem subir containers de aplicação

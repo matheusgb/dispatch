@@ -24,8 +24,8 @@ testar, não um fato medido.
    sob concorrência real, incluindo os cenários com falha injetada (matar o
    processo entre commit e resposta, saturar o pool deliberadamente).
 5. **`ExpireOverdueOffers` não é atômico entre a leitura e a reciclagem.**
-   Entre o `SELECT` que lista IDs vencidos e o `UPDATE` que reciclada cada
-   um, outra rotina pode ter mudado o estado; o código já trata isso
+   Entre o `SELECT` que lista IDs vencidos e o `UPDATE` que recicla cada
+   um, outra rotina pode ter mudado o estado. O código já trata isso
    ignorando `ErrNotOffered`, mas não há teste de duas instâncias do loop
    competindo pela mesma entrega. Isso importa a partir do tier 3, quando
    `tracking-projector` e workers concorrentes existirem de fato.

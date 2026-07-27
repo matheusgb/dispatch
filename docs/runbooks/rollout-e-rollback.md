@@ -82,7 +82,7 @@ error: timed out waiting for the condition
 ### 3. Observação: o rollout trava, o serviço não cai
 
 Com `maxUnavailable: 0`, o Kubernetes nunca derruba um pod saudável antes
-do novo estar pronto — e o novo nunca fica pronto, porque nem sobe:
+do novo estar pronto, e o novo nunca fica pronto, porque nem sobe:
 
 ```
 $ kubectl --context kind-lunchrush -n lunchrush get pods -l app=delivery-api -o wide
@@ -150,7 +150,7 @@ partir do repositório Git público, com sync e correção de drift reais
 provados por comando (não só descritos). Ver `docs/adr/0026-gitops-com-argocd-real.md`
 e `docs/runbooks/gitops-argocd.md`. O mecanismo de rollback em si
 (`Deployment` + `ReplicaSet` do Kubernetes) é o mesmo por baixo, com ou
-sem ArgoCD — o que este runbook prova (rollout seguro, rollback
+sem ArgoCD: o que este runbook prova (rollout seguro, rollback
 funcional, `PriorityClass` real) continua valendo com ou sem GitOps por
 cima; ArgoCD não substitui `scripts/helm-deploy.sh` como caminho padrão
 de deploy deste laboratório (ver ADR 0026 para o porquê).

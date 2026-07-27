@@ -37,7 +37,7 @@ Três classes de estado exigem tratamento diferente na coluna "dados"
   real, registrada em `docs/benchmarks/tier-6-what-breaks-next.md`.
 - **Ledger de assignment (fencing)**: não é "dado que se copia e pronto":
   é a autoridade viva do protocolo. A prova aqui não é cópia de dados, é
-  o protocolo de promoção em si — ADR 0023.
+  o protocolo de promoção em si, ver ADR 0023.
 
 ## Por que "mesmo teste, dois stacks" prova portabilidade de contrato
 

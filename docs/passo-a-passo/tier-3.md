@@ -50,10 +50,10 @@ chamada sua, chega em `offered` sozinha em alguns segundos.
 1 segundo. [cmd/lunchrush-worker](../../cmd/lunchrush-worker) consome
 `lunchrush.delivery-events`, vê `delivery.created`, chama
 `MarkReadyForLunchRush`, que grava outro evento
-(`delivery.ready_for_lunchrush`); o mesmo worker consome esse evento e
-chama `Offer`. Dois hops pelo relay, cada um até 1s, mais o processamento:
-por isso uma entrega isolada leva uns 3-4 segundos até `offered` (ver ADR
-0009).
+(`delivery.ready_for_lunchrush`). O mesmo worker consome esse evento e
+chama `Offer`. São dois hops pelo relay, cada um levando até 1s, mais o
+tempo de processamento. Por isso uma entrega isolada leva uns 3-4
+segundos até `offered` (ver ADR 0009).
 
 ---
 
@@ -80,8 +80,8 @@ docker compose logs notification-worker --tail 20
 [cmd/notification-worker](../../cmd/notification-worker) consome os
 mesmos eventos de lifecycle, filtra por `delivery.assigned` e
 `delivery.delivered`, e chama o `dependency-simulator` de forma
-assíncrona. Se você chamasse `/assign` no tier 2, a notificação acontecia
-dentro do mesmo request; aqui ela saiu do caminho síncrono.
+assíncrona. No tier 2, chamar `/assign` disparava a notificação dentro
+do mesmo request. Aqui ela saiu do caminho síncrono.
 
 ---
 
@@ -117,8 +117,9 @@ docker exec lunchrush-redpanda-1 rpk topic consume lunchrush.delivery-events.dlq
 docker compose ps lunchrush-worker
 ```
 
-**O que você vai ver:** a mensagem malformada aparece na DLQ, e o
-`lunchrush-worker` continua `Up` normalmente. Ver
+**O que você vai ver:** a mensagem malformada aparece na DLQ (dead-letter
+queue, a fila para onde vão mensagens que o consumidor não consegue
+processar), e o `lunchrush-worker` continua `Up` normalmente. Ver
 `docs/runbooks/dlq-replay.md`.
 
 ---
@@ -176,11 +177,15 @@ docker compose --profile app --profile observability down
 
 ## Resumo da ópera
 
-O tier 3 prova que dá pra distribuir sem perder nem duplicar efeito: o
-outbox garante que o evento só existe se o efeito já comitou, o relay
-republica sem medo depois de um crash simulado, e o inbox do consumidor
-absorve a duplicata que o at-least-once do Kafka garante. O preço foi
-latência (dois hops pelo relay antes de `offered`) e duas dores de rede
-bem específicas de simular localmente (DNS cruzado entre `kind` e docker
-compose, `runAsNonRoot` com imagem distroless) — nenhuma delas veio da
-lógica de domínio, que continuou correta o tempo todo.
+O tier 3 prova que dá pra distribuir sem perder nem duplicar efeito. O
+outbox garante que o evento só existe se o efeito já comitou. O relay
+republica sem medo depois de um crash simulado. O inbox do consumidor
+absorve a duplicata que a entrega at-least-once do Kafka garante (o
+consumidor pode receber a mesma mensagem mais de uma vez, e o inbox
+descarta a repetida).
+
+O preço foi latência: dois hops pelo relay antes de `offered`. Também
+apareceram duas dores de rede específicas de simular tudo localmente,
+DNS cruzado entre `kind` e docker compose, e `runAsNonRoot` com imagem
+distroless. Nenhuma delas veio da lógica de domínio, que continuou
+correta o tempo todo.

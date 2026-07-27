@@ -36,7 +36,7 @@ go run ./cmd/loadgen \
 
 `run1.json` e `run2.json` comparados em Python, removendo apenas
 `delivery_id` (UUID gerado pelo servidor) e `duration_ns` (tempo de
-parede) de cada resultado — **os 40 resultados restantes são idênticos
+parede) de cada resultado: **os 40 resultados restantes são idênticos
 byte a byte** entre as duas execuções. Script usado:
 
 ```python
@@ -65,6 +65,6 @@ detalhe no ADR 0020.
 40 ordens, ~230 chamadas HTTP reais (criação, oferta, atribuição, 3
 posições de GPS por entrega concluída, coleta, entrega, consulta), em
 ~17-19s. Isso é uma fração pequena, deliberadamente, do "milhões de
-operações" que o critério de conclusão do tier 5 pede — ver
+operações" que o critério de conclusão do tier 5 pede: ver
 `docs/benchmarks/tier-5-baseline.md` para o volume real alcançado no soak
 desta sessão e a distância honesta até a meta original do roadmap.

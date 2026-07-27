@@ -34,17 +34,20 @@ Saída bruta completa em `tlc-output-mutation.txt`.
 
 ## Leitura do contraexemplo
 
-O cenário achado pelo TLC não é split-brain entre dois writers diferentes:
-é mais sutil e mais realista. O mesmo writer `w1` perde a lease, se
-auto-recupera (comum quando o processo apenas reiniciou e voltou a ser
-eleito dono da mesma região), e um comando de `Assign` que já estava
-formado com o epoch antigo (por exemplo, enfileirado antes do restart, ou
-reenviado por um retry que não observou a mudança de epoch) ainda é aceito
-porque a única coisa que a autoridade checava era "o writer que está
-pedindo é o dono atual" — verdade, mas insuficiente. Isso confirma por que
-o desenho do roadmap (`docs/tla/LunchRushFencing.tla`, seção "Implementação
-de referência" do `lunch-rush.md`) exige checar epoch **e** owner_region na
-mesma condição do `UPDATE`, não um substituto do outro.
+O cenário achado pelo TLC não é split-brain entre dois writers diferentes.
+É mais sutil e mais realista: o mesmo writer `w1` perde a lease e se
+auto-recupera. Isso é comum quando o processo só reiniciou e voltou a ser
+eleito dono da mesma região.
+
+Um comando de `Assign` que já estava formado com o epoch antigo, por
+exemplo enfileirado antes do restart ou reenviado por um retry que não
+observou a mudança de epoch, ainda é aceito. Isso acontece porque a única
+coisa que a autoridade checava era se o writer que está pedindo é o dono
+atual. Isso é verdade, mas insuficiente.
+
+Isso confirma por que o desenho do roadmap (`docs/tla/LunchRushFencing.tla`,
+seção "Implementação de referência" do `lunch-rush.md`) exige checar epoch
+e owner_region na mesma condição do `UPDATE`, um não substitui o outro.
 
 ## Modelo corrigido
 

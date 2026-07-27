@@ -1,13 +1,13 @@
-# Relatório LoadGen — identidade compartilhada esgota o rate limit
+# Relatório LoadGen: identidade compartilhada esgota o rate limit
 
 **Nota de leitura:** os 429 abaixo não são bug do rate limit, são uma
 limitação real do próprio LoadGen: todas as ordens simuladas enviam GPS
 autenticadas como o mesmo caller (`loadgen`), então elas competem pelo
 mesmo bucket de 20 req/s com burst 40. Em produção, cada entregador teria
 seu próprio token; aqui, sem tokens por entregador, a concorrência entre
-ordens vira concorrência dentro da mesma identidade. Ver a limitação
-registrada em `docs/learning/tier-2.md`. Comparar com
-`loadgen-tier-2-golden.md`, que usa concorrência 1 e fica sem erros.
+ordens vira concorrência dentro da mesma identidade. Limitação registrada
+em `docs/learning/tier-2.md`. Comparar com `loadgen-tier-2-golden.md`, que
+usa concorrência 1 e fica sem erros.
 
 - seed: 777
 - ordens simuladas: 100

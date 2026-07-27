@@ -1,4 +1,4 @@
-# Relatório LoadGen — pool de entregadores deliberadamente escasso
+# Relatório LoadGen: pool de entregadores deliberadamente escasso
 
 **Nota de leitura:** os 22 "erros" abaixo não são bug. Este cenário usa
 propositalmente 5 entregadores para 150 ordens com concorrência 30: em vários

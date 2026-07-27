@@ -29,9 +29,8 @@ pipeline de equipe.
   dentro de um runner hospedado do GitHub Actions é possível, mas este
   laboratório nunca validou isso (o ambiente de desenvolvimento sempre foi
   local, com docker compose já de pé). Adicionar isso sem testar seria o
-  mesmo erro do `terraform apply` que ficou pendurado contra o LocalStack:
-  documentar sem executar não prova nada. Fica registrado como pendência
-  honesta, não como "feito".
+  mesmo erro do `terraform apply` que ficou pendurado contra o LocalStack.
+  Fica registrado como pendência honesta, não como "feito".
 - **Templates de ADR, experimento, incidente e benchmark ficam em
   `docs/templates/`**, não em `.github/ISSUE_TEMPLATE/`. Como o projeto não
   usa o fluxo de Issues do GitHub (decisão do mantenedor: laboratório solo,

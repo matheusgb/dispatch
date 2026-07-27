@@ -36,7 +36,7 @@ lado do `tracking-projector` (constraint única em `tracking_positions`).
   `docs/benchmarks/tier-3-baseline.md` mede essa janela;
 - se o `tracking-projector` cair, GPS continua sendo aceito e persistido no
   Kafka: nada se perde, só a leitura atrasa até o consumidor voltar. Isso é
-  o oposto do outbox (que protege a escrita), mas resolve o mesmo problema
+  o oposto do outbox, que protege a escrita, mas resolve o mesmo problema
   de durabilidade por outro caminho, adequado a este dado.
 
 ## Status

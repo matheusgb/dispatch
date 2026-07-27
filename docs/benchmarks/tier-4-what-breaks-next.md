@@ -3,7 +3,7 @@
 1. **Latência composta em transações com múltiplos round trips.** O
    cenário D de chaos (`chaos-tier-4.md`) mediu 1,8-4,4s de latência para
    `POST /deliveries` com apenas 300ms±100ms de latência injetada no
-   PostgreSQL — muito mais que um único round trip explicaria.
+   PostgreSQL: muito mais que um único round trip explicaria.
    `handleCreateDelivery` faz checagem de idempotência, inserção da
    entrega e inserção do evento de outbox como instruções separadas
    dentro da mesma transação; cada uma paga a latência de rede de novo.
@@ -15,7 +15,7 @@
    LocalStack.** Removido do módulo `storage` (ADR 0012) depois de travar
    `terraform apply` indefinidamente. Qualquer novo recurso Terraform
    adicionado a este laboratório deveria ser testado com um timeout
-   explícito antes de ser considerado parte do módulo — o padrão "roda
+   explícito antes de ser considerado parte do módulo: o padrão "roda
    `apply` e espera" não é seguro nem contra uma API 100% local.
 
 3. **Terraform e Helm cobrem só uma fração do roadmap do tier 4.** EKS,
@@ -64,7 +64,7 @@
    execução. Achado novo, não esperado: sob a carga combinada desta
    sessão, o relay do outbox manteve 96-99% dos eventos pendentes o tempo
    todo, publicando em lotes muito mais lentos que o ciclo de ~1s
-   esperado — candidato a investigação de causa raiz (contenção de CPU do
+   esperado: candidato a investigação de causa raiz (contenção de CPU do
    laboratório vs. gargalo real do relay). Ver
    `docs/runbooks/backup-e-recuperacao-distribuida.md`.
 

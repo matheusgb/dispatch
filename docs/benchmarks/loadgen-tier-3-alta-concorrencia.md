@@ -1,4 +1,4 @@
-# Relatório LoadGen — 40 ordens em concorrência 8, prazo de 30s
+# Relatório LoadGen: 40 ordens em concorrência 8, prazo de 30s
 
 **Nota de leitura:** os "erros" abaixo são timeouts do LoadGen esperando
 `offered`, não perda de dado nem dupla atribuição. Investigação em

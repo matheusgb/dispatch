@@ -22,7 +22,7 @@ referência para uma migração futura, sem trocar o sistema real.
   funcionando sobre JSON, testado em `test/integration/outbox_test.go` e
   exercitado sob carga (`docs/benchmarks/tier-4-load/`). Trocar o formato
   de serialização é uma mudança que atravessa produtor, schema, consumidor
-  e todo teste de integração/contrato ao mesmo tempo — o tipo de mudança
+  e todo teste de integração/contrato ao mesmo tempo: o tipo de mudança
   arriscada que sessões anteriores deste projeto (ver a lição do
   `terraform apply` que ficou pendurado contra o LocalStack) ensinaram a
   não fazer sem tempo disponível para validar de ponta a ponta.
@@ -33,7 +33,7 @@ referência para uma migração futura, sem trocar o sistema real.
   conhece), sem exigir um registry de schema adicional na infraestrutura.
 - Protobuf exigiria decidir e operar um **schema registry** (Confluent
   Schema Registry, Buf Schema Registry, ou equivalente) para
-  compatibilidade entre versões de forma segura — infraestrutura nova, sem
+  compatibilidade entre versões de forma segura: infraestrutura nova, sem
   contrapartida de aprendizado que o laboratório ainda não tenha coberto de
   outra forma (o laboratório já cobre versionamento de schema de forma
   mais simples via AsyncAPI documentado, `contracts/asyncapi/lunchrush-events.yaml`).
@@ -70,7 +70,7 @@ só por revisão manual de sintaxe. O comando ficou reproduzível como
 diretório `include/` do release quando `protoc` não vem de pacote de
 sistema). A saída gerada não é versionada (`api/proto/gen/` no
 `.gitignore`): é prova de forma reproduzível sob demanda, não artefato de
-build do sistema real — nenhum pacote em `internal/` ou `cmd/` importa
+build do sistema real: nenhum pacote em `internal/` ou `cmd/` importa
 `api/proto/gen`, a decisão de manter JSON no outbox real continua valendo
 inalterada.
 
@@ -82,7 +82,7 @@ inalterada.
 - **Validação de schema em compile-time:** um produtor Go ganharia erro de
   compilação ao esquecer um campo obrigatório, em vez de erro de runtime
   na decodificação (hoje só descoberto no consumidor, e só vira DLQ se o
-  JSON for inválido — um JSON válido mas com campo faltando não é pego
+  JSON for inválido: um JSON válido mas com campo faltando não é pego
   hoje, exceto se o Go struct tiver o campo como obrigatório e o
   `json.Unmarshal` falhar, o que não acontece para campo ausente em Go por
   padrão).
@@ -94,7 +94,7 @@ inalterada.
   caso deste laboratório hoje.
 - Exigiria decidir entre **Protobuf com Schema Registry** (compatibilidade
   automática) ou **Protobuf sem registry** (compatibilidade garantida só
-  por disciplina de code review) — produção real quase sempre quer a
+  por disciplina de code review): produção real quase sempre quer a
   primeira opção.
 
 ## Alternativas consideradas

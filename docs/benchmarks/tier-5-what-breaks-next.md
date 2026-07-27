@@ -7,19 +7,19 @@
    compartilhada, o relay publicou em lotes de ~100 a cada ~1min40s, bem
    mais lento que o ciclo de ~1s esperado (README). Não investigamos
    causa raiz (contenção de CPU do laboratório vs. gargalo real do
-   relay sob essa taxa de chegada) — candidato de profiling de uma
+   relay sob essa taxa de chegada): candidato de profiling de uma
    sessão futura, com a máquina livre de outras cargas simultâneas para
    isolar a variável.
 
 2. **O pool de couriers do LoadGen satura antes das entregas
    completarem, sob concorrência alta.** Uma tentativa de soak com 2000
    ordens, 60 couriers e concorrência 30 produziu 1521 erros "nenhum
-   entregador do pool ficou livre" — não é uma dupla atribuição nem uma
+   entregador do pool ficou livre": não é uma dupla atribuição nem uma
    violação de invariante, é o pool ficando pequeno demais para a taxa
    de chegada de novas ordens (`runCompleted` tenta o pool inteiro antes
    de desistir). A correção é dimensionar `--couriers` proporcionalmente
    a `--concurrency` e à duração média de uma entrega completa (assign
-   até deliver), não um valor arbitrário — o próprio roadmap já exige
+   até deliver), não um valor arbitrário: o próprio roadmap já exige
    isso para "dataset, concorrência, duração" de cada cenário; fica
    registrado aqui como o número concreto que quebrou primeiro.
 
@@ -35,7 +35,7 @@
    tempo.** O teste de fencing prova a propriedade de segurança sob
    concorrência controlada em teste de integração; o runbook de
    failover ainda não foi coordenado com uma execução do LoadGen
-   simulando tráfego real durante a promoção — o "failover no pior
+   simulando tráfego real durante a promoção: o "failover no pior
    momento possível" que o roadmap pede para o simulador.
 
 5. **Partição control plane / data plane não modelada no LoadGen.**

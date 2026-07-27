@@ -7,7 +7,7 @@ Helm versionado (`deploy/helm/lunchrush/`, ADR 0013): hoje o deploy é
 imperativo (`scripts/helm-deploy.sh` roda `helm upgrade --install` na mão
 ou via CI). Uma rodada anterior documentou ArgoCD como "fora de alcance
 por tempo/memória", mas nunca tentou de verdade instalar um ArgoCD real
-contra um cluster `kind` local — a única coisa que faltava era rodar até o
+contra um cluster `kind` local: a única coisa que faltava era rodar até o
 fim.
 
 ## Decisão
@@ -45,7 +45,7 @@ outputs de CLI. Resumo:
   observados e ruído na UI"). O chart usa `Endpoints` manuais (sem
   `selector`) para apontar para a infra externa ao cluster (Postgres,
   Redis, Redpanda, dependency-simulator do `docker compose` do host, ver
-  `templates/external-infra.yaml` e ADR 0011) — um padrão legítimo e comum
+  `templates/external-infra.yaml` e ADR 0011), um padrão legítimo e comum
   para referenciar infra fora do cluster, mas que colide com essa exclusão
   padrão. Sem o `Endpoints`, os `Service` ficam sem endereço de destino e
   todo pod que depende de Postgres/Kafka entra em `CrashLoopBackOff`. A

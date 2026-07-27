@@ -9,7 +9,7 @@ execução real, contra o ambiente `docker compose --profile app` local
 
 ## O que este laboratório tem, e o que não tem
 
-Este ambiente **não** tem WAL archiving contínuo nem PITR configurado — só
+Este ambiente **não** tem WAL archiving contínuo nem PITR configurado, só
 `pg_dump` lógico sob demanda. Isso significa que o RPO real deste
 laboratório é o intervalo entre backups, não "zero até o último commit"
 como um Aurora/RDS com backup contínuo prometeria. Essa é uma limitação
@@ -64,7 +64,7 @@ mensagens** efetivamente publicadas no Kafka (as 3 partições foram de
 374/355/384 para 382/366/391).
 
 ### 4. Restauração (para um banco separado, `lunchrush_restore`, para não
-destruir o ambiente compartilhado do resto desta sessão — mecanicamente
+destruir o ambiente compartilhado do resto desta sessão, mecanicamente
 idêntico a restaurar por cima do banco original)
 
 ```text
@@ -98,7 +98,7 @@ aconteceu porque o relay do outbox estava seriamente atrasado durante esta
 sessão (96-99% dos eventos pendentes o tempo todo, ver seção abaixo):
 sob essa condição específica, restaurar para T0 não corre o risco "clássico"
 do runbook (um efeito já propagado para fora do banco, sem o registro
-correspondente depois do restore) — simplesmente não haveria nada
+correspondente depois do restore): simplesmente não haveria nada
 inconsistente para reconciliar no lado do Kafka neste cenário particular.
 Isso não prova que o caso mais difícil (evento já publicado e já
 consumido por um efeito externo, como uma notificação) esteja resolvido
@@ -146,7 +146,7 @@ do drill; a evidência (contagens, saída do `rpk`) fica neste documento.
 
 | Classe de dado | RPO medido |
 | --- | --- |
-| lifecycle de entrega (PostgreSQL) | 39s (intervalo real entre `pg_dump` e o ponto de "crash" simulado) — em produção real seria o intervalo entre backups agendados, ou próximo de zero com WAL archiving/PITR (não configurado neste laboratório) |
+| lifecycle de entrega (PostgreSQL) | 39s (intervalo real entre `pg_dump` e o ponto de "crash" simulado); em produção real seria o intervalo entre backups agendados, ou próximo de zero com WAL archiving/PITR (não configurado neste laboratório) |
 | eventos de outbox não publicados | mesmos 39s; adicionalmente sujeitos ao atraso do relay observado (96-99% pendente durante esta sessão) |
 | Kafka (log já publicado) | não perdido: o log do Redpanda é independente do PostgreSQL e não foi tocado neste drill |
 | Redis | 0 (projeção descartável, reconstrução automática já provada) |

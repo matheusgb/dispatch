@@ -28,7 +28,7 @@ O `ScaledObject` ficou preso em `KEDAScalerFailed` com
 `lookup redpanda on ...: server misbehaving`, apesar de
 `bootstrapServers` apontar para o FQDN completo
 (`redpanda.lunchrush.svc.cluster.local:9092`). Causa: um cliente Kafka
-nunca fala só com o endereço de bootstrap — depois do primeiro contato, o
+nunca fala só com o endereço de bootstrap: depois do primeiro contato, o
 broker devolve metadados dizendo qual endereço usar para cada partição, e
 o cliente reconecta usando *esse* endereço. O Redpanda do docker compose
 anuncia a si mesmo como `redpanda:9092` (nome curto, ver ADR 0011). O
@@ -77,7 +77,7 @@ Events:
 
 Depois que os 3 consumidores drenaram o lag (`TOTAL-LAG` voltou a `0`),
 o `cooldownPeriod` de 30s levaria o `ScaledObject` de volta a 0 réplicas
-sem lag ativo — não capturado em evidência separada porque o
+sem lag ativo, não capturado em evidência separada porque o
 comportamento simétrico (desativar por ausência de lag) já está no mesmo
 mecanismo documentado pelo evento `KEDAScaleTargetDeactivated`, visto
 antes da injeção de lag. Evidência completa em

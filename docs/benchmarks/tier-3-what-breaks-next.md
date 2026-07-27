@@ -23,7 +23,7 @@
    um problema com infra gerenciada de verdade ou com o Redpanda dentro do
    próprio cluster.
 5. **Nenhum teste de evolução de schema.** O roadmap pede "teste de replay
-   atravessará ao menos uma evolução real de schema" — os envelopes usam
+   atravessará ao menos uma evolução real de schema": os envelopes usam
    JSON simples (`internal/platform/outbox.Envelope`), sem Protobuf nem
    verificação de compatibilidade. Ficou fora deste tier por escopo: JSON
    sem schema registry não tem como testar compatibilidade formal, e

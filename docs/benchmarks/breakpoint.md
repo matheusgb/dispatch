@@ -17,13 +17,13 @@ rodando um cluster `kind` de 3 nós ao mesmo tempo desta execução).
 `delivery-api` rodando como container único, sem réplicas, PostgreSQL
 único no mesmo `docker compose`. Estágios de arrival rate: 500 → 1500 →
 3000 → 5000 → 8000 → 12000 requisições/s alvo, 15-20s cada, `k6` v2.1.0
-rodando no mesmo host (não numa máquina de carga separada — ver limitação
+rodando no mesmo host (não numa máquina de carga separada, ver limitação
 abaixo). SLO de corte: `http_req_failed` < 5% ou `http_req_duration`
 p(95) > 2000ms, qualquer um aborta o teste inteiro.
 
 ## Resultado (Medido)
 
-Nenhum dos dois thresholds estourou dentro da faixa testada — o teste
+Nenhum dos dois thresholds estourou dentro da faixa testada: o teste
 completou os 5 estágios sem abortar. Saída bruta completa em
 `docs/benchmarks/breakpoint-k6-output.txt`. Números da execução registrada:
 
@@ -40,7 +40,7 @@ completou os 5 estágios sem abortar. Saída bruta completa em
 | VUs no pico | 1174 |
 
 Uma execução anterior, mesma configuração, registrou p(95)=19,69ms e
-max=1,14s — a mesma ordem de grandeza, confirmando que o padrão
+max=1,14s: mesma ordem de grandeza, confirmando que o padrão
 (degradação de latência sem erro) é consistente entre execuções, não
 ruído de uma única corrida.
 
@@ -64,7 +64,7 @@ que o número real de degradação medido (~5000 req/s sustentados, p95 subindo
 para a casa de 20-27ms) reflete o teto desta máquina compartilhada rodando
 cliente e servidor juntos, não necessariamente o teto do `delivery-api`
 isolado contra uma máquina de carga dedicada. Um teste de breakpoint mais
-rigoroso rodaria o `k6` numa máquina separada do serviço sob teste — fora
+rigoroso rodaria o `k6` numa máquina separada do serviço sob teste, fora
 de alcance deste laboratório local de single-host.
 
 Este resultado também é de uma única réplica do `delivery-api`, um único

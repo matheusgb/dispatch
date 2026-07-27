@@ -22,7 +22,7 @@ docker compose --profile app up -d
 
 **O que roda por baixo:** o mesmo build multi-stage de sempre
 (`deploy/compose/Dockerfile.*`), produzindo imagens nomeadas
-`lunchrush-<serviço>` no daemon Docker local — esse nome é o que
+`lunchrush-<serviço>` no daemon Docker local. Esse nome é o que
 `docker-compose.cloud-b.yml` vai reusar no próximo passo, sem rebuild.
 
 ## Passo 2: subir cloud-b apontando para a mesma imagem
@@ -37,7 +37,7 @@ tracking-ingest, `18085` tracking-projector, `15432` Postgres, `16379`
 Redis, `19093`/`29093` Redpanda).
 
 **O que roda por baixo:** `docker-compose.cloud-b.yml` não tem nenhuma
-diretiva `build:` nos serviços de app — eles referenciam por nome a
+diretiva `build:` nos serviços de app. Eles referenciam por nome a
 imagem que o passo 1 já construiu. Confirme:
 
 ```bash
@@ -63,7 +63,7 @@ DATABASE_URL="postgres://lunchrush:lunchrush@localhost:15432/lunchrush?sslmode=d
 ambientes, sem nenhuma diferença de código entre as duas execuções.
 
 **O que roda por baixo:** o mesmo binário de teste, contra dois bancos
-fisicamente diferentes — se o contrato observável do sistema dependesse
+fisicamente diferentes. Se o contrato observável do sistema dependesse
 de algo específico do ambiente além das variáveis já suportadas, um dos
 dois lados falharia.
 
@@ -83,7 +83,7 @@ com nomes de bucket/segredo diferentes (`lunchrush-cloud-a-receipts` e
 
 **O que roda por baixo:** dois roots Terraform independentes (`main.tf`,
 `.tfstate` próprios), cada um apontado para o `localstack_endpoint` do seu
-próprio stack (`:4566` e `:14566`) — dois "provedores" simulados, sem
+próprio stack (`:4566` e `:14566`): dois "provedores" simulados, sem
 nenhum recurso compartilhado entre os dois planos.
 
 ```bash
@@ -95,6 +95,12 @@ cd ../cloud-b && terraform destroy -auto-approve
 dois.
 
 ## Passo 5: failover da autoridade de fencing entre cloud-a e cloud-b
+
+O fencing usa um número (epoch) que só cresce a cada troca de líder. Um
+writer antigo, com epoch velho, tem suas escritas rejeitadas assim que
+aparece um writer novo com epoch maior. É a técnica clássica de fencing
+token para evitar que dois donos do mesmo recurso escrevam ao mesmo
+tempo depois de um failover.
 
 ```bash
 DB_A="postgres://lunchrush:lunchrush@localhost:5432/lunchrush?sslmode=disable"
@@ -124,15 +130,15 @@ go run ./cmd/cloudfailover assign -db "$DB_B" -shard tier6-crosscloud -region cl
 **O que você vai ver:** os 10 assignments do writer de `cloud-a` bem
 sucedidos antes do backup, os 5 assignments depois do backup também bem
 sucedidos (mas fora do dump), a restauração em `cloud-b` trazendo só os
-10 primeiros, a promoção de `cloud-b` (epoch 1 → 2), 10/10 tentativas do
-writer antigo rejeitadas com `ErrStaleFence`, e 5/5 tentativas do writer
-novo aceitas.
+10 primeiros, a promoção de `cloud-b` (epoch 1 para 2), 10/10 tentativas
+do writer antigo rejeitadas com `ErrStaleFence`, e 5/5 tentativas do
+writer novo aceitas.
 
 **O que roda por baixo:** `cmd/cloudfailover` chama diretamente
-`internal/fencing.Service` — o mesmo código do tier 5, sem nenhuma
+`internal/fencing.Service`, o mesmo código do tier 5, sem nenhuma
 alteração de protocolo. A promoção em `cloud-b` só funciona porque a
 lease do fence restaurado (herdada de `cloud-a`) já expirou no relógio
-real; se você repetir o passo com uma lease mais longa, `Promote` retorna
+real. Se você repetir o passo com uma lease mais longa, `Promote` retorna
 `ErrLeaseNotExpired`. Transcrição completa, com timestamps reais e o
 RTO/RPO calculados: `docs/benchmarks/tier-6-portability/failover-transcript.txt`.
 
@@ -152,7 +158,7 @@ denied`.
 
 **O que roda por baixo:** com a imagem removida do daemon (e nenhum
 container de nenhum dos dois stacks mais a referenciando), `cloud-b` não
-consegue recriar o container — a mesma falha que apareceria contra um
+consegue recriar o container. É a mesma falha que apareceria contra um
 registry real fora do ar. Recupere com:
 
 ```bash

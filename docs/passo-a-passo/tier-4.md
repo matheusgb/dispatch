@@ -18,15 +18,15 @@ terraform init
 terraform apply -auto-approve
 ```
 
-**O que você vai ver:** o LocalStack sobe saudável em `localhost:4566`; o
+**O que você vai ver:** o LocalStack sobe saudável em `localhost:4566`. O
 `apply` cria um bucket S3 (`lunchrush-delivery-receipts`) e um segredo no
-Secrets Manager (`lunchrush/jwt-secret`, cifrado por uma chave KMS
-criada junto).
+Secrets Manager (`lunchrush/jwt-secret`), cifrado por uma chave KMS
+criada junto.
 
 **O que roda por baixo:** o provider `hashicorp/aws` oficial, sem fork,
 apontando para `http://localhost:4566` via `endpoints {}` (ver
 `infra/terraform/environments/aws-lab/main.tf` e ADR 0012). Nenhuma conta
-AWS real é tocada; as credenciais são as estáticas `test`/`test`, aceitas
+AWS real é tocada. As credenciais são as estáticas `test`/`test`, aceitas
 só pelo LocalStack.
 
 ```bash
@@ -47,12 +47,12 @@ docker compose --profile app --profile aws-lab up -d --build
 ```
 
 **O que você vai ver:** `delivery-api` inicia lendo `LUNCHRUSH_JWT_SECRET`
-do Secrets Manager (não da variável de ambiente, quando
-`AWS_SECRETS_ENDPOINT` está setado) e sobe um comprovante para o S3 a
+do Secrets Manager, não da variável de ambiente, quando
+`AWS_SECRETS_ENDPOINT` está setado. E sobe um comprovante para o S3 a
 cada entrega concluída (`internal/platform/objectstore`).
 
 **O que roda por baixo:** `cmd/delivery-api/main.go` chama
-`secrets.ResolveJWTSecret` e `objectstore.New` na inicialização; se
+`secrets.ResolveJWTSecret` e `objectstore.New` na inicialização. Se
 `AWS_SECRETS_ENDPOINT`/`AWS_S3_ENDPOINT` não estiverem setados, os dois
 caem de volta ao comportamento do tier 3 sem erro (ver
 `internal/platform/secrets/secretsmanager.go`).
@@ -101,12 +101,12 @@ externos (`postgres-external`, `redis-external`, `redpanda-external`,
 e um `ScaledObject` (`lunchrush-worker`) com `READY: True`. Sem lag no
 tópico, `lunchrush-worker` fica em 0 réplicas (`minReplicaCount: 0`).
 
-**O que roda por baixo:** o chart do KEDA oficial (`kedacore/keda`) mais
+**O que roda por baixo:** o chart do KEDA oficial (`kedacore/keda`), mais
 um `Service` `ExternalName` que este repositório cria no namespace `keda`
-apontando para `redpanda.lunchrush.svc.cluster.local` — sem ele, o
-operador do KEDA (rodando fora do namespace `lunchrush`) não resolve o
-nome curto `redpanda` que o broker anuncia de volta (ADR 0014, mesma
-causa raiz do ADR 0011).
+apontando para `redpanda.lunchrush.svc.cluster.local`. Sem esse
+`Service`, o operador do KEDA, que roda fora do namespace `lunchrush`,
+não resolve o nome curto `redpanda` que o broker anuncia de volta (ADR
+0014, mesma causa raiz do ADR 0011).
 
 ```bash
 for i in $(seq 1 40); do echo "teste-lag-$i"; done | \
@@ -123,9 +123,12 @@ lunchrush-worker`, o `ScaledObject` marcando `ACTIVE: True`, e o
 
 ## Passo 5: rodar os cenários de chaos
 
-Ver `docs/benchmarks/chaos-tier-4.md` para os quatro cenários completos
-(pod kill, falha do Redis, Redpanda pausado, latência via Toxiproxy no
-PostgreSQL) com o comando exato de cada injeção e a evidência coletada.
+Chaos engineering é a
+prática de injetar falhas de propósito num sistema para verificar se ele
+continua se comportando como esperado. Ver
+`docs/benchmarks/chaos-tier-4.md` para os quatro cenários completos (pod
+kill, falha do Redis, Redpanda pausado, latência via Toxiproxy no
+PostgreSQL), com o comando exato de cada injeção e a evidência coletada.
 
 **Atalho para o cenário mais simples (pod kill):**
 
@@ -136,7 +139,7 @@ kubectl --context kind-lunchrush -n lunchrush get pods -l app=delivery-api -w
 ```
 
 **O que você vai ver:** o pod morto sai de `Terminating`, um novo nasce em
-`ContainerCreating` e chega em `1/1 Running` em segundos; o outro pod do
+`ContainerCreating` e chega em `1/1 Running` em segundos. O outro pod do
 mesmo `Deployment` nunca parou de responder.
 
 ---
@@ -162,8 +165,8 @@ burn-rate (rápido e lento), técnica do Google SRE Workbook.
 curl -s 'http://localhost:9090/api/v1/query?query=slo:delivery_api_errors:ratio_rate5m'
 ```
 
-**O que você vai ver:** `0` com tráfego 100% bem-sucedido (não um vetor
-vazio: ver o bug do `or on() vector(0)` documentado no ADR 0015).
+**O que você vai ver:** `0` com tráfego 100% bem-sucedido, não um vetor
+vazio (ver o bug do `or on() vector(0)` documentado no ADR 0015).
 
 ---
 

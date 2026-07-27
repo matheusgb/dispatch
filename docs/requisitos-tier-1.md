@@ -2,7 +2,7 @@
 
 ## Missão
 
-Construir um núcleo correto e mensurável em Go antes de distribuir o sistema.
+Construir, em Go, um núcleo correto e mensurável antes de distribuir o sistema.
 
 ## Atores
 

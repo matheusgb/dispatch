@@ -40,7 +40,7 @@ epoch maior) e ainda escreve com um token de epoch antigo.
 
 **O que roda por baixo:** a mesma especificação, com uma única guarda
 removida de propósito (`e = epoch` em `Assign`). O contraexemplo prova que
-a especificação original captura a propriedade que importa — se o
+a especificação original captura a propriedade que importa: se o
 mutation test não achasse nada, o modelo estaria fraco demais para
 significar alguma coisa.
 
@@ -96,8 +96,8 @@ curl -X POST http://localhost:8096/deliveries -H "X-Cell-ID: cell-b" \
 **O que roda por baixo:** `cmd/cellrouter` lê `X-Cell-ID` e encaminha para
 o backend certo sem consultar banco algum (ADR 0019). Consultando
 `lunchrush_cell_a` e `lunchrush_cell_b` diretamente, cada entrega só existe
-no banco da sua própria célula — prova de isolamento de dados real, não
-descrita.
+no banco da sua própria célula: isso é prova real de isolamento de dados,
+não apenas descrição teórica.
 
 ---
 
@@ -137,11 +137,11 @@ psql "$DATABASE_URL" -c "TRUNCATE idempotency_keys, delivery_transitions, tracki
 
 **O que você vai ver:** os mesmos números agregados.
 
-**O que roda por baixo:** nada de mágico — a mesma seed produz a mesma
-sequência de decisões do `rand.Rand`; sem truncar o banco, a idempotência
+**O que roda por baixo:** nada de mágico: a mesma seed produz a mesma
+sequência de decisões do `rand.Rand`. Sem truncar o banco, a idempotência
 real do tier 1 devolveria as mesmas entregas já criadas na primeira
-execução (e já avançadas de estado), causando `409` na segunda — um
-achado real documentado no ADR 0020, não um defeito do simulador.
+execução (e já avançadas de estado), causando `409` na segunda. Isso é
+um achado real documentado no ADR 0020, não um defeito do simulador.
 
 ---
 

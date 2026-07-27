@@ -38,8 +38,8 @@ Relatórios completos: `docs/benchmarks/tier-6-portability/k6-smoke-cloud-a.json
 `k6-smoke-cloud-b.json`.
 
 A diferença de throughput e p95 entre os dois (cloud-b ligeiramente mais
-rápido) não tem causa investigada nesta sessão — ambos os stacks
-competiam pelos mesmos recursos físicos da máquina ao mesmo tempo; a
+rápido) não tem causa investigada nesta sessão: ambos os stacks
+competiam pelos mesmos recursos físicos da máquina ao mesmo tempo. A
 diferença fica registrada como observação, não como conclusão sobre qual
 "provedor" é mais rápido (os dois são o mesmo hardware).
 
@@ -89,7 +89,7 @@ O RTO medido (~11,5s) é dominado pelo tempo de `docker compose stop` +
 `pg_dump`/`pg_restore`/`dropdb`/`createdb` de um banco de laboratório
 pequeno (dezenas de linhas). Não generaliza para um banco de produção
 real nem para latência de rede real entre dois provedores geograficamente
-distantes — ver `docs/adr/0023` para a discussão completa.
+distantes. Ver `docs/adr/0023` para a discussão completa.
 
 ## 6. Dependência oculta revelada
 
@@ -98,7 +98,7 @@ remover a imagem `lunchrush-delivery-api` do daemon Docker local (depois de
 parar todos os containers que a referenciavam, nos dois stacks) faz
 `cloud-b` falhar ao recriar seu container com `pull access denied`. A
 dependência oculta real desta configuração é o processo de build/registry
-de imagem, compartilhado pelas duas "clouds" — não Postgres, Redis, Kafka
+de imagem, compartilhado pelas duas "clouds": não Postgres, Redis, Kafka
 ou rede, que já são duplicados e isolados por stack.
 
 ## Ambiente

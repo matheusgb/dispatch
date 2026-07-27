@@ -40,7 +40,7 @@ dias com dois alertas; não foram recalculados aqui, citados como
 premissa herdada da fonte. A vantagem sobre um alerta de limiar único: a
 janela curta detecta queima rápida (incidente agudo) sem esperar a janela
 longa acumular, e a janela longa evita alertar por um pico de 2 minutos
-que não teria impacto real no orçamento de 30 dias — as duas precisam
+que não teria impacto real no orçamento de 30 dias: as duas precisam
 concordar para o alerta disparar.
 
 ## Bug encontrado na validação: divisão por vetor vazio no PromQL

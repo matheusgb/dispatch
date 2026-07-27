@@ -47,10 +47,10 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
   `cell-a` tem `count(*) = 0` quando consultada no banco de `cell-b`, e
   vice-versa;
 - noisy neighbor: `cell-a` saturada por k6 (40 VUs, 3.320 req/s, 31,68%
-  de erro proposital) enquanto `cell-b` era sondada ao mesmo tempo — p95
+  de erro proposital) enquanto `cell-b` era sondada ao mesmo tempo: p95
   de `cell-b` subiu de **14ms (baseline) para 24ms (durante a
   sobrecarga)**, ~1,7x, não catastrófico, mas real e não escondido
-  (isolamento lógico, não físico — mesmo processo PostgreSQL, mesma
+  (isolamento lógico, não físico: mesmo processo PostgreSQL, mesma
   rede Docker);
 - ver `docs/adr/0019-arquitetura-celular-local.md` e
   `docs/benchmarks/tier-5-cells/README.md`.
@@ -64,7 +64,7 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
 - sob rede virtual (drop 15%, atraso 20-50ms, duplicação 30%, reorder
   30%, clock skew 30%, crash de sessão 20%): 40 ordens, 32 concluídas, 0
   erros, **5 de 5 tentativas de clock skew seguras** (nenhuma regrediu a
-  posição atual — invariante 7 preservada sob rede adversarial real, não
+  posição atual: invariante 7 preservada sob rede adversarial real, não
   só em unit test);
 - ver `docs/adr/0020-loadgen-rede-e-relogio-virtuais.md` e
   `docs/benchmarks/tier-5-loadgen-netfault/README.md`.
@@ -73,7 +73,7 @@ notification-worker), TLC 2.19 (`tla2tools.jar`), Go 1.26.
 
 O critério de conclusão do tier 5 original pede mais de 100 milhões de
 eventos em 24 horas, contra AWS real. Esta máquina compartilhada e local
-não sustenta esse volume nem essa duração de forma honesta — a redução
+não sustenta esse volume nem essa duração de forma honesta: a redução
 está declarada aqui, não escondida.
 
 **Medido**, `docs/benchmarks/tier-5-soak/soak-reduzido.{json,md}`, seed
@@ -104,7 +104,7 @@ duplicado nas 203 repetições de chave de idempotência.
 GPS e ~2.000 ordens de lifecycle em 5 minutos locais é uma fração muito
 pequena de "mais de 100 milhões de eventos em 24 horas" contra AWS real.
 Extrapolar linearmente (ex.: "então em 24h daria X") não é uma alegação
-que este documento faz — o gargalo real (courier pool, relay do outbox,
+que este documento faz: o gargalo real (courier pool, relay do outbox,
 CPU compartilhada) não escala linearmente, como o item 2 de
 `docs/benchmarks/tier-5-what-breaks-next.md` já mostra.
 

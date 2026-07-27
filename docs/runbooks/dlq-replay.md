@@ -34,7 +34,7 @@ Log do consumidor (`lunchrush-worker`, `tracking-projector` ou
     | docker exec -i lunchrush-redpanda rpk topic produce lunchrush.delivery-events
   ```
 
-  (`N` é o offset, um inteiro puro — `rpk topic consume --help` mostra as
+  (`N` é o offset, um inteiro puro: `rpk topic consume --help` mostra as
   formas aceitas por `-o`; confirmado rodando o comando de verdade nesta
   sessão.) Automatizado em `scripts/dlq-replay.sh`, amarrado a
   `make replay TOPIC=lunchrush.delivery-events.dlq DLQ_ID=<offset>`.

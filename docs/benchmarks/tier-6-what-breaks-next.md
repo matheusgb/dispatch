@@ -26,19 +26,19 @@ continuasse além do roadmap original.
    (`cloud-a`, `cloud-b`) foi populado de forma independente pela mesma
    carga, não por cópia real de um para o outro. Um failover real de
    tracking (não só do ledger de assignment) exigiria MSK Replicator ou
-   equivalente — não implementado neste tier, é a lacuna mais importante
+   equivalente, não implementado neste tier: é a lacuna mais importante
    deixada aberta.
 2. **RTO domina por operação manual, não por tamanho de dado.** Os 11,5s
    medidos são quase todo overhead de processo (`docker compose stop`,
    `dropdb`/`createdb`, `pg_restore`) contra um banco com dezenas de
    linhas. Um banco de produção real com gigabytes levaria minutos a
-   horas só no `pg_restore`, e isso não foi medido aqui — extrapolação
+   horas só no `pg_restore`, e isso não foi medido aqui: extrapolação
    linear não seria uma alegação testada.
 3. **A ferramenta de failover (`cmd/cloudfailover`) é manual, não um
    runbook automatizado com stop condition e alarme.** Promover a
    autoridade errada por engano (dois operadores promovendo ao mesmo
    tempo) já é impossível pelo protocolo (`ErrLeaseNotExpired`), mas
-   nenhuma automação decide *quando* promover — isso continua sendo uma
+   nenhuma automação decide *quando* promover: isso continua sendo uma
    decisão humana neste laboratório.
 4. **Registry único como ponto único de falha.** O experimento da seção 6
    do baseline mostrou isso na prática: sem um registry por provedor
@@ -62,8 +62,8 @@ tier normal do `docker compose --profile app`) produziu uma falha
 intermitente: `TestOutbox_CrashBeforeMarkRepublishesButInboxDedupsEffect`
 esperava publicar 1 evento pendente e encontrou 0. Causa real: o
 `lunchrush-worker` real, rodando ao lado, tem seu próprio relay de outbox
-consumindo a mesma tabela `outbox_events` do mesmo banco que o teste usa
-— ele conseguiu marcar o evento como publicado antes do relay do teste
+consumindo a mesma tabela `outbox_events` do mesmo banco que o teste usa:
+ele conseguiu marcar o evento como publicado antes do relay do teste
 rodar, então o teste (que espera encontrar o evento ainda pendente) não
 achou nada para publicar. Parar `delivery-api`/`lunchrush-worker`/
 `tracking-ingest`/`tracking-projector`/`notification-worker` antes de
@@ -80,7 +80,7 @@ tracking-ingest tracking-projector notification-worker` antes de
 ## Se este laboratório continuasse além do roadmap
 
 Nenhum destes itens é uma pendência do tier 6 (o critério de conclusão do
-roadmap não os exige) — são candidatos honestos de "o que eu faria a
+roadmap não os exige): são candidatos honestos de "o que eu faria a
 seguir", registrados para não sumir:
 
 - réplica lógica contínua (CDC) entre os dois Postgres, para medir RPO

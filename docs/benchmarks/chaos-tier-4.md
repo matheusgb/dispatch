@@ -2,7 +2,7 @@
 
 Quatro cenários, todos executados de verdade contra o cluster `kind`
 "lunchrush" (deploy via Helm, ver `docs/adr/0013-helm-em-vez-de-kustomize.md`)
-e a infra do `docker compose`, não descritos em texto sem rodar. Formato:
+e a infra do `docker compose`, não apenas descritos em texto sem executar. Formato:
 hipótese, estado estável, injeção, observação, condição de parada,
 recuperação, aprendizado. Evidência bruta de cada um em
 `docs/benchmarks/tier-4-chaos-*-evidencia.txt`. Os cenários A e D foram
@@ -130,7 +130,7 @@ pelo `kind` pelo gateway da rede docker). 10 requisições sequenciais de
 300ms ± 100ms de jitter.
 
 **Observação:** as mesmas 10 requisições sequenciais passaram a levar
-entre 1,78s e 4,39s cada — bem mais que os 300-400ms esperados de um
+entre 1,78s e 4,39s cada, bem mais que os 300-400ms esperados de um
 único round trip adicional. Nenhuma requisição falhou (`201` em todas).
 
 **Condição de parada:** nenhuma necessária (sem erro, só latência).

@@ -28,7 +28,7 @@ essa checagem antes de responder.
 
 Detalhe de design: se `created_by_caller` for NULL no banco, `Owner()`
 devolve string vazia e `authorizeOwner` nega para todo mundo (fail-closed,
-não fail-open) — comportamento seguro, mas que pode parecer bug de acesso
+não fail-open), comportamento seguro, mas que pode parecer bug de acesso
 para quem não sabe disso.
 
 **Não testado antes desta sessão.** Não havia teste automatizado que
@@ -48,12 +48,12 @@ mudança de comportamento, não fechamento de lacuna de documentação).
 
 ## 2. Entregador envia posição para entrega que não lhe pertence (Spoofing / Tampering)
 
-**Não mitigado — lacuna real confirmada no código.**
+**Não mitigado: lacuna real confirmada no código.**
 `cmd/tracking-ingest/main.go` `handlePositions` (linhas 89-130) exige JWT
 Bearer válido (`issuer.Middleware`), mas **nunca lê `auth.Caller(ctx)`
 dentro do handler** e nunca compara contra o dono ou o `courier_id` da
-entrega do path. Qualquer portador de um JWT válido — de qualquer
-identidade emitida por `POST /auth/tokens` — pode publicar posição GPS
+entrega do path. Qualquer portador de um JWT válido, de qualquer
+identidade emitida por `POST /auth/tokens`, pode publicar posição GPS
 para qualquer `delivery_id`, inclusive entregas atribuídas a outro
 entregador.
 
@@ -69,7 +69,7 @@ lugar nenhum do código.
 escrever um teste que **prova a lacuna existe** (`TestTracking_
 AnyValidCallerCanPostPositionForAnyDelivery` em
 `test/integration/tracking_test.go`, marcado como `t.Skip` com o motivo, ou
-mantido como teste que hoje passa confirmando o comportamento inseguro —
+mantido como teste que hoje passa confirmando o comportamento inseguro,
 ver seção de testes). Fechar a lacuna de verdade (adicionar a checagem de
 autorização em `tracking-ingest`) é mudança de comportamento de produção
 fora do escopo deste passe de auditoria, registrado como pendência
@@ -82,8 +82,8 @@ prioritária.
 validado pela biblioteca `golang-jwt/jwt/v5` em `ParseWithClaims`. Um token
 expirado é rejeitado.
 
-**Não mitigado:** não há `jti` (JWT ID) nas claims — `IssueToken` nunca
-preenche o campo `ID` da struct `jwt.RegisteredClaims` — e não existe
+**Não mitigado:** não há `jti` (JWT ID) nas claims: `IssueToken` nunca
+preenche o campo `ID` da struct `jwt.RegisteredClaims`, e não existe
 denylist/allowlist de tokens revogados. Um token roubado continua válido e
 reutilizável por qualquer um até expirar (TTL configurável, ex.
 `time.Hour` em produção). Isso é uma decisão de simplicidade aceita no
@@ -93,7 +93,7 @@ esquecida, mas fica documentado aqui como trade-off real, não como
 "resolvido".
 
 Replay de _comando_ (não token): a idempotência de `POST /deliveries`
-(`Idempotency-Key`) já cobre isso para criação — repetir a mesma chave com
+(`Idempotency-Key`) já cobre isso para criação: repetir a mesma chave com
 o mesmo payload é idempotente
 (`TestDelivery_CreateIsIdempotent`), e a máquina de estados
 (`internal/delivery/state.go`) rejeita transições fora de ordem, o que
@@ -112,13 +112,13 @@ por engano" nas transições de lifecycle.
 - `sequence`/`epoch` de tracking: **a proteção contra regressão existe na
   projeção, não na ingestão.** `internal/tracking/tracking.go` `RecordPosition`
   usa `WHERE (tracking_session_epoch, sequence) < (EXCLUDED.tracking_session_epoch,
-  EXCLUDED.sequence)` — a "posição atual" projetada nunca regride
+  EXCLUDED.sequence)`: a "posição atual" projetada nunca regride
   (testado em `TestTracking_LatePositionNeverOverridesNewer` e
   `TestTracking_NewEpochSupersedesOldSequence`). Mas o log append-only
   (`tracking_positions`, inserido em `cmd/tracking-ingest`) aceita
   qualquer `(epoch, sequence)` enviado pelo cliente, sem checar
   plausibilidade contra o último epoch/sequence conhecido antes de
-  aceitar a escrita — deduplicação é só por `ON CONFLICT DO NOTHING`
+  aceitar a escrita: deduplicação é só por `ON CONFLICT DO NOTHING`
   na mesma chave exata, não por ordem.
 - `timestamp` (`RecordedAt`): se vier zero, o servidor usa `time.Now()`;
   se vier preenchido, **é aceito sem validação de janela** (não checa se
@@ -144,13 +144,13 @@ encontraria fricção adicional além do espaço de UUID em si.
 
 **Não mitigado para tamanho de payload; mitigado para mensagem
 malformada.** `internal/platform/outbox/outbox.go` `Enqueue` não valida
-tamanho de payload antes de serializar e inserir no outbox — não há limite
+tamanho de payload antes de serializar e inserir no outbox: não há limite
 de bytes no código. Para mensagem venenosa (poison pill) já decodificada
 do Kafka, `internal/platform/kafka/kafka.go` (`Consumer`, linhas 44-86)
 desvia para uma fila DLQ por tópico (`<topico>.dlq`) em vez de travar a
 partição, documentado em `docs/runbooks/dlq-replay.md`. O HTTP handler de
 tracking (`cmd/tracking-ingest`) usa `http.MaxBytesReader` implícito? não
-confirmado neste passe — registrado como pendência de verificação futura,
+confirmado neste passe; registrado como pendência de verificação futura,
 não afirmado como coberto.
 
 ## 7. Credencial exposta em log, trace ou imagem (Information disclosure)
@@ -187,7 +187,7 @@ posição após N dias), que este laboratório não implementa.
 execução.** Cada `cmd/` (delivery-api, lunchrush-worker, tracking-ingest,
 tracking-projector, notification-worker) roda como processo/container
 separado com sua própria credencial de banco (`DATABASE_URL`) e grupo de
-consumidor Kafka próprio — isolamento por processo, não por permissão de
+consumidor Kafka próprio: isolamento por processo, não por permissão de
 banco (não há usuário Postgres distinto por serviço com `GRANT` restrito
 por tabela; todos usam o mesmo usuário `lunchrush` no `docker-compose.yml`
 local). Em produção real isso pediria usuários de banco por serviço com
@@ -213,7 +213,7 @@ GitHub Actions atualizados contra CVE conhecido.
 
 ## Testes negativos adicionados nesta sessão
 
-- `internal/delivery/authorization_test.go` —
+- `internal/delivery/authorization_test.go`:
   `TestAuthorizeOwner_RejectsCallerThatIsNotOwner` e
   `TestAuthorizeOwner_AllowsOwner`: testes de unidade contra a lógica de
   `authorizeOwner` extraída/exercitada isoladamente (dado um dono e um
@@ -221,7 +221,7 @@ GitHub Actions atualizados contra CVE conhecido.
   a forma exata usada, dado que `authorizeOwner` em si é um método não
   exportado de `cmd/tracking-projector`; o teste cobre o mesmo contrato via
   `test/invariant/`, ver abaixo.
-- `test/invariant/authorization_invariant_test.go` — invariante central:
+- `test/invariant/authorization_invariant_test.go`: invariante central:
   "um caller nunca lê tracking de uma entrega que não criou", exercitando
   o fluxo HTTP real do `tracking-projector` contra Postgres real (mesmo
   padrão de `test/integration`), com asserção de `403 Forbidden`.

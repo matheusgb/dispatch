@@ -39,9 +39,8 @@ apontar `postgres-external`, `redis-external`, `redpanda-external`,
 `redpanda` e `dependency-simulator-external` para o gateway da rede
 docker do `kind` (ver `templates/external-infra.yaml`, ADR 0011). Sem essa
 correção, o ArgoCD sincroniza os `Service` mas nunca cria os `Endpoints`
-correspondentes, e todo pod que depende de Postgres/Kafka fica em
-`CrashLoopBackOff` por não conseguir resolver o Service (sem endereço de
-destino).
+correspondentes. Todo pod que depende de Postgres/Kafka fica em
+`CrashLoopBackOff`: o Service não tem endereço de destino para resolver.
 
 ```
 kubectl --context kind-lunchrush -n argocd patch cm argocd-cm --type merge -p '{"data":{"resource.exclusions":"...\n- apiGroups:\n  - discovery.k8s.io\n  kinds:\n  - EndpointSlice\n..."}}'
@@ -50,7 +49,7 @@ kubectl --context kind-lunchrush -n argocd rollout status statefulset/argocd-app
 ```
 
 (o YAML completo do patch, com os outros grupos de exclusão padrão
-preservados, está no histórico de comandos desta sessão; a única mudança
+preservados, está no histórico de comandos desta sessão. A única mudança
 real é remover `Endpoints` da lista, mantendo `EndpointSlice`, que
 continua populado automaticamente pelo `EndpointSliceMirroring
 controller` do Kubernetes a partir do `Endpoints` real).

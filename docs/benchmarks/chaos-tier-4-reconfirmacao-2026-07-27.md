@@ -21,7 +21,7 @@ inline), contra um `delivery-api` local apontando para o proxy Toxiproxy
   lento, não incorreto);
 - depois de remover o toxic: `GET /proxies` no Toxiproxy respondeu `200`
   (API de controle segue responsiva, sem sinal do deadlock do bug
-  conhecido, issue Shopify/toxiproxy#558 — este script só dispara
+  conhecido, issue Shopify/toxiproxy#558: este script só dispara
   requisições sequenciais, bem abaixo dos ~400 clientes concorrentes que
   disparam o bug);
 - recuperação: média de volta a 4ms em 10 requisições, igual ao estado
@@ -32,7 +32,7 @@ inline), contra um `delivery-api` local apontando para o proxy Toxiproxy
 
 Reconfirma a hipótese original sem alteração.
 
-## A. Pod kill de uma réplica do `delivery-api` — bug real encontrado e corrigido
+## A. Pod kill de uma réplica do `delivery-api`: bug real encontrado e corrigido
 
 Primeira reexecução com `chaos/local/pod-kill.sh` reportou `100/101`
 requisições e saiu com `exit 1` ("hipótese quebrou"), o que pareceria uma
@@ -41,7 +41,7 @@ regressão real. Investigação do arquivo de resultados
 `"matando pod $victim na requisição $i"`, escrita dentro do mesmo bloco
 `( ... ) >/tmp/chaos-podkill-results.txt` que também recebe os códigos
 HTTP da rajada, vazava para dentro do arquivo de resultados como uma
-linha extra — 100 códigos `200` reais + 1 linha de log = 101 linhas,
+linha extra: 100 códigos `200` reais + 1 linha de log = 101 linhas,
 `total=101` e `ok=100` no cálculo de sucesso, gerando um falso "1
 requisição falhou" que nunca existiu de verdade.
 

@@ -24,8 +24,8 @@ mensagem malformada (runbook `docs/runbooks/dlq-replay.md`).
 **Hipótese:** escalar um consumer group além do número de partições do
 tópico não aumenta throughput; a réplica extra fica ociosa.
 
-**Injeção:** `kubectl -n lunchrush scale deployment/lunchrush-worker --replicas=4`
-com o cluster já rodando 2 réplicas e o docker compose com mais uma
+**Injeção:** `kubectl -n lunchrush scale deployment/lunchrush-worker --replicas=4`,
+com o cluster já rodando 2 réplicas. O docker compose tinha ainda mais uma
 instância do mesmo serviço competindo pelo mesmo grupo.
 
 **Observação:** `rpk group describe lunchrush-worker` mostrou 5 membros no
@@ -43,8 +43,8 @@ por `ExternalName` funciona da mesma forma que apontar para um nome DNS.
 
 **Observação:** não funciona. `ExternalName` com um IP literal devolve
 `server misbehaving` do CoreDNS. Documentado como achado real, não como
-chaos planejado: apareceu durante a primeira tentativa de deploy no
-`kind` (ver ADR 0011). A correção (Service/Endpoints manuais, e um Service
+chaos planejado, pois apareceu durante a primeira tentativa de deploy no
+`kind` (ver ADR 0011). A correção (Service/Endpoints manuais e um Service
 extra para o nome curto que o Redpanda anuncia de volta) ficou registrada
 para qualquer novo consumidor que precise da mesma infra externa.
 

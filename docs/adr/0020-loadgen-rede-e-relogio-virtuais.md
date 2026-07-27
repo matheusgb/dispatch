@@ -20,7 +20,7 @@ tier 1), como perturbar o trajeto de GPS de cada entrega simulada:
 - **reorder**: dois pontos adjacentes do mesmo epoch trocam de ordem de
   envio;
 - **crash/restart**: a sessão de tracking do entregador reinicia no meio
-  do trajeto — `tracking_session_epoch` sobe, `sequence` reinicia em 1,
+  do trajeto: `tracking_session_epoch` sobe, `sequence` reinicia em 1,
   exatamente a mesma regra que o app real usaria ao reabrir
   (`internal/tracking`, tier 2);
 - **clock skew**: ao final do trajeto, uma tentativa de reenviar a
@@ -30,7 +30,7 @@ tier 1), como perturbar o trajeto de GPS de cada entrega simulada:
 Toda perturbação vira uma chamada HTTP real contra o `tracking-ingest`/
 `tracking-projector` reais (`client.recordPosition`/`currentPosition`,
 inalterados). `netfault.go` não sabe nada sobre monotonicidade, dedup ou
-constraints de banco — ele só decide **quais** chamadas fazer, em que
+constraints de banco: ele só decide **quais** chamadas fazer, em que
 **ordem**, com que **epoch/sequence** e depois de que **atraso**. Quem
 garante a invariante 7 (posição monotônica) continua sendo
 `internal/tracking`, provado desde o tier 2. Isso é a diferença central
@@ -44,7 +44,7 @@ sistema diferente do deploy").
 `.ClockSkewSafe`), quantas tentativas de clock skew aconteceram e quantas
 não regrediram a posição atual. Se `ClockSkewSafe < ClockSkewTried`, o
 processo termina com código de saída 1 e uma mensagem explícita de
-violação de invariante — o mesmo padrão que `Errors > 0` já usava, agora
+violação de invariante, o mesmo padrão que `Errors > 0` já usava, agora
 também para a invariante de domínio sob rede virtual, não só para falha
 de rede.
 
@@ -73,12 +73,12 @@ de 5 seguras**.
 A primeira tentativa de reprodutibilidade, sem truncar o banco entre as
 duas execuções, produziu 40 erros na segunda: a chave de idempotência
 `loadgen-<seed>-<index>` devolveu, corretamente, a mesma entrega já
-criada na primeira execução — mas essa entrega já tinha avançado de
+criada na primeira execução, mas essa entrega já tinha avançado de
 estado, então `/ready` respondeu `409` (`lunchrush: entrega não está em
 created`). Isso não é um defeito: é a idempotência do tier 1 funcionando
 exatamente como desenhada (mesma chave, mesmo efeito, uma vez só). A seed
 determina a *sequência de decisões*, não substitui o estado real do banco
-entre execuções — por isso o protocolo de reprodutibilidade documentado
+entre execuções, por isso o protocolo de reprodutibilidade documentado
 aqui exige `TRUNCATE` (ou um banco novo) entre execuções que devem ser
 comparadas.
 

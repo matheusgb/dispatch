@@ -17,7 +17,7 @@ processo `delivery-api`, cada uma com seu próprio banco de dados
 PostgreSQL (`lunchrush_cell_a`, `lunchrush_cell_b`), **no mesmo container
 PostgreSQL** que o resto do laboratório já usa. `cmd/cellrouter` é um
 reverse proxy mínimo (Go, `net/http/httputil`) que lê `X-Cell-ID` e
-encaminha para o backend certo, sem consultar nenhum banco — o "diretório
+encaminha para o backend certo, sem consultar nenhum banco: o "diretório
 pequeno" do roadmap, implementado como mapa estático carregado de
 variável de ambiente (`CELLS=cell-a=http://...,cell-b=http://...`), não
 DynamoDB Global Tables (fora de alcance sem AWS real).
@@ -76,7 +76,7 @@ Kafka (reaproveita os já existentes do `docker compose --profile app`).
 - o roteamento e o isolamento de dados por célula estão provados com
   execução real;
 - o isolamento de recurso físico (CPU, I/O do Postgres compartilhado,
-  rede Docker compartilhada) não está provado — está medido como
+  rede Docker compartilhada) não está provado: está medido como
   vazamento pequeno e não perfeito, rotulado como tal;
 - `cell_id` e `home_cell`/`courier_session_epoch` (migration 0006) já
   existem no schema para quando uma sessão futura decidir estender para
