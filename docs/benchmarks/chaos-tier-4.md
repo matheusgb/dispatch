@@ -5,7 +5,11 @@ Quatro cenários, todos executados de verdade contra o cluster `kind`
 e a infra do `docker compose`, não descritos em texto sem rodar. Formato:
 hipótese, estado estável, injeção, observação, condição de parada,
 recuperação, aprendizado. Evidência bruta de cada um em
-`docs/benchmarks/tier-4-chaos-*-evidencia.txt`.
+`docs/benchmarks/tier-4-chaos-*-evidencia.txt`. Os cenários A e D foram
+reexecutados via `chaos/local/pod-kill.sh` e
+`chaos/local/postgres-latency-toxiproxy.sh` numa sessão posterior, ver
+`docs/benchmarks/chaos-tier-4-reconfirmacao-2026-07-27.md` (inclui um bug
+real de script encontrado e corrigido).
 
 ## A. Pod kill de uma réplica do `delivery-api`
 

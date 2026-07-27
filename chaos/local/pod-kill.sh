@@ -51,7 +51,12 @@ log "injeção: rajada de $REQUESTS GET /healthz via Service, matando um pod no 
   for i in $(seq 1 "$REQUESTS"); do
     if [ "$i" -eq $((REQUESTS / 2)) ]; then
       victim=$(kubectl --context "$CONTEXT" -n "$NAMESPACE" get pods -l app=delivery-api -o jsonpath='{.items[0].metadata.name}')
-      log "matando pod $victim na requisição $i"
+      # >&2: este bloco inteiro tem o stdout redirecionado para o arquivo
+      # de resultados (só códigos HTTP, um por linha); sem isso a linha de
+      # log vira uma linha a mais no arquivo e quebra a contagem de
+      # sucesso/total mais abaixo (bug real encontrado reexecutando este
+      # script, corrigido nesta sessão).
+      log "matando pod $victim na requisição $i" >&2
       kubectl --context "$CONTEXT" -n "$NAMESPACE" delete pod "$victim" --wait=false >/dev/null
     fi
     kubectl --context "$CONTEXT" -n "$NAMESPACE" exec chaos-curl -- \
