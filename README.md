@@ -7,10 +7,10 @@
   <img src="https://img.shields.io/badge/infra-kafka%20%2B%20kubernetes%20%2B%20multi--regi%C3%A3o-1e50d8" alt="Kafka, Kubernetes e multi-região">
 </p>
 
-**Um sistema único de última milha, evoluindo por seis tiers até uma arquitetura
+**Um sistema único de entregas, evoluindo por seis tiers até uma arquitetura
 celular multi-região com prova formal de protocolo.**
 
-Uma plataforma de última milha precisa encontrar um entregador, acompanhar o
+Uma plataforma de entregas precisa encontrar um entregador, acompanhar o
 deslocamento e manter cliente e operação informados mesmo sob disputa concorrente,
 picos de tráfego e falhas parciais. O lunch-rush constrói essa plataforma em Go,
 começando por um monólito modular correto e terminando numa arquitetura celular
@@ -353,7 +353,7 @@ cada tier por escolha de escopo, não por esquecimento, está mapeado em
 
 ## Fim
 
-O lunch-rush transforma seis perguntas sobre entrega de última milha, correção
+O lunch-rush transforma seis perguntas sobre entrega, correção
 concorrente, mensageria distribuída, infraestrutura provada, protocolo formal,
 isolamento celular e portabilidade, em um único sistema, testado tier por tier
 contra infraestrutura real local. Escolha um tier no catálogo, siga o passo a
