@@ -2,33 +2,31 @@
   <defs>
     <style>
       .title { font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; font-weight: 900; }
-      .label { font-family: "Helvetica Neue", Arial, sans-serif; }
     </style>
   </defs>
 
   <rect width="2172" height="724" fill="#181310"/>
 
-  <!-- word LUNCH-RUSH, top row, clear of the diagram below -->
-  <text x="60" y="260" class="title" font-size="150" fill="#fbead2" letter-spacing="-2">LUNCH-RUSH</text>
+  <!-- word LUNCH-RUSH, top left -->
+  <text x="60" y="240" class="title" font-size="150" fill="#fbead2" letter-spacing="-2">LUNCH-RUSH</text>
 
-  <!-- route: um entregador saindo de um monolito, chegando a duas células -->
-  <line x1="60" y1="480" x2="620" y2="480" stroke="#f2a93c" stroke-width="6"/>
-  <circle cx="60" cy="480" r="16" fill="#f2a93c"/>
+  <!-- staircase: tier 1 to tier 6, growing in complexity left to right -->
+  <line x1="1180" y1="650" x2="2132" y2="650" stroke="#3a2f28" stroke-width="3"/>
 
-  <!-- tick marks along the main route: tiers 1-4 -->
-  <circle cx="230" cy="480" r="10" fill="#fbead2"/>
-  <circle cx="380" cy="480" r="10" fill="#fbead2"/>
-  <circle cx="500" cy="480" r="10" fill="#fbead2"/>
+  <!-- tier 1 -->
+  <rect x="1212" y="560" width="130" height="90" fill="#f2a93c"/>
+  <!-- tier 2 -->
+  <rect x="1366" y="510" width="130" height="140" fill="#f2a93c"/>
+  <!-- tier 3 -->
+  <rect x="1520" y="460" width="130" height="190" fill="#f2a93c"/>
+  <!-- tier 4 -->
+  <rect x="1674" y="410" width="130" height="240" fill="#f2a93c"/>
 
-  <!-- fork into two cells (tier 5/6: arquitetura celular, dois provedores) -->
-  <line x1="620" y1="480" x2="1120" y2="400" stroke="#f2a93c" stroke-width="6"/>
-  <line x1="620" y1="480" x2="1120" y2="620" stroke="#f2a93c" stroke-width="6"/>
+  <!-- tier 5: split in two, arquitetura celular -->
+  <rect x="1828" y="360" width="65" height="290" fill="#f2a93c"/>
+  <rect x="1893" y="360" width="65" height="290" fill="none" stroke="#f2a93c" stroke-width="4"/>
 
-  <!-- cell A: owner atual, epoch válido -->
-  <circle cx="1120" cy="400" r="18" fill="#f2a93c"/>
-  <text x="1160" y="392" class="label" font-size="28" fill="#fbead2">cell A · epoch atual</text>
-
-  <!-- cell B: writer antigo, fencing rejeita -->
-  <circle cx="1120" cy="620" r="18" fill="none" stroke="#e8432c" stroke-width="6"/>
-  <text x="1160" y="628" class="label" font-size="28" fill="#e8432c">cell B · writer antigo, rejeitado</text>
+  <!-- tier 6: split in two, dois provedores, um writer rejeitado -->
+  <rect x="1982" y="310" width="65" height="340" fill="#f2a93c"/>
+  <rect x="2047" y="310" width="65" height="340" fill="none" stroke="#e8432c" stroke-width="4"/>
 </svg>
