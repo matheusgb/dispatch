@@ -48,7 +48,7 @@ jobs:
           syft lunchrush-${{ matrix.service }}:ci -o spdx-json > ${{ matrix.service }}-sbom.spdx.json
 
       - name: scan com grype
-        uses: anchore/scan-action@v6
+        uses: anchore/scan-action@v7
         id: grype
         with:
           sbom: ${{ matrix.service }}-sbom.spdx.json
