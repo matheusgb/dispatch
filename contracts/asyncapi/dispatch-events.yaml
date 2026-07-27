@@ -1,0 +1,236 @@
+asyncapi: 3.0.0
+info:
+  title: dispatch events
+  version: tier-6.0.0
+  description: >
+    Eventos reais publicados pelo dispatch em Kafka/Redpanda. Fonte da
+    verdade dos nomes de tópico e kind: internal/platform/topics/topics.go.
+    Todo evento de delivery-events passa pelo outbox transacional
+    (internal/platform/outbox) e chega envelopado (ver schema Envelope);
+    tracking-positions não passa pela outbox, é publicado direto (ver
+    docs/adr/0007-tracking-nao-usa-outbox.md), então seu payload vai sem
+    envelope.
+
+defaultContentType: application/json
+
+servers:
+  local:
+    host: localhost:19092
+    protocol: kafka
+    description: Redpanda do docker compose local (deploy/compose).
+
+channels:
+  dispatch.delivery-events:
+    address: dispatch.delivery-events
+    description: >
+      Todo evento de lifecycle de uma entrega. Chave de partição:
+      delivery_id, preserva ordem por agregado (docs/adr/0006).
+    messages:
+      deliveryCreated:
+        $ref: "#/components/messages/DeliveryCreated"
+      deliveryReadyForDispatch:
+        $ref: "#/components/messages/DeliveryReadyForDispatch"
+      deliveryOffered:
+        $ref: "#/components/messages/DeliveryOffered"
+      deliveryAssigned:
+        $ref: "#/components/messages/DeliveryAssigned"
+      deliveryDeclined:
+        $ref: "#/components/messages/DeliveryDeclined"
+      deliveryExpired:
+        $ref: "#/components/messages/DeliveryExpired"
+      deliveryPickedUp:
+        $ref: "#/components/messages/DeliveryPickedUp"
+      deliveryDelivered:
+        $ref: "#/components/messages/DeliveryDelivered"
+      assignmentConfirmed:
+        $ref: "#/components/messages/AssignmentConfirmed"
+
+  dispatch.delivery-events.dlq:
+    address: dispatch.delivery-events.dlq
+    description: >
+      Mensagem que o consumidor não conseguiu decodificar/processar (ver
+      internal/platform/kafka/kafka.go e docs/runbooks/dlq-replay.md).
+      Mesmo payload do tópico original, replay é manual.
+    messages:
+      deliveryCreated:
+        $ref: "#/components/messages/DeliveryCreated"
+
+  dispatch.tracking-positions:
+    address: dispatch.tracking-positions
+    description: >
+      Posição de GPS aceita pelo tracking-ingest. Chave de partição:
+      delivery_id. Não usa o Envelope da outbox (docs/adr/0007).
+    messages:
+      positionRecorded:
+        $ref: "#/components/messages/PositionRecorded"
+
+  dispatch.tracking-positions.dlq:
+    address: dispatch.tracking-positions.dlq
+    description: mensagem de tracking que o tracking-projector não decodificou.
+    messages:
+      positionRecorded:
+        $ref: "#/components/messages/PositionRecorded"
+
+operations:
+  publishDeliveryEvents:
+    action: send
+    channel:
+      $ref: "#/channels/dispatch.delivery-events"
+    summary: >
+      internal/platform/outbox.Relay publica cada linha pendente de
+      outbox_events depois do commit da transação de domínio.
+  consumeDeliveryEvents:
+    action: receive
+    channel:
+      $ref: "#/channels/dispatch.delivery-events"
+    summary: dispatch-worker e notification-worker consomem, cada um com seu group.
+  publishTrackingPositions:
+    action: send
+    channel:
+      $ref: "#/channels/dispatch.tracking-positions"
+    summary: cmd/tracking-ingest publica direto, sem outbox.
+  consumeTrackingPositions:
+    action: receive
+    channel:
+      $ref: "#/channels/dispatch.tracking-positions"
+    summary: tracking-projector consome e projeta em Postgres/Redis.
+
+components:
+  messages:
+    DeliveryCreated:
+      name: delivery.created
+      title: Entrega criada
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryReadyForDispatch:
+      name: delivery.ready_for_dispatch
+      title: Entrega pronta para despacho
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryOffered:
+      name: delivery.offered
+      title: Entrega ofertada a um entregador
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryAssigned:
+      name: delivery.assigned
+      title: Entrega atribuída
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryDeclined:
+      name: delivery.declined
+      title: Oferta recusada
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryExpired:
+      name: delivery.expired
+      title: Oferta expirou sem resposta
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryPickedUp:
+      name: delivery.picked_up
+      title: Entrega coletada
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    DeliveryDelivered:
+      name: delivery.delivered
+      title: Entrega concluída
+      payload:
+        $ref: "#/components/schemas/EnvelopeDeliveryLifecycle"
+    AssignmentConfirmed:
+      name: assignment.confirmed
+      title: Atribuição confirmada pelo protocolo de fencing (tier 5)
+      payload:
+        $ref: "#/components/schemas/EnvelopeAssignmentConfirmed"
+    PositionRecorded:
+      name: tracking.position_recorded
+      title: Posição de GPS aceita (sem envelope, ver docs/adr/0007)
+      payload:
+        $ref: "#/components/schemas/PositionPayload"
+
+  schemas:
+    Envelope:
+      type: object
+      description: >
+        Formato publicado pelo outbox.Relay (internal/platform/outbox.go
+        Envelope). Todo consumidor de dispatch.delivery-events decodifica
+        isto primeiro, depois o `payload` interno conforme o `kind`.
+      required: [event_id, kind, payload]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          description: id do evento, usado pelo inbox do consumidor para deduplicar.
+        kind:
+          type: string
+          enum:
+            - delivery.created
+            - delivery.ready_for_dispatch
+            - delivery.offered
+            - delivery.assigned
+            - delivery.declined
+            - delivery.expired
+            - delivery.picked_up
+            - delivery.delivered
+            - assignment.confirmed
+        payload:
+          description: JSON bruto, o schema exato depende de `kind`.
+
+    EnvelopeDeliveryLifecycle:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          properties:
+            payload:
+              $ref: "#/components/schemas/DeliveryLifecyclePayload"
+
+    DeliveryLifecyclePayload:
+      type: object
+      description: >
+        Payload real hoje (internal/dispatch/dispatch.go enqueueDeliveryEvent):
+        só delivery_id. Eventos de lifecycle não carregam o estado
+        completo, o consumidor busca o estado atual se precisar (menos
+        acoplamento a um schema de payload rico, mais uma chamada de
+        leitura quando necessário).
+      required: [delivery_id]
+      properties:
+        delivery_id:
+          type: string
+          format: uuid
+
+    EnvelopeAssignmentConfirmed:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          properties:
+            payload:
+              $ref: "#/components/schemas/AssignmentConfirmedPayload"
+
+    AssignmentConfirmedPayload:
+      type: object
+      description: internal/fencing/fencing.go CreateAssignment, publicado na mesma transação do INSERT em active_assignments.
+      required: [delivery_id, courier_id, shard_id, assignment_id]
+      properties:
+        delivery_id: { type: string, format: uuid }
+        courier_id: { type: string, format: uuid }
+        shard_id: { type: string }
+        assignment_id: { type: string, format: uuid }
+
+    PositionPayload:
+      type: object
+      description: cmd/tracking-ingest/main.go handlePositions, publicado direto sem outbox.
+      required: [delivery_id, tracking_session_epoch, sequence, latitude, longitude, recorded_at]
+      properties:
+        delivery_id: { type: string, format: uuid }
+        tracking_session_epoch:
+          type: integer
+          format: int64
+          description: incrementa a cada nova sessão de tracking; supera qualquer sequence de epoch anterior.
+        sequence:
+          type: integer
+          format: int64
+          description: monotônico dentro do mesmo epoch; nunca sobrescreve uma posição mais nova (internal/tracking).
+        latitude: { type: number, minimum: -90, maximum: 90 }
+        longitude: { type: number, minimum: -180, maximum: 180 }
+        accuracy_m: { type: number, nullable: true }
+        recorded_at: { type: string, format: date-time }

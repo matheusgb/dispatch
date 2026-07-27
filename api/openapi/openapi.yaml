@@ -1,11 +1,14 @@
 openapi: 3.0.3
 info:
   title: dispatch delivery-api
-  version: tier-1.0.0
+  version: tier-6.0.0
   description: >
-    Lifecycle de entrega, cadastro de entregador e atribuição do tier 1. Um
-    único monólito modular sobre PostgreSQL, sem Kafka, sem Redis, sem
-    microsserviços.
+    Lifecycle de entrega, cadastro de entregador, atribuição e emissão de
+    token do delivery-api (internal/platform/httpapi/server.go). Cobre só
+    o delivery-api; tracking-ingest e tracking-projector não estão neste
+    documento (endpoints de tracking, ver internal/tracking e
+    cmd/tracking-projector/http.go, ficam fora de escopo deste OpenAPI por
+    enquanto).
 paths:
   /healthz:
     get:
@@ -55,6 +58,20 @@ paths:
               schema: { $ref: "#/components/schemas/Delivery" }
         "404":
           description: entrega não encontrada
+  /deliveries/{id}/ready:
+    post:
+      summary: >
+        move created -> ready_for_dispatch. Em operação normal é o
+        dispatch-worker quem aciona, reagindo a delivery.created; exposto
+        também para override manual e testes.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: entrega pronta para despacho }
+        "409": { description: entrega não estava em created }
   /deliveries/{id}/offer:
     post:
       summary: move ready_for_dispatch -> offered com prazo de expiração
@@ -100,6 +117,59 @@ paths:
       responses:
         "204": { description: recusa registrada }
         "409": { description: entrega não estava em oferta }
+  /deliveries/{id}/pickup:
+    post:
+      summary: entregador coletou o pedido, assigned -> picked_up
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: coleta registrada }
+        "409": { description: entrega não estava em assigned }
+  /deliveries/{id}/deliver:
+    post:
+      summary: entrega concluída, picked_up -> delivered (estado terminal)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: entrega concluída }
+        "409": { description: entrega não estava em picked_up }
+  /auth/tokens:
+    post:
+      summary: >
+        emite um JWT HS256 para caller/tracking-ingest/tracking-projector
+        validarem (delivery-api é a identidade raiz do sistema, ver
+        docs/adr/0005-tokens-assinados-em-vez-de-oidc.md)
+      parameters:
+        - name: X-Admin-Secret
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [caller]
+              properties:
+                caller: { type: string }
+      responses:
+        "201":
+          description: token emitido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+        "401": { description: X-Admin-Secret ausente ou inválido }
+        "422": { description: caller ausente }
   /couriers:
     post:
       summary: cadastra um entregador, indisponível por padrão

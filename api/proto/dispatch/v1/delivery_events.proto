@@ -1,0 +1,56 @@
+// Referência de forma, não implementação. Ver docs/adr/0025 para o porquê
+// de o sistema real continuar em JSON (internal/platform/outbox.Envelope)
+// em vez deste schema. Nenhum código Go gera nem consome este arquivo.
+syntax = "proto3";
+
+package dispatch.v1;
+
+option go_package = "github.com/matheusgb/dispatch/api/proto/dispatch/v1;dispatchv1";
+
+import "google/protobuf/timestamp.proto";
+
+// Envelope replica internal/platform/outbox.Envelope: todo evento carrega
+// event_id (dedup no inbox do consumidor) e kind (o consumidor decide a
+// ação, ver internal/platform/topics/topics.go para o mapa completo de
+// Kind*). Em Protobuf, "payload: bytes" viraria google.protobuf.Any ou um
+// oneof explícito por kind; aqui optamos por oneof para deixar o contrato
+// explícito no schema, ao custo de crescer a cada novo tipo de evento.
+message Envelope {
+  string event_id = 1;
+  string kind = 2;
+
+  oneof payload {
+    DeliveryLifecyclePayload delivery_lifecycle = 3;
+    AssignmentConfirmedPayload assignment_confirmed = 4;
+  }
+}
+
+// DeliveryLifecyclePayload é o payload real hoje de todo evento
+// delivery.* (internal/dispatch/dispatch.go enqueueDeliveryEvent): só o
+// id da entrega. O consumidor busca o estado atual via delivery-api se
+// precisar de mais que isso — decisão de acoplamento fraco que continua
+// válida em Protobuf.
+message DeliveryLifecyclePayload {
+  string delivery_id = 1;
+}
+
+// AssignmentConfirmedPayload espelha internal/fencing.CreateAssignment.
+message AssignmentConfirmedPayload {
+  string delivery_id = 1;
+  string courier_id = 2;
+  string shard_id = 3;
+  string assignment_id = 4;
+}
+
+// PositionRecorded espelha cmd/tracking-ingest positionRequest. Não passa
+// pela outbox (docs/adr/0007), por isso não usa o Envelope acima — seria
+// publicado como mensagem de topo, não aninhado num oneof.
+message PositionRecorded {
+  string delivery_id = 1;
+  int64 tracking_session_epoch = 2;
+  int64 sequence = 3;
+  double latitude = 4;
+  double longitude = 5;
+  optional double accuracy_m = 6;
+  google.protobuf.Timestamp recorded_at = 7;
+}
