@@ -23,8 +23,9 @@ reescrever o anterior. O roadmap está fechado no tier 6.
   o monólito em serviços comunicando por outbox/inbox: um crash simulado entre
   publicar e confirmar republica a mensagem, mas o inbox deduplica o efeito.
 - **[Tier 4 · "AWS" simulada e supply chain](./docs/passo-a-passo/tier-4.md)**.
-  Terraform contra LocalStack, Helm, KEDA e SBOM assinado: o KEDA escala de 0 a
-  6 réplicas por lag real de consumer group, sem conta AWS paga envolvida.
+  Terraform contra LocalStack e floci, Helm, KEDA e SBOM assinado: o KEDA
+  escala de 0 a 6 réplicas por lag real de consumer group, sem conta AWS paga
+  envolvida.
 - **[Tier 5 · arquitetura celular e TLA+](./docs/passo-a-passo/tier-5.md)**.
   Divide o sistema em células com fencing por epoch/lease, verificado
   formalmente: 0 violação em 1086 estados do TLC, 20 tentativas com epoch

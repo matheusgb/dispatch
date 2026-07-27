@@ -207,6 +207,32 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  # floci cobre só o que o LocalStack community deixa de fora (EKS, MSK,
+  # RDS, ElastiCache), atrás do LocalStack Pro pago. Convive com o
+  # localstack acima em vez de substituí-lo: S3/Secrets Manager/KMS
+  # continuam no localstack, sem necessidade de trocar o que já funciona.
+  # Ver docs/adr/0027-floci-para-eks-msk-rds-elasticache.md.
+  floci:
+    profiles: ["aws-lab"]
+    image: floci/floci:latest
+    user: root
+    environment:
+      DEFAULT_REGION: us-east-1
+      PERSISTENCE: "0"
+    ports:
+      # 4577, não 4566: evita colisão com o localstack acima, que já usa
+      # a porta padrão neste mesmo compose.
+      - "4577:4566"
+    healthcheck:
+      # o mesmo path de health do LocalStack: o floci implementa a
+      # mesma rota por compatibilidade.
+      test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   prometheus:
     profiles: ["observability"]
     image: prom/prometheus:v3.0.1

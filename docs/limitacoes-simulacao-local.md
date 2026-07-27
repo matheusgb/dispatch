@@ -37,23 +37,31 @@ Kubernetes em si, que já são as ferramentas reais desde aqui.
 
 | Peça do roadmap | Substituição local | O que se perde |
 | --- | --- | --- |
-| EKS | `kind` (Kubernetes-in-Docker) | não existe control plane gerenciado, nem IAM de nó, nem cobrança, nem os limites reais de escala do EKS |
-| MSK | Redpanda (compatível com o protocolo Kafka) | sem réplicas cross-AZ reais, sem o modelo de custo do MSK, sem os limites operacionais documentados da AWS |
-| RDS/Aurora PostgreSQL | PostgreSQL em container único ou `docker compose` com réplica de leitura manual | sem Multi-AZ real, sem failover gerenciado, sem métricas de um serviço gerenciado |
-| ElastiCache for Redis | Redis em container | idêntico em protocolo; perde-se apenas o failover gerenciado |
+| EKS | `kind` (Kubernetes-in-Docker) para o cluster de aplicação; Terraform aplicado contra o floci (`aws_eks_cluster`, container `rancher/k3s`) desde ADR 0027 | não existe control plane gerenciado da AWS, nem IAM de nó, nem cobrança, nem os limites reais de escala do EKS |
+| MSK | Redpanda (compatível com o protocolo Kafka) desde o tier 3; Terraform aplicado contra o floci (`aws_msk_cluster`, mesmo container Redpanda por trás da API MSK) desde ADR 0027 | sem réplicas cross-AZ reais, sem o modelo de custo do MSK, sem os limites operacionais documentados da AWS; o refresh do floci não ecoa `broker_node_group_info`/`tags`, então mudanças pós-apply exigem `terraform taint` (ver ADR 0027) |
+| RDS/Aurora PostgreSQL | PostgreSQL em container único ou `docker compose` com réplica de leitura manual; Terraform aplicado contra o floci (`aws_db_instance`) desde ADR 0027 | sem Multi-AZ real, sem failover gerenciado, sem métricas de um serviço gerenciado |
+| ElastiCache for Redis | Redis em container; Terraform aplicado contra o floci (`aws_elasticache_replication_group`, container Valkey real) desde ADR 0027 | idêntico em protocolo; perde-se o failover gerenciado. O refresh do floci não ecoa `engine`/`num_cache_clusters`/`tags`, então mudanças pós-apply exigem `terraform taint` (ver ADR 0027) |
 | S3 | LocalStack (quando aplicável) ou sistema de arquivos local | sem durabilidade de objeto real, sem custo de egress real |
-| AWS FIS | Toxiproxy e Chaos Mesh dentro do `kind` | cobre falha de rede e de pod; não cobre falha de zona de disponibilidade real nem o modelo de permissão do FIS |
-| Terraform contra AWS | Terraform contra LocalStack, quando o provider suporta | LocalStack open source não implementa EKS nem MSK; os módulos que dependem desses serviços ficam documentados, não aplicados |
+| AWS FIS | Toxiproxy e Chaos Mesh dentro do `kind` | cobre falha de rede e de pod; não cobre falha de zona de disponibilidade real nem o modelo de permissão do FIS. floci não lista FIS entre os serviços emulados |
+| Terraform contra AWS | Terraform contra LocalStack para S3/Secrets Manager/KMS (ADR 0012); Terraform contra floci para EKS/MSK/RDS/ElastiCache (ADR 0027, MIT, sem paywall) | os quatro serviços que ficavam sem módulo nenhum agora têm Terraform real aplicado; a limitação deixou de ser "nenhum módulo escrito" e passou a ser "sem Multi-AZ real" (ver linhas acima) |
 | Multi-AZ real, RPO/RTO medidos em zona de verdade | três instâncias locais rotuladas como "zona", sem isolamento de rede físico real | qualquer RTO/RPO medido aqui é do ambiente local, não de uma zona AWS |
 
-### Terraform contra LocalStack: só S3 e Secrets Manager/KMS
+### Terraform contra LocalStack: S3 e Secrets Manager/KMS; contra floci: EKS, MSK, RDS e ElastiCache
 
-`infra/terraform/` (ver ADR 0012) só tem módulo para os serviços que o
+`infra/terraform/` (ver ADR 0012) tem módulo para os serviços que o
 LocalStack **community** (edição gratuita) implementa de forma honesta:
 S3 e Secrets Manager (com KMS por baixo). EKS, MSK, RDS/Aurora e
-ElastiCache ficam atrás do LocalStack Pro, que é pago. Nenhum módulo
-Terraform foi escrito para eles neste laboratório, para não fingir um
-recurso que nunca aceitaria uma conexão de verdade.
+ElastiCache ficam atrás do LocalStack Pro, que é pago, e continuam sem
+módulo contra o LocalStack neste laboratório, para não fingir um recurso
+que nunca aceitaria uma conexão de verdade.
+
+Desde ADR 0027, esses quatro serviços passaram a ter módulo Terraform
+próprio (`infra/terraform/modules/database`, `cache`, `messaging`,
+`kubernetes`), aplicado contra o floci em vez do LocalStack — o floci é
+MIT e implementa os quatro com Docker real (Postgres, Valkey, Redpanda e
+k3s por trás da API de cada serviço), sem paywall. Os módulos `storage` e
+`secrets` originais continuam intactos contra o LocalStack; nenhum dos
+dois precisou mudar.
 
 Limitação adicional encontrada na prática: `aws_s3_bucket_lifecycle_configuration`
 trava `terraform apply` indefinidamente contra o LocalStack 3.8.1 (o

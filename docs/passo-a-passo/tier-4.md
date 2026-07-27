@@ -1,11 +1,11 @@
 # Tier 4 passo a passo
 
 Continuação do [tier 3](tier-3.md). Aqui entram Terraform contra
-LocalStack, Helm no lugar de Kustomize, KEDA escalando por lag de
+LocalStack e floci, Helm no lugar de Kustomize, KEDA escalando por lag de
 consumer group, chaos engineering contra o cluster real e SLOs como
 código. Você precisa do que o tier 3 já pedia (`docker compose`, `kind`,
 `kubectl`), mais `terraform`, `helm` e o AWS CLI (`pip install awscli`,
-usado só contra LocalStack, nunca contra a AWS real).
+usado só contra LocalStack e floci, nunca contra a AWS real).
 
 ---
 
@@ -40,7 +40,54 @@ confirmando que o Terraform aplicou de verdade, não só validou sintaxe.
 
 ---
 
-## Passo 2: subir a aplicação com o objectstore e o secrets manager ligados
+## Passo 2: provisionar EKS, MSK, RDS e ElastiCache com Terraform contra o floci
+
+```bash
+docker compose --profile aws-lab up -d floci
+terraform apply -auto-approve
+```
+
+**O que você vai ver:** o `floci` sobe saudável em `localhost:4577`
+(porta separada do LocalStack no passo 1, mesmo `docker compose`). O
+`apply` cria um cluster EKS, um cluster MSK, uma instância RDS PostgreSQL
+e um replication group ElastiCache — o mesmo `terraform apply` do passo
+1, porque os módulos novos já estão ligados ao mesmo `environment`.
+
+**O que roda por baixo:** um segundo provider `aws`, alias `floci`, no
+mesmo `main.tf` do passo 1, apontando `rds`/`elasticache`/`kafka`/`eks`
+para `http://localhost:4577` (ver ADR 0027). O LocalStack community não
+implementa esses quatro serviços (ficam atrás do LocalStack Pro pago);
+o floci é MIT e os implementa com Docker real por trás da API de cada
+um.
+
+```bash
+docker ps --format '{{.Names}}\t{{.Image}}' | grep floci
+```
+
+**O que você vai ver:** containers `postgres`, `valkey`, `redpanda` e
+`k3s` reais, criados pelo `terraform apply` acima, não uma resposta fake
+de API:
+
+```text
+floci-rds-xxxxxx                postgres:16-alpine
+floci-msk-xxxxxx                redpandadata/redpanda:latest
+floci-eks-lunchrush-aws-lab     rancher/k3s:latest
+floci-valkey-lunchrush-aws-lab  valkey/valkey:8
+```
+
+**Limitação, não escondida:** cada um desses containers é uma instância
+única, sem Multi-AZ nem failover gerenciado — `multi_az`,
+`automatic_failover_enabled` e `number_of_broker_nodes = 1` estão
+explícitos nos módulos (`infra/terraform/modules/database`, `cache`,
+`messaging`, `kubernetes`) para não fingir uma prova que este ambiente
+não pode dar. Depois do apply inicial, o refresh do floci não ecoa de
+volta alguns atributos de MSK, ElastiCache e RDS; mudar a configuração
+desses três módulos exige `terraform taint` explícito, não um `apply`
+normal (ver ADR 0027).
+
+---
+
+## Passo 3: subir a aplicação com o objectstore e o secrets manager ligados
 
 ```bash
 docker compose --profile app --profile aws-lab up -d --build
@@ -59,7 +106,7 @@ caem de volta ao comportamento do tier 3 sem erro (ver
 
 ---
 
-## Passo 3: migrar (ou reaproveitar) o cluster `kind` e instalar via Helm
+## Passo 4: migrar (ou reaproveitar) o cluster `kind` e instalar via Helm
 
 ```bash
 docker compose --profile app up -d postgres redis redpanda \
@@ -91,7 +138,7 @@ externos (`postgres-external`, `redis-external`, `redpanda-external`,
 
 ---
 
-## Passo 4: instalar o KEDA e escalar `lunchrush-worker` por lag real
+## Passo 5: instalar o KEDA e escalar `lunchrush-worker` por lag real
 
 ```bash
 ./scripts/keda-install.sh
@@ -121,7 +168,7 @@ lunchrush-worker`, o `ScaledObject` marcando `ACTIVE: True`, e o
 
 ---
 
-## Passo 5: rodar os cenários de chaos
+## Passo 6: rodar os cenários de chaos
 
 Chaos engineering é a
 prática de injetar falhas de propósito num sistema para verificar se ele
@@ -144,7 +191,7 @@ mesmo `Deployment` nunca parou de responder.
 
 ---
 
-## Passo 6: subir o Prometheus com os SLOs como código
+## Passo 7: subir o Prometheus com os SLOs como código
 
 ```bash
 docker compose --profile observability up -d prometheus grafana
