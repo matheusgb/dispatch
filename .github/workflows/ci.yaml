@@ -60,7 +60,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: build image (sem push, só valida o Dockerfile)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deploy/compose/Dockerfile.${{ matrix.service }}
