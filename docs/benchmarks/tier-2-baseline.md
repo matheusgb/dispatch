@@ -46,7 +46,7 @@ PostgreSQL via Toxiproxy sem nenhuma requisição falhando (só mais lentas).
 
 ## Observabilidade
 
-Dashboard `lunchrush — RED e negócio` provisionado no Grafana
+Dashboard `lunchrush: RED e negócio` provisionado no Grafana
 (`observability/grafana/provisioning`), com rate/errors/duration por rota e
 métricas de negócio (entregas por resultado, ingestão de GPS, notificações
 por resultado). Confirmado com tráfego real do LoadGen: métrica

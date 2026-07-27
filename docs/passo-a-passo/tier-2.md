@@ -32,7 +32,7 @@ projeto, o `docker-compose.yml` já publica `delivery-api` em `8083` e
 ## Passo 2: ver o dashboard
 
 Abra `http://localhost:3000` (Grafana, login anônimo habilitado só para
-uso local) e `http://localhost:9090` (Prometheus). O dashboard "lunchrush —
+uso local) e `http://localhost:9090` (Prometheus). O dashboard "lunchrush:
 RED e negócio" já vem provisionado, em
 [observability/grafana/provisioning](../../observability/grafana/provisioning).
 

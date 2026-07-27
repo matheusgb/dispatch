@@ -29,7 +29,7 @@ o Redis, não o dado nele:
 2. Não é preciso "aquecer" o cache manualmente: a primeira leitura de cada
    entrega depois da religação já popula o Redis via cache-aside.
 3. Confirmar que a latência das rotas de tracking volta ao normal
-   (dashboard "lunchrush — RED e negócio" no Grafana, painel "Duration p95
+   (dashboard "lunchrush: RED e negócio" no Grafana, painel "Duration p95
    por rota").
 
 ## O que este runbook não cobre
