@@ -43,13 +43,36 @@ referência para uma migração futura, sem trocar o sistema real.
 `api/proto/dispatch/v1/delivery_events.proto` define o mesmo evento
 `delivery.created` (`internal/dispatch/dispatch.go` `enqueueDeliveryEvent`,
 payload real hoje: só `delivery_id`) em Protobuf, com comentário explicando
-o mapeamento campo a campo com o JSON atual. Não é gerado nem consumido por
-nenhum código Go: é documentação executável de forma, para provar que o
-schema Protobuf é trivial de escrever quando a decisão de migrar for
-tomada. `protoc`/`buf` não estão instalados neste ambiente, então o
-`.proto` foi revisado manualmente (sintaxe conferida contra a
-especificação proto3), não compilado; sessão futura que for gerar código
-de verdade deve rodar `buf lint`/`buf build` antes de confiar nele.
+o mapeamento campo a campo com o JSON atual. Não é consumido por nenhum
+código Go de produção: é documentação executável de forma, para provar que
+o schema Protobuf é trivial de escrever quando a decisão de migrar for
+tomada.
+
+**Geração de código real, não só revisão manual.** Sessão anterior deixou
+isso pendente por falta de `protoc` instalado; esta sessão instalou o
+binário oficial (`protocolbuffers/protobuf` v29.3, release Linux x86_64 do
+GitHub, sem precisar de `apt`/sudo) e o plugin `protoc-gen-go`
+(`go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`), e
+rodou:
+
+```
+protoc -I api/proto -I <include dos well-known types do release> \
+  --go_out=api/proto/gen --go_opt=paths=source_relative \
+  api/proto/dispatch/v1/delivery_events.proto
+```
+
+Gerou `api/proto/gen/dispatch/v1/delivery_events.pb.go` sem erro, e
+`go build ./api/...` compila o pacote gerado (`google.golang.org/protobuf`
+virou dependência direta do módulo em vez de `// indirect`, confirmado por
+`go mod tidy`). O `.proto` agora é validado por geração de código real, não
+só por revisão manual de sintaxe. O comando ficou reproduzível como
+`make proto-gen` (`Makefile`, variável `PROTOC_INCLUDE` para apontar ao
+diretório `include/` do release quando `protoc` não vem de pacote de
+sistema). A saída gerada não é versionada (`api/proto/gen/` no
+`.gitignore`): é prova de forma reproduzível sob demanda, não artefato de
+build do sistema real — nenhum pacote em `internal/` ou `cmd/` importa
+`api/proto/gen`, a decisão de manter JSON no outbox real continua valendo
+inalterada.
 
 ## O que mudaria se fosse produção
 

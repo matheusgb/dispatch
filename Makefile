@@ -1,7 +1,7 @@
 .PHONY: bootstrap test test-race test-integration invariant-test contract-test e2e fuzz local-up migrate-up migrate-down run \
 	load-smoke load-lunchrush load-spike load-breakpoint load-soak \
 	compose-up compose-down kind-up kind-down helm-up keda-up tf-aws-lab-up tf-aws-lab-down \
-	chaos replay benchmark-report \
+	chaos replay benchmark-report proto-gen \
 	cloud-plan cloud-up cloud-destroy portability-test cloud-failover
 
 DATABASE_URL ?= postgres://dispatch:dispatch@localhost:5432/dispatch?sslmode=disable
@@ -45,6 +45,23 @@ e2e:
 
 fuzz:
 	go test -fuzz=. -fuzztime=30s ./internal/delivery/...
+
+# proto-gen: gera api/proto/gen/ a partir de api/proto/dispatch/v1/*.proto,
+# só como prova de forma (ver docs/adr/0025) — nada em internal/ importa o
+# resultado. Exige protoc (protocolbuffers/protobuf) e protoc-gen-go
+# (google.golang.org/protobuf/cmd/protoc-gen-go) no PATH. Saída não é
+# versionada (api/proto/gen/ está no .gitignore), regenere quando precisar.
+# PROTOC_INCLUDE: caminho extra de -I para os "well-known types"
+# (google/protobuf/timestamp.proto). Binário instalado via apt
+# (protobuf-compiler) já resolve sozinho; binário de release baixado direto
+# do GitHub precisa apontar para o diretório include/ que vem no zip, ex.
+# PROTOC_INCLUDE=.tools/protoc/include.
+PROTOC_INCLUDE ?=
+proto-gen:
+	mkdir -p api/proto/gen
+	protoc -I api/proto $(if $(PROTOC_INCLUDE),-I $(PROTOC_INCLUDE)) \
+		--go_out=api/proto/gen --go_opt=paths=source_relative \
+		api/proto/dispatch/v1/delivery_events.proto
 
 local-up:
 	docker compose up -d postgres

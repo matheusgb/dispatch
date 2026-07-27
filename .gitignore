@@ -33,6 +33,8 @@ docs/benchmarks/supply-chain/cosign.key
 
 # TLA+: binario de terceiros baixado localmente (ADR 0017), nao versionado.
 docs/tla/tools/tla2tools.jar
+.tools/
+api/proto/gen/
 
 # TLC: diretorios de checkpoint/estado gerados a cada execucao.
 docs/tla/**/states/

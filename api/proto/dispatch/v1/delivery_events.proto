@@ -1,6 +1,10 @@
 // Referência de forma, não implementação. Ver docs/adr/0025 para o porquê
 // de o sistema real continuar em JSON (internal/platform/outbox.Envelope)
-// em vez deste schema. Nenhum código Go gera nem consome este arquivo.
+// em vez deste schema. O código gerado a partir deste arquivo
+// (api/proto/gen/dispatch/v1/delivery_events.pb.go, `protoc --go_out=...`,
+// não versionado, ver Makefile alvo proto-gen) compila, mas nenhum código
+// Go de produção o importa ou consome: é geração validada como prova de
+// forma, não parte do pipeline real.
 syntax = "proto3";
 
 package dispatch.v1;
